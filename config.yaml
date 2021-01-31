@@ -1,0 +1,61 @@
+baseURL: "https://eric.swiftzer.net/"
+defaultContentLanguage: en
+languages:
+  en:
+    weight: 1
+    languageCode: zh-Hant-HK
+title: EricLog
+theme: PaperMod
+permalinks:
+  posts: /:year/:month/:filename/
+pygmentsUseClasses: true
+hasCJKLanguage: true
+rssLimit: 10
+googleAnalytics: UA-1268728-8
+disqusShortname: efilm
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+  highlight:
+    codeFences: true
+    guessSyntax: true
+    lineNos: false
+menu:
+  main:
+    - name: Fonts
+      url: fonts/
+      weight: 10
+    - name: Archives
+      url: archives/
+      weight: 20
+    - name: Tags
+      url: tags/
+      weight: 30
+    - name: About
+      url: about/
+      weight: 50
+taxonomies:
+  tag: tags
+params:
+  env: production
+  defaultTheme: auto
+  homeInfoParams:
+    Title: Eric Li
+    Content: Android app developer
+  socialIcons:
+    - name: telegram
+      url: "https://telegram.me/ericksli"
+    - name: twitter
+      url: "https://twitter.com/ericksli"
+    - name: instagram
+      url: "https://www.instagram.com/ericksli"
+    - name: medium
+      url: "https://medium.com/@ericksli"
+    - name: github
+      url: "https://github.com/ericksli"
+    - name: linkedin
+      url: "https://www.linkedin.com/in/ericksli/"
+  assets:
+    disableHLJS: true
+  comments: true
