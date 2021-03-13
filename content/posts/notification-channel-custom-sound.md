@@ -1,7 +1,6 @@
 ---
 title: "Notification Channel 自訂音效"
 date: 2021-03-13T22:10:00+08:00
-draft: true
 tags:
   - Android
 ---
