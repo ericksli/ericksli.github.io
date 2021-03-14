@@ -98,7 +98,7 @@ class SmsRetrieverBroadcastReceiver : BroadcastReceiver() {
 </manifest>
 ```
 
-## SMS User Consent
+## SMS User Consent API
 
 上面介紹的 SMS Retriever API 只適用於能夠控制到 SMS 內文的情況。但如果那個 SMS 並不能自己控制內文的話（例如由銀行發出），那就要使用 [SMS User Consent API](https://developers.google.com/identity/sms-retriever/user-consent/overview)。做法和 SMS Retriever API 相似，最大分別是系統會顯示一個 bottom sheet 詢問用戶是不是想把收到的那個 SMS 給予 app 讀取。如果同意的話 app 就會透過 `BroadcastReceiver` 接收 SMS 原文。
 
