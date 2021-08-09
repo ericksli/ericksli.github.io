@@ -68,8 +68,8 @@ class SmsRetrieverBroadcastReceiver : BroadcastReceiver() {
             when (status?.statusCode) {
                 CommonStatusCodes.SUCCESS -> {
                     // Success, obtain the SMS message body
-                    val message = intent.extras?
-                            .getString(SmsRetriever.EXTRA_SMS_MESSAGE)
+                    val message = intent.extras
+                            ?.getString(SmsRetriever.EXTRA_SMS_MESSAGE)
                             .orEmpty()
                 }
                 CommonStatusCodes.TIMEOUT -> {
