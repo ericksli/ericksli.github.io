@@ -1,15 +1,129 @@
-<!doctype html><html lang=zh-hant-hk dir=auto><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Conventional Commits 和 commitlint | EricLog</title><meta name=keywords content="Git"><meta name=description content="Conventional Commits 是一個簡單的 Git commit message 約定，用來規定 commit message 的寫法。Git 本身就沒有規定 commit message 的內容格式，所以不同人會有不同的做法。如果 repository 只是有一個或幾個人用的話"><meta name=author content><link rel=canonical href=https://eric.swiftzer.net/2020/08/conventional-commits-commitlint/><link href=/assets/css/stylesheet.min.540e9d13c320add066cf1c3f0e0b529a475da4f4256e42083a40e3205f46886a.css integrity="sha256-VA6dE8MgrdBmzxw/DgtSmkddpPQlbkIIOkDjIF9GiGo=" rel="preload stylesheet" as=style><link rel=icon href=https://eric.swiftzer.net/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png><link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png><link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><meta name=generator content="Hugo 0.80.0"><link rel=preconnect href=https://fonts.gstatic.com><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-1268728-8','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script><meta property="og:title" content="Conventional Commits 和 commitlint"><meta property="og:description" content="Conventional Commits 是一個簡單的 Git commit message 約定，用來規定 commit message 的寫法。Git 本身就沒有規定 commit message 的內容格式，所以不同人會有不同的做法。如果 repository 只是有一個或幾個人用的話"><meta property="og:type" content="article"><meta property="og:url" content="https://eric.swiftzer.net/2020/08/conventional-commits-commitlint/"><meta property="article:published_time" content="2020-08-24T23:27:07+08:00"><meta property="article:modified_time" content="2020-08-24T23:27:07+08:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Conventional Commits 和 commitlint"><meta name=twitter:description content="Conventional Commits 是一個簡單的 Git commit message 約定，用來規定 commit message 的寫法。Git 本身就沒有規定 commit message 的內容格式，所以不同人會有不同的做法。如果 repository 只是有一個或幾個人用的話"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Conventional Commits 和 commitlint","name":"Conventional Commits 和 commitlint","description":"Conventional Commits 是一個簡單的 Git commit message 約定，用來規定 commit message 的寫法。Git 本身就沒有規定 commit message 的內容格式，所以不同人會有不同的做法。如果 repository 只是有一個或幾個人用的話","keywords":["Git"],"articleBody":"Conventional Commits 是一個簡單的 Git commit message 約定，用來規定 commit message 的寫法。Git 本身就沒有規定 commit message 的內容格式，所以不同人會有不同的做法。如果 repository 只是有一個或幾個人用的話，那問題就不大。但如果在開源軟件或者公司這類多人同時參與的 repository 時，不同風格的 commit message 會令人花額外的時間來了解 repository 的變動。如果再加上一部分的 commit message 內容空洞的時候（例如只寫「fix」、「commit」、「修正錯誤」等等），情況就會失控。\n一般的 Git client 因為界面空間和方便檢索，在顯示紀錄時都是顯示 commit message 的第一行。所以第一行是最重要。\n[optional scope]:  [optional body] [optional footer(s)] Conventional Commits 亦是這樣處理。上面是 Conventional Commits 的 commit message 結構。第一行是 header。Header 分為三部分：type、scope 和 subject。Type 就是分類，例子有 fix、feat，分別表示修正和新功能。如果按 Angular 的約定，還有 build、ci、docs、perf、refactor、style、test 可供選擇。值得一提是 chore 已經被刪走，原因是因為太多人濫用。緊接 type 的就是 scope，它是用來提供除 type 之外額外的脈絡資訊，例如是用來注明改動和那個組件或功能相關。而 header 最重要的部分 subject 就是為這個 commit 提供一個簡短的總結。\n因為 Git client 顯示 commit message 第一行的空間有限，如果 subject 空間有限而未能完全表達的話（例如是講解變動的原因），可以寫在 body 部分。Body 可以多於一段，用空行分隔。\n而 footer 就是用來放 issue tracker 的 issue ID、pull request 或 merge request ID、審核者、重大變更之類，一行一個詮釋。\n除了規範格式方便其他人閱讀 Git log 以外，Conventional Commits 的另一個主要作用是用來控制版本號碼的變更。具體來說就是跟 Semantic Versioning (SemVer) 連動。如果 Git log 有 fix 的 commit 就對應 SemVer 的 PATCH release；feat 就對應 MINOR release；BREAKING CHANGE 就對應 MAJOR release。\n另外，可以配合對應 Conventional Commits 的工具自動生成 CHANGELOG，毋須再人手整理，減少遺漏項目的機會。\nConventional Commits 還有其他的規範，我不花時間逐一說明。可以到他們的網站閱讀，網頁已被翻譯成不同的語言。\n 有了 Conventional Commits 這個規範都未能完全解決 commit message 混亂的問題，因為總有人不按規範寫 commit message。所以就有 Conventional Commits 的 linter，例好 commitsar 和 commitlint。如果用 commitlint 的話，它有一個 @commitlint/config-conventional 的設定讓你做 lint rule 基底。它是按照 Conventional Commits 規範來設定，但因為規範要適用於不同的 project，所以不能寫得太嚴格。如果想要更細緻的規範，commitlint 提供了額外的 rule 可供選用。\n為方便大家了解 @commitlint/config-conventional 的 rule，下面我準備了一張 cheat sheet（另有 PDF 檔案）。希望這張 cheat sheet 可以令你更容易向你的團隊推廣 Conventional Commits。\n  Cheat sheet   ","wordCount":"1041","inLanguage":"en","datePublished":"2020-08-24T23:27:07+08:00","dateModified":"2020-08-24T23:27:07+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2020/08/conventional-commits-commitlint/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script></head><body id=top><script>if(localStorage.getItem("pref-theme")==="dark"){document.body.classList.add('dark');}else if(localStorage.getItem("pref-theme")==="light"){document.body.classList.remove('dark')}else if(window.matchMedia('(prefers-color-scheme: dark)').matches){document.body.classList.add('dark');}</script><noscript><style type=text/css>.theme-toggle,.top-link{display:none}</style></noscript><header class=header><nav class=nav><div class=logo><a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
-<span class=logo-switches><span class=theme-toggle title="(Alt + T)"><a id=theme-toggle accesskey=t><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></a></span></span></div><ul class=menu id=menu onscroll=menu_on_scroll()><li><a href=https://eric.swiftzer.net/fonts/ title=Fonts><span>Fonts</span></a></li><li><a href=https://eric.swiftzer.net/archives/ title=Archives><span>Archives</span></a></li><li><a href=https://eric.swiftzer.net/tags/ title=Tags><span>Tags</span></a></li><li><a href=https://eric.swiftzer.net/about/ title=About><span>About</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><h1 class=post-title>Conventional Commits 和 commitlint</h1><div class=post-meta>August 24, 2020</div></header><div class=post-content><p><a href=https://www.conventionalcommits.org/>Conventional Commits</a> 是一個簡單的 Git commit message 約定，用來規定 commit message 的寫法。Git 本身就沒有規定 commit message 的內容格式，所以不同人會有不同的做法。如果 repository 只是有一個或幾個人用的話，那問題就不大。但如果在開源軟件或者公司這類多人同時參與的 repository 時，不同風格的 commit message 會令人花額外的時間來了解 repository 的變動。如果再加上一部分的 commit message 內容空洞的時候（例如只寫「fix」、「commit」、「修正錯誤」等等），情況就會失控。</p><p>一般的 Git client 因為界面空間和方便檢索，在顯示紀錄時都是顯示 commit message 的第一行。所以第一行是最重要。</p><div class=highlight><pre class=chroma><code class=language-text data-lang=text>&lt;type&gt;[optional scope]: &lt;description&gt;
+<!doctype html><html lang=zh-hant-hk dir=auto>
+<head><meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=robots content="index, follow">
+<title>Conventional Commits 和 commitlint | EricLog</title>
+<meta name=keywords content="Git">
+<meta name=description content="Conventional Commits 是一個簡單的 Git commit message 約定，用來規定 commit message 的寫法。Git 本身就沒有規定 commit message 的內容格式，所以不同人會有不同的做法。如果 repository 只是有一個或幾個人用的話">
+<meta name=author content>
+<link rel=canonical href=https://eric.swiftzer.net/2020/08/conventional-commits-commitlint/>
+<link href=/assets/css/stylesheet.min.fb7ad69a514b80a660b6c35150bc2988c0a53cecc30f28f0c4742d7b89d9ef6a.css integrity="sha256-+3rWmlFLgKZgtsNRULwpiMClPOzDDyjwxHQte4nZ72o=" rel="preload stylesheet" as=style>
+<link rel=icon href=https://eric.swiftzer.net/favicon.ico>
+<link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png>
+<link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png>
+<link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png>
+<link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg>
+<meta name=theme-color content="#2e2e33">
+<meta name=msapplication-TileColor content="#2e2e33">
+<meta name=generator content="Hugo 0.88.1">
+<link rel=preconnect href=https://fonts.gstatic.com>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-1268728-8','auto'),ga('send','pageview'))</script>
+<script async src=https://www.google-analytics.com/analytics.js></script>
+<meta property="og:title" content="Conventional Commits 和 commitlint">
+<meta property="og:description" content="Conventional Commits 是一個簡單的 Git commit message 約定，用來規定 commit message 的寫法。Git 本身就沒有規定 commit message 的內容格式，所以不同人會有不同的做法。如果 repository 只是有一個或幾個人用的話">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://eric.swiftzer.net/2020/08/conventional-commits-commitlint/">
+<meta property="article:published_time" content="2020-08-24T23:27:07+08:00">
+<meta property="article:modified_time" content="2020-08-24T23:27:07+08:00">
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="Conventional Commits 和 commitlint">
+<meta name=twitter:description content="Conventional Commits 是一個簡單的 Git commit message 約定，用來規定 commit message 的寫法。Git 本身就沒有規定 commit message 的內容格式，所以不同人會有不同的做法。如果 repository 只是有一個或幾個人用的話">
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Conventional Commits 和 commitlint","name":"Conventional Commits 和 commitlint","description":"Conventional Commits 是一個簡單的 Git commit message 約定，用來規定 commit message 的寫法。Git 本身就沒有規定 commit message 的內容格式，所以不同人會有不同的做法。如果 repository 只是有一個或幾個人用的話","keywords":["Git"],"articleBody":"Conventional Commits 是一個簡單的 Git commit message 約定，用來規定 commit message 的寫法。Git 本身就沒有規定 commit message 的內容格式，所以不同人會有不同的做法。如果 repository 只是有一個或幾個人用的話，那問題就不大。但如果在開源軟件或者公司這類多人同時參與的 repository 時，不同風格的 commit message 會令人花額外的時間來了解 repository 的變動。如果再加上一部分的 commit message 內容空洞的時候（例如只寫「fix」、「commit」、「修正錯誤」等等），情況就會失控。\n一般的 Git client 因為界面空間和方便檢索，在顯示紀錄時都是顯示 commit message 的第一行。所以第一行是最重要。\n[optional scope]:  [optional body] [optional footer(s)] Conventional Commits 亦是這樣處理。上面是 Conventional Commits 的 commit message 結構。第一行是 header。Header 分為三部分：type、scope 和 subject。Type 就是分類，例子有 fix、feat，分別表示修正和新功能。如果按 Angular 的約定，還有 build、ci、docs、perf、refactor、style、test 可供選擇。值得一提是 chore 已經被刪走，原因是因為太多人濫用。緊接 type 的就是 scope，它是用來提供除 type 之外額外的脈絡資訊，例如是用來注明改動和那個組件或功能相關。而 header 最重要的部分 subject 就是為這個 commit 提供一個簡短的總結。\n因為 Git client 顯示 commit message 第一行的空間有限，如果 subject 空間有限而未能完全表達的話（例如是講解變動的原因），可以寫在 body 部分。Body 可以多於一段，用空行分隔。\n而 footer 就是用來放 issue tracker 的 issue ID、pull request 或 merge request ID、審核者、重大變更之類，一行一個詮釋。\n除了規範格式方便其他人閱讀 Git log 以外，Conventional Commits 的另一個主要作用是用來控制版本號碼的變更。具體來說就是跟 Semantic Versioning (SemVer) 連動。如果 Git log 有 fix 的 commit 就對應 SemVer 的 PATCH release；feat 就對應 MINOR release；BREAKING CHANGE 就對應 MAJOR release。\n另外，可以配合對應 Conventional Commits 的工具自動生成 CHANGELOG，毋須再人手整理，減少遺漏項目的機會。\nConventional Commits 還有其他的規範，我不花時間逐一說明。可以到他們的網站閱讀，網頁已被翻譯成不同的語言。\n 有了 Conventional Commits 這個規範都未能完全解決 commit message 混亂的問題，因為總有人不按規範寫 commit message。所以就有 Conventional Commits 的 linter，例好 commitsar 和 commitlint。如果用 commitlint 的話，它有一個 @commitlint/config-conventional 的設定讓你做 lint rule 基底。它是按照 Conventional Commits 規範來設定，但因為規範要適用於不同的 project，所以不能寫得太嚴格。如果想要更細緻的規範，commitlint 提供了額外的 rule 可供選用。\n為方便大家了解 @commitlint/config-conventional 的 rule，下面我準備了一張 cheat sheet（另有 PDF 檔案）。希望這張 cheat sheet 可以令你更容易向你的團隊推廣 Conventional Commits。\n  Cheat sheet   ","wordCount":"1041","inLanguage":"en","datePublished":"2020-08-24T23:27:07+08:00","dateModified":"2020-08-24T23:27:07+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2020/08/conventional-commits-commitlint/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
+</head>
+<body id=top>
+<script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
+<noscript>
+<style type=text/css>.theme-toggle,.top-link{display:none}</style>
+</noscript>
+<header class=header>
+<nav class=nav>
+<div class=logo>
+<a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
+<span class=logo-switches>
+<span class=theme-toggle title="(Alt + T)">
+<a id=theme-toggle accesskey=t><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+</a>
+</span>
+</span>
+</div>
+<ul class=menu id=menu onscroll=menu_on_scroll()>
+<li>
+<a href=https://eric.swiftzer.net/fonts/ title=Fonts>
+<span>Fonts</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/archives/ title=Archives>
+<span>Archives</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/tags/ title=Tags>
+<span>Tags</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/about/ title=About>
+<span>About</span>
+</a>
+</li></ul>
+</nav>
+</header>
+<main class=main>
+<article class=post-single>
+<header class=post-header>
+<h1 class=post-title>
+Conventional Commits 和 commitlint
+</h1>
+<div class=post-meta>August 24, 2020
+</div>
+</header>
+<div class=post-content>
+<p><a href=https://www.conventionalcommits.org/>Conventional Commits</a> 是一個簡單的 Git commit message 約定，用來規定 commit message 的寫法。Git 本身就沒有規定 commit message 的內容格式，所以不同人會有不同的做法。如果 repository 只是有一個或幾個人用的話，那問題就不大。但如果在開源軟件或者公司這類多人同時參與的 repository 時，不同風格的 commit message 會令人花額外的時間來了解 repository 的變動。如果再加上一部分的 commit message 內容空洞的時候（例如只寫「fix」、「commit」、「修正錯誤」等等），情況就會失控。</p>
+<p>一般的 Git client 因為界面空間和方便檢索，在顯示紀錄時都是顯示 commit message 的第一行。所以第一行是最重要。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>&lt;type&gt;[optional scope]: &lt;description&gt;
 
 [optional body]
 
 [optional footer(s)]
-</code></pre></div><p>Conventional Commits 亦是這樣處理。上面是 Conventional Commits 的 commit message 結構。第一行是 header。Header 分為三部分：type、scope 和 subject。Type 就是分類，例子有 <code>fix</code>、<code>feat</code>，分別表示修正和新功能。如果按 <a href=https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelines>Angular</a> 的約定，還有 <code>build</code>、<code>ci</code>、<code>docs</code>、<code>perf</code>、<code>refactor</code>、<code>style</code>、<code>test</code> 可供選擇。值得一提是 <a href=https://github.com/angular/angular/commit/dff6ee32725197bdb81f3f63c5bd9805f2ed22bb><code>chore</code> 已經被刪走</a>，原因是因為太多人濫用。緊接 type 的就是 scope，它是用來提供除 type 之外額外的脈絡資訊，例如是用來注明改動和那個組件或功能相關。而 header 最重要的部分 subject 就是為這個 commit 提供一個簡短的總結。</p><p>因為 Git client 顯示 commit message 第一行的空間有限，如果 subject 空間有限而未能完全表達的話（例如是講解變動的原因），可以寫在 body 部分。Body 可以多於一段，用空行分隔。</p><p>而 footer 就是用來放 issue tracker 的 issue ID、pull request 或 merge request ID、審核者、重大變更之類，一行一個詮釋。</p><p>除了規範格式方便其他人閱讀 Git log 以外，Conventional Commits 的另一個主要作用是用來控制版本號碼的變更。具體來說就是跟 <a href=https://semver.org/>Semantic Versioning (SemVer)</a> 連動。如果 Git log 有 <code>fix</code> 的 commit 就對應 SemVer 的 <code>PATCH</code> release；<code>feat</code> 就對應 <code>MINOR</code> release；<code>BREAKING CHANGE</code> 就對應 <code>MAJOR</code> release。</p><p>另外，可以配合對應 Conventional Commits 的工具自動生成 CHANGELOG，毋須再人手整理，減少遺漏項目的機會。</p><p>Conventional Commits 還有其他的規範，我不花時間逐一說明。可以到他們的<a href=https://www.conventionalcommits.org/>網站</a>閱讀，網頁已被翻譯成不同的語言。</p><hr><p>有了 Conventional Commits 這個規範都未能完全解決 commit message 混亂的問題，因為總有人不按規範寫 commit message。所以就有 Conventional Commits 的 linter，例好 <a href=https://commitsar.tech/>commitsar</a> 和 <a href=https://commitlint.js.org/>commitlint</a>。如果用 commitlint 的話，它有一個 <a href=https://github.com/conventional-changelog/commitlint/tree/master/%40commitlint/config-conventional>@commitlint/config-conventional</a> 的設定讓你做 lint rule 基底。它是按照 Conventional Commits 規範來設定，但因為規範要適用於不同的 project，所以不能寫得太嚴格。如果想要更細緻的規範，commitlint 提供了額外的 rule 可供選用。</p><p>為方便大家了解 @commitlint/config-conventional 的 rule，下面我準備了一張 cheat sheet（<a href=commitlint-config-conventional-cheatsheet.pdf>另有 PDF 檔案</a>）。希望這張 cheat sheet 可以令你更容易向你的團隊推廣 Conventional Commits。</p><figure><img src=commitlint-config-conventional-cheatsheet.png><figcaption>Cheat sheet</figcaption></figure></div><footer class=post-footer><ul class=post-tags><li><a href=https://eric.swiftzer.net/tags/git/>Git</a></li></ul></footer><div id=disqus_thread></div><script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return;}
-var d=document,s=d.createElement('script');s.async=true;s.src='//'+"efilm"+'.disqus.com/embed.js';s.setAttribute('data-timestamp',+new Date());(d.head||d.body).appendChild(s);})();</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></article></main><footer class=footer><span>&copy; 2021 <a href=https://eric.swiftzer.net/>EricLog</a></span>
+</code></pre></div><p>Conventional Commits 亦是這樣處理。上面是 Conventional Commits 的 commit message 結構。第一行是 header。Header 分為三部分：type、scope 和 subject。Type 就是分類，例子有 <code>fix</code>、<code>feat</code>，分別表示修正和新功能。如果按 <a href=https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelines>Angular</a> 的約定，還有 <code>build</code>、<code>ci</code>、<code>docs</code>、<code>perf</code>、<code>refactor</code>、<code>style</code>、<code>test</code> 可供選擇。值得一提是 <a href=https://github.com/angular/angular/commit/dff6ee32725197bdb81f3f63c5bd9805f2ed22bb><code>chore</code> 已經被刪走</a>，原因是因為太多人濫用。緊接 type 的就是 scope，它是用來提供除 type 之外額外的脈絡資訊，例如是用來注明改動和那個組件或功能相關。而 header 最重要的部分 subject 就是為這個 commit 提供一個簡短的總結。</p>
+<p>因為 Git client 顯示 commit message 第一行的空間有限，如果 subject 空間有限而未能完全表達的話（例如是講解變動的原因），可以寫在 body 部分。Body 可以多於一段，用空行分隔。</p>
+<p>而 footer 就是用來放 issue tracker 的 issue ID、pull request 或 merge request ID、審核者、重大變更之類，一行一個詮釋。</p>
+<p>除了規範格式方便其他人閱讀 Git log 以外，Conventional Commits 的另一個主要作用是用來控制版本號碼的變更。具體來說就是跟 <a href=https://semver.org/>Semantic Versioning (SemVer)</a> 連動。如果 Git log 有 <code>fix</code> 的 commit 就對應 SemVer 的 <code>PATCH</code> release；<code>feat</code> 就對應 <code>MINOR</code> release；<code>BREAKING CHANGE</code> 就對應 <code>MAJOR</code> release。</p>
+<p>另外，可以配合對應 Conventional Commits 的工具自動生成 CHANGELOG，毋須再人手整理，減少遺漏項目的機會。</p>
+<p>Conventional Commits 還有其他的規範，我不花時間逐一說明。可以到他們的<a href=https://www.conventionalcommits.org/>網站</a>閱讀，網頁已被翻譯成不同的語言。</p>
+<hr>
+<p>有了 Conventional Commits 這個規範都未能完全解決 commit message 混亂的問題，因為總有人不按規範寫 commit message。所以就有 Conventional Commits 的 linter，例好 <a href=https://commitsar.tech/>commitsar</a> 和 <a href=https://commitlint.js.org/>commitlint</a>。如果用 commitlint 的話，它有一個 <a href=https://github.com/conventional-changelog/commitlint/tree/master/%40commitlint/config-conventional>@commitlint/config-conventional</a> 的設定讓你做 lint rule 基底。它是按照 Conventional Commits 規範來設定，但因為規範要適用於不同的 project，所以不能寫得太嚴格。如果想要更細緻的規範，commitlint 提供了額外的 rule 可供選用。</p>
+<p>為方便大家了解 @commitlint/config-conventional 的 rule，下面我準備了一張 cheat sheet（<a href=commitlint-config-conventional-cheatsheet.pdf>另有 PDF 檔案</a>）。希望這張 cheat sheet 可以令你更容易向你的團隊推廣 Conventional Commits。</p>
+<figure>
+<img src=commitlint-config-conventional-cheatsheet.png> <figcaption>
+Cheat sheet
+</figcaption>
+</figure>
+</div>
+<footer class=post-footer>
+<ul class=post-tags>
+<li><a href=https://eric.swiftzer.net/tags/git/>Git</a></li>
+</ul>
+</footer><div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//efilm.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</article>
+</main><footer class=footer>
+<span>&copy; 2021 <a href=https://eric.swiftzer.net/>EricLog</a></span>
 <span>&#183;</span>
 <span>Powered by <a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a></span>
 <span>&#183;</span>
-<span>Theme <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)"><button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg></button></a>
-<script>window.onload=function(){if(localStorage.getItem("menu-scroll-position")){document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position");}}
-document.querySelectorAll('a[href^="#"]').forEach(anchor=>{anchor.addEventListener("click",function(e){e.preventDefault();var id=this.getAttribute("href").substr(1);if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({behavior:"smooth"});}else{document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();}
-if(id==="top"){history.replaceState(null,null," ");}else{history.pushState(null,null,`#${id}`);}});});var mybutton=document.getElementById("top-link");window.onscroll=function(){if(document.body.scrollTop>800||document.documentElement.scrollTop>800){mybutton.style.visibility="visible";mybutton.style.opacity="1";}else{mybutton.style.visibility="hidden";mybutton.style.opacity="0";}};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft);}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{if(document.body.className.includes("dark")){document.body.classList.remove('dark');localStorage.setItem("pref-theme",'light');}else{document.body.classList.add('dark');localStorage.setItem("pref-theme",'dark');}})</script></body></html>
+<span>Theme <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span>
+</footer>
+<a href=#top aria-label="go to top" title="Go to Top (Alt + G)">
+<button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</button>
+</a>
+<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))},document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})});var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}</script>
+<script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
+</body>
+</html>

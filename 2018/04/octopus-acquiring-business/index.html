@@ -1,13 +1,122 @@
-<!doctype html><html lang=zh-hant-hk dir=auto><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>八達通新方向 | EricLog</title><meta name=keywords content="八達通,信用卡"><meta name=description content="最近，八達通終於做應該做的事了：商戶可以用八達通提供的商用版 app 經 NFC 向實體卡扣錢，小商戶就毋須租拍卡機就能接受八達通付款，亦都毋須使用 O! ePay 的 QR code 功能。
-八達通當初就是一張單純的儲值卡。八達通開拓流動支付應該要數到在 Android 2.3 (Gingerbread) 支援 NFC 的時候見到有其他 Android 開發者推出查閱餘額 app 就學人推出一個查閱交易記錄 app（因為卡內的交易紀錄被加密，所以其他 app 只可以查閱餘額）。其後亦推出了八達通 SIM 卡，但現在應該終止推廣了。"><meta name=author content><link rel=canonical href=https://eric.swiftzer.net/2018/04/octopus-acquiring-business/><link href=/assets/css/stylesheet.min.540e9d13c320add066cf1c3f0e0b529a475da4f4256e42083a40e3205f46886a.css integrity="sha256-VA6dE8MgrdBmzxw/DgtSmkddpPQlbkIIOkDjIF9GiGo=" rel="preload stylesheet" as=style><link rel=icon href=https://eric.swiftzer.net/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png><link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png><link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><meta name=generator content="Hugo 0.80.0"><link rel=preconnect href=https://fonts.gstatic.com><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-1268728-8','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script><meta property="og:title" content="八達通新方向"><meta property="og:description" content="最近，八達通終於做應該做的事了：商戶可以用八達通提供的商用版 app 經 NFC 向實體卡扣錢，小商戶就毋須租拍卡機就能接受八達通付款，亦都毋須使用 O! ePay 的 QR code 功能。
-八達通當初就是一張單純的儲值卡。八達通開拓流動支付應該要數到在 Android 2.3 (Gingerbread) 支援 NFC 的時候見到有其他 Android 開發者推出查閱餘額 app 就學人推出一個查閱交易記錄 app（因為卡內的交易紀錄被加密，所以其他 app 只可以查閱餘額）。其後亦推出了八達通 SIM 卡，但現在應該終止推廣了。"><meta property="og:type" content="article"><meta property="og:url" content="https://eric.swiftzer.net/2018/04/octopus-acquiring-business/"><meta property="article:published_time" content="2018-04-16T21:40:53+08:00"><meta property="article:modified_time" content="2018-04-16T21:40:53+08:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="八達通新方向"><meta name=twitter:description content="最近，八達通終於做應該做的事了：商戶可以用八達通提供的商用版 app 經 NFC 向實體卡扣錢，小商戶就毋須租拍卡機就能接受八達通付款，亦都毋須使用 O! ePay 的 QR code 功能。
-八達通當初就是一張單純的儲值卡。八達通開拓流動支付應該要數到在 Android 2.3 (Gingerbread) 支援 NFC 的時候見到有其他 Android 開發者推出查閱餘額 app 就學人推出一個查閱交易記錄 app（因為卡內的交易紀錄被加密，所以其他 app 只可以查閱餘額）。其後亦推出了八達通 SIM 卡，但現在應該終止推廣了。"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"八達通新方向","name":"八達通新方向","description":"最近，八達通終於做應該做的事了：商戶可以用八達通提供的商用版 app 經 NFC 向實體卡扣錢，小商戶就毋須租拍卡機就能接受八達通付款，亦都毋須使用 O! ePay 的 QR code 功能。\n八達通當初就是一張單純的儲值卡。八達通開拓流動支付應該要數到在 Android 2.3 (Gingerbread) 支援 NFC 的時候見到有其他 Android 開 …","keywords":["八達通","信用卡"],"articleBody":"最近，八達通終於做應該做的事了：商戶可以用八達通提供的商用版 app 經 NFC 向實體卡扣錢，小商戶就毋須租拍卡機就能接受八達通付款，亦都毋須使用 O! ePay 的 QR code 功能。\n八達通當初就是一張單純的儲值卡。八達通開拓流動支付應該要數到在 Android 2.3 (Gingerbread) 支援 NFC 的時候見到有其他 Android 開發者推出查閱餘額 app 就學人推出一個查閱交易記錄 app（因為卡內的交易紀錄被加密，所以其他 app 只可以查閱餘額）。其後亦推出了八達通 SIM 卡，但現在應該終止推廣了。\n到了近年推出 O! ePay（八達通「好易畀」）並取得 SVF 牌照，正式進軍流動支付。不過 O! ePay 和八達通實體卡是兩個獨立的戶口。交易方法都有不同：O! ePay 是用 QR code 進行交易；實體卡則是用 RFID。因為一般商戶都是用實體卡拍卡機，只有甚少會支援 O! ePay QR code。所以 O! ePay 在消費方面不夠普及。其他功能比如朋友間轉賬、繳費等亦都因為用戶數量少、要另外申請戶口、增值 / 轉走餘額方式比較少（主要靠 NFC 從實體八達通卡轉出 / 轉入餘額）、市場上有其他同類的 app 等等的原因同樣少人用。結果 O! ePay 變成無本生利的信用卡積分 / 飛行里數刷分工具。\n到近月在 Samsung Pay 支援 Smart Octopus 到近日 Apple Pay 支援北京上海公交卡又再令網民批評八達通落後，寧願支援 Samsung 幾個型號的設備都不肯支援多人用的 Apple Pay/Google Pay。可能因為八達通對 Apple/Google 抽成不滿意，而 Samsung 可能是貼錢請八達通支援 Samsung Pay。八達通向來都是靠按金、交易手續費、拍卡機租金、用戶私隱來賺錢，如果要跟其他公司分成可能就不太願意。\n八達通最廣泛的用途是繳付車資，其次是零售商戶消費。尤其是交通這部分幾乎是壟斷，其他公司難以打入這一市場。八達通最大好處是離線交易，速度夠快。但這正正是它的缺點：因為要迎合近年的競爭，推出了和其他流動支付工具相近的 app。但用家卻因為用法不及實體卡方便和應用場合少而不使用。\n八達通在小額交易，尤其是在交通方面可以繼續「食老本」。但如果可以「FF」的話，香港的交通運輸機構可以參考倫敦 Transport for London (TfL) / 廣州地鐵般提供非接觸式信用卡付款（即是 Offline Data Authentication），這樣就能用 Apple Pay/Android Pay 付款，不是經常訪港的遊客毋須購買八達通卡就能乘車。聽起來這樣會對八達通公司不利，但這可能是八達通的新商機。\n  因為香港的交通有不少跨機構的轉乘優惠（例如港鐵和小巴的轉乘優惠），而交通運輸機構並不是由單一機構控制。如果由交通運輸機構各自處理信用卡車費付款的話就不能做到這些優惠（因為在尖東及尖沙咀站轉車 / 月票 / 轉乘優惠 / 港鐵特惠站是靠八達通卡的儲存資料在拍卡時即時計算，而信用卡是不會儲存這些資料），而各交通運輸機構一直都有和八達通公司合作（它們本身就接受八達通付款）。所以交由八達通公司負責信用卡車費結算最為合理。和八達通卡的運作一樣，交通運輸機構每日都要為拍卡機「清機」，將拍卡機內的交易紀錄交到八達通公司。八達通公司收到這些紀錄後就可以按各交通運輸機構所訂的車費和轉乘優惠規則計算每張信用卡當日的總車費，再向信用卡發卡組織扣錢。如果遲交交易紀錄的話，就在之後的交易日少扣當日車費，日子相隔太遠的話就考慮直接退款。拍卡的動作和八達通一樣都是離線交易，但因為用信用卡不能即時計算實際車費，所以在拍卡時不能顯示所扣車費。故此，八達通公司要提供網上查閱已誌帳的交易紀錄，方便乘客查詢及核對。另外，因為信用卡未能儲存票種（成人、長者、學生），在查票時難以操作。所以只可以當作成人車費處理。簡單來說，使用信用卡乘車是先乘車，後付款。而八達通公司亦由只處理八達通卡交易變成同時兼任信用卡收單機構。如果和信用卡發卡組織洽談到一個較優惠的手續費的話，八達通公司可能有利可圖。繼而可以向商戶推銷八達通及信用卡二合一讀卡機，即使消費者不用八達通都可以有錢賺。\n","wordCount":"1498","inLanguage":"en","datePublished":"2018-04-16T21:40:53+08:00","dateModified":"2018-04-16T21:40:53+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2018/04/octopus-acquiring-business/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script></head><body id=top><script>if(localStorage.getItem("pref-theme")==="dark"){document.body.classList.add('dark');}else if(localStorage.getItem("pref-theme")==="light"){document.body.classList.remove('dark')}else if(window.matchMedia('(prefers-color-scheme: dark)').matches){document.body.classList.add('dark');}</script><noscript><style type=text/css>.theme-toggle,.top-link{display:none}</style></noscript><header class=header><nav class=nav><div class=logo><a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
-<span class=logo-switches><span class=theme-toggle title="(Alt + T)"><a id=theme-toggle accesskey=t><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></a></span></span></div><ul class=menu id=menu onscroll=menu_on_scroll()><li><a href=https://eric.swiftzer.net/fonts/ title=Fonts><span>Fonts</span></a></li><li><a href=https://eric.swiftzer.net/archives/ title=Archives><span>Archives</span></a></li><li><a href=https://eric.swiftzer.net/tags/ title=Tags><span>Tags</span></a></li><li><a href=https://eric.swiftzer.net/about/ title=About><span>About</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><h1 class=post-title>八達通新方向</h1><div class=post-meta>April 16, 2018</div></header><div class=post-content><p>最近，八達通終於做應該做的事了：商戶可以用<a href=https://ezone.ulifestyle.com.hk/article/2040493/%E5%85%AB%E9%81%94%E9%80%9A%E6%9B%B4%E6%96%B0%E5%95%86%E7%94%A8%E7%89%88%20App%20%E5%85%8D%E7%A7%9F%E6%A9%9F%E5%82%B3%E7%B5%B1%E5%A0%B1%E6%94%A4%E8%A9%A6%E7%94%A8>八達通提供的商用版 app 經 NFC 向實體卡扣錢</a>，小商戶就毋須租拍卡機就能接受八達通付款，亦都毋須使用 O! ePay 的 QR code 功能。</p><p>八達通當初就是一張單純的儲值卡。八達通開拓流動支付應該要數到在 Android 2.3 (Gingerbread) 支援 NFC 的時候見到有其他 Android 開發者推出查閱餘額 app 就學人推出一個查閱交易記錄 app（因為卡內的交易紀錄被加密，所以其他 app 只可以查閱餘額）。其後亦推出了<a href=https://www.octopus.com.hk/tc/consumer/mobile-payment/mobile-sim/index.html>八達通 SIM 卡</a>，但現在應該終止推廣了。</p><p>到了近年推出 O! ePay（八達通「好易畀」）並取得 SVF 牌照，正式進軍流動支付。不過 O! ePay 和八達通實體卡是兩個獨立的戶口。交易方法都有不同：O! ePay 是用 QR code 進行交易；實體卡則是用 RFID。因為一般商戶都是用實體卡拍卡機，只有甚少會支援 O! ePay QR code。所以 O! ePay 在消費方面不夠普及。其他功能比如朋友間轉賬、繳費等亦都因為用戶數量少、要另外申請戶口、增值 / 轉走餘額方式比較少（主要靠 NFC 從實體八達通卡轉出 / 轉入餘額）、市場上有其他同類的 app 等等的原因同樣少人用。結果 O! ePay 變成無本生利的信用卡積分 / 飛行里數刷分工具。</p><p>到近月在 Samsung Pay 支援 Smart Octopus 到近日 Apple Pay 支援北京上海公交卡又再令網民批評八達通落後，寧願支援 Samsung 幾個型號的設備都不肯支援多人用的 Apple Pay/Google Pay。可能因為八達通對 Apple/Google 抽成不滿意，而 Samsung 可能是貼錢請八達通支援 Samsung Pay。八達通向來都是靠按金、交易手續費、拍卡機租金、用戶私隱來賺錢，如果要跟其他公司分成可能就不太願意。</p><p>八達通最廣泛的用途是繳付車資，其次是零售商戶消費。尤其是交通這部分幾乎是壟斷，其他公司難以打入這一市場。八達通最大好處是離線交易，速度夠快。但這正正是它的缺點：因為要迎合近年的競爭，推出了和其他流動支付工具相近的 app。但用家卻因為用法不及實體卡方便和應用場合少而不使用。</p><p>八達通在小額交易，尤其是在交通方面可以繼續「食老本」。但如果可以「FF」的話，香港的交通運輸機構可以參考倫敦 <a href=https://contactless.tfl.gov.uk/>Transport for London (TfL)</a> / <a href=http://www.gzmtr.com/ygwm/xwzx/gsxw/201709/t20170925_54174.html>廣州地鐵</a>般提供非接觸式信用卡付款（即是 Offline Data Authentication），這樣就能用 Apple Pay/Android Pay 付款，不是經常訪港的遊客毋須購買八達通卡就能乘車。聽起來這樣會對八達通公司不利，但這可能是八達通的新商機。</p><div style=position:relative;padding-bottom:56.25%;height:0;overflow:hidden><iframe src=https://www.youtube.com/embed/19tLxYnhkyg style=position:absolute;top:0;left:0;width:100%;height:100%;border:0 allowfullscreen title="YouTube Video"></iframe></div><p>因為香港的交通有不少跨機構的轉乘優惠（例如港鐵和小巴的轉乘優惠），而交通運輸機構並不是由單一機構控制。如果由交通運輸機構各自處理信用卡車費付款的話就不能做到這些優惠（因為在尖東及尖沙咀站轉車 / 月票 / 轉乘優惠 / 港鐵特惠站是靠八達通卡的儲存資料在拍卡時即時計算，而信用卡是不會儲存這些資料），而各交通運輸機構一直都有和八達通公司合作（它們本身就接受八達通付款）。所以交由八達通公司負責信用卡車費結算最為合理。和八達通卡的運作一樣，交通運輸機構每日都要為拍卡機「清機」，將拍卡機內的交易紀錄交到八達通公司。八達通公司收到這些紀錄後就可以按各交通運輸機構所訂的車費和轉乘優惠規則計算每張信用卡當日的總車費，再向信用卡發卡組織扣錢。如果遲交交易紀錄的話，就在之後的交易日少扣當日車費，日子相隔太遠的話就考慮直接退款。拍卡的動作和八達通一樣都是離線交易，但因為用信用卡不能即時計算實際車費，所以在拍卡時不能顯示所扣車費。故此，八達通公司要提供網上查閱已誌帳的交易紀錄，方便乘客查詢及核對。另外，因為信用卡未能儲存票種（成人、長者、學生），在查票時難以操作。所以只可以當作成人車費處理。簡單來說，使用信用卡乘車是先乘車，後付款。而八達通公司亦由只處理八達通卡交易變成同時兼任信用卡收單機構。如果和信用卡發卡組織洽談到一個較優惠的手續費的話，八達通公司可能有利可圖。繼而可以向商戶推銷八達通及信用卡二合一讀卡機，即使消費者不用八達通都可以有錢賺。</p></div><footer class=post-footer><ul class=post-tags><li><a href=https://eric.swiftzer.net/tags/%E5%85%AB%E9%81%94%E9%80%9A/>八達通</a></li><li><a href=https://eric.swiftzer.net/tags/%E4%BF%A1%E7%94%A8%E5%8D%A1/>信用卡</a></li></ul></footer><div id=disqus_thread></div><script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return;}
-var d=document,s=d.createElement('script');s.async=true;s.src='//'+"efilm"+'.disqus.com/embed.js';s.setAttribute('data-timestamp',+new Date());(d.head||d.body).appendChild(s);})();</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></article></main><footer class=footer><span>&copy; 2021 <a href=https://eric.swiftzer.net/>EricLog</a></span>
+<!doctype html><html lang=zh-hant-hk dir=auto>
+<head><meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=robots content="index, follow">
+<title>八達通新方向 | EricLog</title>
+<meta name=keywords content="八達通,信用卡">
+<meta name=description content="最近，八達通終於做應該做的事了：商戶可以用八達通提供的商用版 app 經 NFC 向實體卡扣錢，小商戶就毋須租拍卡機就能接受八達通付款，亦都毋須使用 O! ePay 的 QR code 功能。
+八達通當初就是一張單純的儲值卡。八達通開拓流動支付應該要數到在 Android 2.3 (Gingerbread) 支援 NFC 的時候見到有其他 Android 開發者推出查閱餘額 app 就學人推出一個查閱交易記錄 app（因為卡內的交易紀錄被加密，所以其他 app 只可以查閱餘額）。其後亦推出了八達通 SIM 卡，但現在應該終止推廣了。">
+<meta name=author content>
+<link rel=canonical href=https://eric.swiftzer.net/2018/04/octopus-acquiring-business/>
+<link href=/assets/css/stylesheet.min.fb7ad69a514b80a660b6c35150bc2988c0a53cecc30f28f0c4742d7b89d9ef6a.css integrity="sha256-+3rWmlFLgKZgtsNRULwpiMClPOzDDyjwxHQte4nZ72o=" rel="preload stylesheet" as=style>
+<link rel=icon href=https://eric.swiftzer.net/favicon.ico>
+<link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png>
+<link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png>
+<link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png>
+<link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg>
+<meta name=theme-color content="#2e2e33">
+<meta name=msapplication-TileColor content="#2e2e33">
+<meta name=generator content="Hugo 0.88.1">
+<link rel=preconnect href=https://fonts.gstatic.com>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-1268728-8','auto'),ga('send','pageview'))</script>
+<script async src=https://www.google-analytics.com/analytics.js></script>
+<meta property="og:title" content="八達通新方向">
+<meta property="og:description" content="最近，八達通終於做應該做的事了：商戶可以用八達通提供的商用版 app 經 NFC 向實體卡扣錢，小商戶就毋須租拍卡機就能接受八達通付款，亦都毋須使用 O! ePay 的 QR code 功能。
+八達通當初就是一張單純的儲值卡。八達通開拓流動支付應該要數到在 Android 2.3 (Gingerbread) 支援 NFC 的時候見到有其他 Android 開發者推出查閱餘額 app 就學人推出一個查閱交易記錄 app（因為卡內的交易紀錄被加密，所以其他 app 只可以查閱餘額）。其後亦推出了八達通 SIM 卡，但現在應該終止推廣了。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://eric.swiftzer.net/2018/04/octopus-acquiring-business/">
+<meta property="article:published_time" content="2018-04-16T21:40:53+08:00">
+<meta property="article:modified_time" content="2018-04-16T21:40:53+08:00">
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="八達通新方向">
+<meta name=twitter:description content="最近，八達通終於做應該做的事了：商戶可以用八達通提供的商用版 app 經 NFC 向實體卡扣錢，小商戶就毋須租拍卡機就能接受八達通付款，亦都毋須使用 O! ePay 的 QR code 功能。
+八達通當初就是一張單純的儲值卡。八達通開拓流動支付應該要數到在 Android 2.3 (Gingerbread) 支援 NFC 的時候見到有其他 Android 開發者推出查閱餘額 app 就學人推出一個查閱交易記錄 app（因為卡內的交易紀錄被加密，所以其他 app 只可以查閱餘額）。其後亦推出了八達通 SIM 卡，但現在應該終止推廣了。">
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"八達通新方向","name":"八達通新方向","description":"最近，八達通終於做應該做的事了：商戶可以用八達通提供的商用版 app 經 NFC 向實體卡扣錢，小商戶就毋須租拍卡機就能接受八達通付款，亦都毋須使用 O! ePay 的 QR code 功能。\n八達通當初就是一張單純的儲值卡。八達通開拓流動支付應該要數到在 Android 2.3 (Gingerbread) 支援 NFC 的時候見到有其他 Android 開 …","keywords":["八達通","信用卡"],"articleBody":"最近，八達通終於做應該做的事了：商戶可以用八達通提供的商用版 app 經 NFC 向實體卡扣錢，小商戶就毋須租拍卡機就能接受八達通付款，亦都毋須使用 O! ePay 的 QR code 功能。\n八達通當初就是一張單純的儲值卡。八達通開拓流動支付應該要數到在 Android 2.3 (Gingerbread) 支援 NFC 的時候見到有其他 Android 開發者推出查閱餘額 app 就學人推出一個查閱交易記錄 app（因為卡內的交易紀錄被加密，所以其他 app 只可以查閱餘額）。其後亦推出了八達通 SIM 卡，但現在應該終止推廣了。\n到了近年推出 O! ePay（八達通「好易畀」）並取得 SVF 牌照，正式進軍流動支付。不過 O! ePay 和八達通實體卡是兩個獨立的戶口。交易方法都有不同：O! ePay 是用 QR code 進行交易；實體卡則是用 RFID。因為一般商戶都是用實體卡拍卡機，只有甚少會支援 O! ePay QR code。所以 O! ePay 在消費方面不夠普及。其他功能比如朋友間轉賬、繳費等亦都因為用戶數量少、要另外申請戶口、增值 / 轉走餘額方式比較少（主要靠 NFC 從實體八達通卡轉出 / 轉入餘額）、市場上有其他同類的 app 等等的原因同樣少人用。結果 O! ePay 變成無本生利的信用卡積分 / 飛行里數刷分工具。\n到近月在 Samsung Pay 支援 Smart Octopus 到近日 Apple Pay 支援北京上海公交卡又再令網民批評八達通落後，寧願支援 Samsung 幾個型號的設備都不肯支援多人用的 Apple Pay/Google Pay。可能因為八達通對 Apple/Google 抽成不滿意，而 Samsung 可能是貼錢請八達通支援 Samsung Pay。八達通向來都是靠按金、交易手續費、拍卡機租金、用戶私隱來賺錢，如果要跟其他公司分成可能就不太願意。\n八達通最廣泛的用途是繳付車資，其次是零售商戶消費。尤其是交通這部分幾乎是壟斷，其他公司難以打入這一市場。八達通最大好處是離線交易，速度夠快。但這正正是它的缺點：因為要迎合近年的競爭，推出了和其他流動支付工具相近的 app。但用家卻因為用法不及實體卡方便和應用場合少而不使用。\n八達通在小額交易，尤其是在交通方面可以繼續「食老本」。但如果可以「FF」的話，香港的交通運輸機構可以參考倫敦 Transport for London (TfL) / 廣州地鐵般提供非接觸式信用卡付款（即是 Offline Data Authentication），這樣就能用 Apple Pay/Android Pay 付款，不是經常訪港的遊客毋須購買八達通卡就能乘車。聽起來這樣會對八達通公司不利，但這可能是八達通的新商機。\n  因為香港的交通有不少跨機構的轉乘優惠（例如港鐵和小巴的轉乘優惠），而交通運輸機構並不是由單一機構控制。如果由交通運輸機構各自處理信用卡車費付款的話就不能做到這些優惠（因為在尖東及尖沙咀站轉車 / 月票 / 轉乘優惠 / 港鐵特惠站是靠八達通卡的儲存資料在拍卡時即時計算，而信用卡是不會儲存這些資料），而各交通運輸機構一直都有和八達通公司合作（它們本身就接受八達通付款）。所以交由八達通公司負責信用卡車費結算最為合理。和八達通卡的運作一樣，交通運輸機構每日都要為拍卡機「清機」，將拍卡機內的交易紀錄交到八達通公司。八達通公司收到這些紀錄後就可以按各交通運輸機構所訂的車費和轉乘優惠規則計算每張信用卡當日的總車費，再向信用卡發卡組織扣錢。如果遲交交易紀錄的話，就在之後的交易日少扣當日車費，日子相隔太遠的話就考慮直接退款。拍卡的動作和八達通一樣都是離線交易，但因為用信用卡不能即時計算實際車費，所以在拍卡時不能顯示所扣車費。故此，八達通公司要提供網上查閱已誌帳的交易紀錄，方便乘客查詢及核對。另外，因為信用卡未能儲存票種（成人、長者、學生），在查票時難以操作。所以只可以當作成人車費處理。簡單來說，使用信用卡乘車是先乘車，後付款。而八達通公司亦由只處理八達通卡交易變成同時兼任信用卡收單機構。如果和信用卡發卡組織洽談到一個較優惠的手續費的話，八達通公司可能有利可圖。繼而可以向商戶推銷八達通及信用卡二合一讀卡機，即使消費者不用八達通都可以有錢賺。\n","wordCount":"1498","inLanguage":"en","datePublished":"2018-04-16T21:40:53+08:00","dateModified":"2018-04-16T21:40:53+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2018/04/octopus-acquiring-business/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
+</head>
+<body id=top>
+<script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
+<noscript>
+<style type=text/css>.theme-toggle,.top-link{display:none}</style>
+</noscript>
+<header class=header>
+<nav class=nav>
+<div class=logo>
+<a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
+<span class=logo-switches>
+<span class=theme-toggle title="(Alt + T)">
+<a id=theme-toggle accesskey=t><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+</a>
+</span>
+</span>
+</div>
+<ul class=menu id=menu onscroll=menu_on_scroll()>
+<li>
+<a href=https://eric.swiftzer.net/fonts/ title=Fonts>
+<span>Fonts</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/archives/ title=Archives>
+<span>Archives</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/tags/ title=Tags>
+<span>Tags</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/about/ title=About>
+<span>About</span>
+</a>
+</li></ul>
+</nav>
+</header>
+<main class=main>
+<article class=post-single>
+<header class=post-header>
+<h1 class=post-title>
+八達通新方向
+</h1>
+<div class=post-meta>April 16, 2018
+</div>
+</header>
+<div class=post-content>
+<p>最近，八達通終於做應該做的事了：商戶可以用<a href=https://ezone.ulifestyle.com.hk/article/2040493/%E5%85%AB%E9%81%94%E9%80%9A%E6%9B%B4%E6%96%B0%E5%95%86%E7%94%A8%E7%89%88%20App%20%E5%85%8D%E7%A7%9F%E6%A9%9F%E5%82%B3%E7%B5%B1%E5%A0%B1%E6%94%A4%E8%A9%A6%E7%94%A8>八達通提供的商用版 app 經 NFC 向實體卡扣錢</a>，小商戶就毋須租拍卡機就能接受八達通付款，亦都毋須使用 O! ePay 的 QR code 功能。</p>
+<p>八達通當初就是一張單純的儲值卡。八達通開拓流動支付應該要數到在 Android 2.3 (Gingerbread) 支援 NFC 的時候見到有其他 Android 開發者推出查閱餘額 app 就學人推出一個查閱交易記錄 app（因為卡內的交易紀錄被加密，所以其他 app 只可以查閱餘額）。其後亦推出了<a href=https://www.octopus.com.hk/tc/consumer/mobile-payment/mobile-sim/index.html>八達通 SIM 卡</a>，但現在應該終止推廣了。</p>
+<p>到了近年推出 O! ePay（八達通「好易畀」）並取得 SVF 牌照，正式進軍流動支付。不過 O! ePay 和八達通實體卡是兩個獨立的戶口。交易方法都有不同：O! ePay 是用 QR code 進行交易；實體卡則是用 RFID。因為一般商戶都是用實體卡拍卡機，只有甚少會支援 O! ePay QR code。所以 O! ePay 在消費方面不夠普及。其他功能比如朋友間轉賬、繳費等亦都因為用戶數量少、要另外申請戶口、增值 / 轉走餘額方式比較少（主要靠 NFC 從實體八達通卡轉出 / 轉入餘額）、市場上有其他同類的 app 等等的原因同樣少人用。結果 O! ePay 變成無本生利的信用卡積分 / 飛行里數刷分工具。</p>
+<p>到近月在 Samsung Pay 支援 Smart Octopus 到近日 Apple Pay 支援北京上海公交卡又再令網民批評八達通落後，寧願支援 Samsung 幾個型號的設備都不肯支援多人用的 Apple Pay/Google Pay。可能因為八達通對 Apple/Google 抽成不滿意，而 Samsung 可能是貼錢請八達通支援 Samsung Pay。八達通向來都是靠按金、交易手續費、拍卡機租金、用戶私隱來賺錢，如果要跟其他公司分成可能就不太願意。</p>
+<p>八達通最廣泛的用途是繳付車資，其次是零售商戶消費。尤其是交通這部分幾乎是壟斷，其他公司難以打入這一市場。八達通最大好處是離線交易，速度夠快。但這正正是它的缺點：因為要迎合近年的競爭，推出了和其他流動支付工具相近的 app。但用家卻因為用法不及實體卡方便和應用場合少而不使用。</p>
+<p>八達通在小額交易，尤其是在交通方面可以繼續「食老本」。但如果可以「FF」的話，香港的交通運輸機構可以參考倫敦 <a href=https://contactless.tfl.gov.uk/>Transport for London (TfL)</a> / <a href=http://www.gzmtr.com/ygwm/xwzx/gsxw/201709/t20170925_54174.html>廣州地鐵</a>般提供非接觸式信用卡付款（即是 Offline Data Authentication），這樣就能用 Apple Pay/Android Pay 付款，不是經常訪港的遊客毋須購買八達通卡就能乘車。聽起來這樣會對八達通公司不利，但這可能是八達通的新商機。</p>
+<div style=position:relative;padding-bottom:56.25%;height:0;overflow:hidden>
+<iframe src=https://www.youtube.com/embed/19tLxYnhkyg style=position:absolute;top:0;left:0;width:100%;height:100%;border:0 allowfullscreen title="YouTube Video"></iframe>
+</div>
+<p>因為香港的交通有不少跨機構的轉乘優惠（例如港鐵和小巴的轉乘優惠），而交通運輸機構並不是由單一機構控制。如果由交通運輸機構各自處理信用卡車費付款的話就不能做到這些優惠（因為在尖東及尖沙咀站轉車 / 月票 / 轉乘優惠 / 港鐵特惠站是靠八達通卡的儲存資料在拍卡時即時計算，而信用卡是不會儲存這些資料），而各交通運輸機構一直都有和八達通公司合作（它們本身就接受八達通付款）。所以交由八達通公司負責信用卡車費結算最為合理。和八達通卡的運作一樣，交通運輸機構每日都要為拍卡機「清機」，將拍卡機內的交易紀錄交到八達通公司。八達通公司收到這些紀錄後就可以按各交通運輸機構所訂的車費和轉乘優惠規則計算每張信用卡當日的總車費，再向信用卡發卡組織扣錢。如果遲交交易紀錄的話，就在之後的交易日少扣當日車費，日子相隔太遠的話就考慮直接退款。拍卡的動作和八達通一樣都是離線交易，但因為用信用卡不能即時計算實際車費，所以在拍卡時不能顯示所扣車費。故此，八達通公司要提供網上查閱已誌帳的交易紀錄，方便乘客查詢及核對。另外，因為信用卡未能儲存票種（成人、長者、學生），在查票時難以操作。所以只可以當作成人車費處理。簡單來說，使用信用卡乘車是先乘車，後付款。而八達通公司亦由只處理八達通卡交易變成同時兼任信用卡收單機構。如果和信用卡發卡組織洽談到一個較優惠的手續費的話，八達通公司可能有利可圖。繼而可以向商戶推銷八達通及信用卡二合一讀卡機，即使消費者不用八達通都可以有錢賺。</p>
+</div>
+<footer class=post-footer>
+<ul class=post-tags>
+<li><a href=https://eric.swiftzer.net/tags/%E5%85%AB%E9%81%94%E9%80%9A/>八達通</a></li>
+<li><a href=https://eric.swiftzer.net/tags/%E4%BF%A1%E7%94%A8%E5%8D%A1/>信用卡</a></li>
+</ul>
+</footer><div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//efilm.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</article>
+</main><footer class=footer>
+<span>&copy; 2021 <a href=https://eric.swiftzer.net/>EricLog</a></span>
 <span>&#183;</span>
 <span>Powered by <a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a></span>
 <span>&#183;</span>
-<span>Theme <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)"><button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg></button></a>
-<script>window.onload=function(){if(localStorage.getItem("menu-scroll-position")){document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position");}}
-document.querySelectorAll('a[href^="#"]').forEach(anchor=>{anchor.addEventListener("click",function(e){e.preventDefault();var id=this.getAttribute("href").substr(1);if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({behavior:"smooth"});}else{document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();}
-if(id==="top"){history.replaceState(null,null," ");}else{history.pushState(null,null,`#${id}`);}});});var mybutton=document.getElementById("top-link");window.onscroll=function(){if(document.body.scrollTop>800||document.documentElement.scrollTop>800){mybutton.style.visibility="visible";mybutton.style.opacity="1";}else{mybutton.style.visibility="hidden";mybutton.style.opacity="0";}};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft);}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{if(document.body.className.includes("dark")){document.body.classList.remove('dark');localStorage.setItem("pref-theme",'light');}else{document.body.classList.add('dark');localStorage.setItem("pref-theme",'dark');}})</script></body></html>
+<span>Theme <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span>
+</footer>
+<a href=#top aria-label="go to top" title="Go to Top (Alt + G)">
+<button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</button>
+</a>
+<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))},document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})});var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}</script>
+<script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
+</body>
+</html>

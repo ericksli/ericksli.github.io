@@ -1,5 +1,193 @@
-<!doctype html><html lang=zh-hant-hk dir=auto><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Android App Icon 規格 | EricLog</title><meta name=keywords content="Android"><meta name=description content="一個 app 的第一印象應該是它的 app icon (launcher icon)。在 Android，在不同的時期前後出了好幾個 app icon 規格。但是 Android 介紹不同種類的 app icon 的文件放得非常分散"><meta name=author content><link rel=canonical href=https://eric.swiftzer.net/2019/07/android-app-icon-specification/><link href=/assets/css/stylesheet.min.540e9d13c320add066cf1c3f0e0b529a475da4f4256e42083a40e3205f46886a.css integrity="sha256-VA6dE8MgrdBmzxw/DgtSmkddpPQlbkIIOkDjIF9GiGo=" rel="preload stylesheet" as=style><link rel=icon href=https://eric.swiftzer.net/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png><link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png><link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><meta name=generator content="Hugo 0.80.0"><link rel=preconnect href=https://fonts.gstatic.com><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet><script type=application/javascript>var doNotTrack=false;if(!doNotTrack){window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;ga('create','UA-1268728-8','auto');ga('send','pageview');}</script><script async src=https://www.google-analytics.com/analytics.js></script><meta property="og:title" content="Android App Icon 規格"><meta property="og:description" content="一個 app 的第一印象應該是它的 app icon (launcher icon)。在 Android，在不同的時期前後出了好幾個 app icon 規格。但是 Android 介紹不同種類的 app icon 的文件放得非常分散"><meta property="og:type" content="article"><meta property="og:url" content="https://eric.swiftzer.net/2019/07/android-app-icon-specification/"><meta property="article:published_time" content="2019-07-20T13:43:37+08:00"><meta property="article:modified_time" content="2019-07-20T13:43:37+08:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Android App Icon 規格"><meta name=twitter:description content="一個 app 的第一印象應該是它的 app icon (launcher icon)。在 Android，在不同的時期前後出了好幾個 app icon 規格。但是 Android 介紹不同種類的 app icon 的文件放得非常分散"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Android App Icon 規格","name":"Android App Icon 規格","description":"一個 app 的第一印象應該是它的 app icon (launcher icon)。在 Android，在不同的時期前後出了好幾個 app icon 規格。但是 Android 介紹不同種類的 app icon 的文件放得非常分散","keywords":["Android"],"articleBody":"一個 app 的第一印象應該是它的 app icon (launcher icon)。在 Android，在不同的時期前後出了好幾個 app icon 規格。但是 Android 介紹不同種類的 app icon 的文件放得非常分散，如果平時沒有一直留意的話都幾乎肯定會做錯或者做漏。以下是全部 Android app 都會用到 app icon：\n Launcher icon Launcher icon（圓形） Adaptive launcher icon Google Play icon  如果想簡單地做出全部 icon 的話，可以用 Android Studio 內置的 Image Asset Studio。但如果想追求完美的話，還是自行準備圖片比較好。這篇文章整理了不同 icon 的基本規格，寫的時候盡量考慮到設計師。如果有需要的話可以分享給設計師同事參考。\n  Android Studio 的 Image Asset Studio   背景知識 屏幕密度 因為 Android 設備有太多款，所以 Android 在處理不同屏幕方面比起 iOS 更細緻：由最基本的屏幕密度到控制在不同屏幕尺寸下的界面排版都比 iOS 有更多設置。如果是設計 app icon 的話，主要留意的是屏幕密度。iOS 目前有三款密度：1x、2x (@2x) 和 3x (@3x)﹔而 Android 的密度就有 1x (MDPI)、1.5x (HDPI)、2x (XHDPI)、3x (XXHDPI) 和 4x (XXXHDPI)。建議大家使用向量圖準備原檔，並且以 1x 的尺寸準備圖片。在匯出圖片時才一次過匯出全部密度的 PNG 圖片。\n在 Android，一般會使用 dp 這個長度單位來設計 UI。如果不清楚 dp 是甚麼意思的話，可以參考 Material Design 的 Pixel density 部分。但在高密度的屏幕下，如果要把圖案顯示到和低密度屏幕一樣大小（把間尺放在屏幕上量度那個圖案）而又不模糊的話，是要用更多的像素 (pixel, px)。所以就發明了 dp 這個單位來描述尺寸，即使在不同密度的屏幕下 dp 都是一樣。簡單來說，在 1x 的情況下，1dp = 1px。你要在 1x 的情景下繪畫你的圖案，然後按照上一段的 1.5x、2x、3x……倍數匯出成不同尺寸的圖片。\n舉個例子：如果要準備一張 32 × 32dp 的圖片，你要匯出以下的 PNG 檔案：\n   密度 放大倍數 PNG 圖片闊度及高度 (px)     MDPI 1x 32   HDPI 1.5x 48   XHDPI 2x 64   XXHDPI 3x 96   XXXHDPI 4x 128    PNG 檔案名稱需要一致，只可以用小楷英文字母、底線 (_) 和數字（數字不可在作為名稱開首），並將圖片放到對應的資料夾內（例如 drawable-hdpi）。\n主畫面 Android 的主畫面是叫作 launcher，它的功能除了主畫面外，還包括讓用戶選擇要啟動的 app（app 列表）。Launcher 本身是一個 app。和其他 app 一樣，用戶可以在 Google Play 下載其他 launcher 來替代預設的 launcher。不同的 launcher 在顯示 app icon 方面都有不同的效果。簡單來說，app icon 顯示效果取決於 Android 版本和用戶所選用的 launcher。\nLauncher Icon 這個是最基本的 app icon，就是 Android 最先出現的 app icon 形式。稱為 launcher icon 就是因為它主要在 launcher 內顯示。（其實也會在設定頁的應用程式清單中看到）\n和 iOS 不同，Android 的 launcher icon 是沒有規定形狀。在 Android 4 時代的指引（鏡像網站）是鼓勵 icon 的形狀要有特色，不要套上圓角方形之類的遮色片 (clipping mask) 或完全填滿全部像素來侷限 icon 設計。但太多人受到 iOS 的影響，都把 launcher icon 做成像 iOS 般的圓角方形。有些甚至用盡 launcher icon 尺寸，沒有按規格在四邊留足夠空間來加上陰影。結果不同款色的 launcher icon 放在同一個 launcher 時視覺完全不協調。一些 Android 設備品牌為了解決這個問題，在它們的預設 launcher 會做到像 iOS 般為所有 app icon 加上圓角方形的遮色片。亦有一些 launcher 會為所有 app icon 加上托底，令原先不同形狀的 app icon 看上來都統一。加上 Google Play Store 上架無需人工審批，即使 launcher icon 設計不符指引也沒有問題。結果直到現在看到的 app icon 設計都是不統一。\n在後期的 Android 版本為了解決這個問題先後出了好幾款的 app icon 形式（就是之後介紹那些）。但這個 launcher icon 形式仍是必須的。\n規格方面，尺寸是 48 × 48dp。有關設計原則、格線、形狀、高光、陰影之類可以直接查閱 Material Design 網站。Illustrator 範本可在舊版 Material Design 網站的 Resources – Sticker sheets \u0026 icons（Product icons 部分）下載，那些 AI 檔案已經包含了格線、基本形狀、高光、陰影的示範。\n  Launcher icon 連格線示範   不過要留意一點：這個範本的尺寸是 192 × 192pt，而不是 48 × 48px。因為 launcher icon 指引建議大家放大 400% 來設計（但需要以 4pt 的格線來繪制），然後在匯出時是縮小成不同的 PNG 檔案而不是像平時般放大圖片。\n完成設計後按以下的規格匯出：\n   闊度及高度 (px) 密度 放大倍數     48 MDPI 0.25x   72 HDPI 0.375x   96 XHDPI 0.5x   144 XXHDPI 0.75x   192 XXXHDPI 1x    把匯出的 PNG 檔案按以下的目錄結構放好：\n. ├── mipmap-hdpi │ └── ic_launcher.png (72 × 72px) ├── mipmap-mdpi │ └── ic_launcher.png (48 × 48px) ├── mipmap-xhdpi │ └── ic_launcher.png (96 × 96px) ├── mipmap-xxhdpi │ └── ic_launcher.png (144 × 144px) └── mipmap-xxxhdpi └── ic_launcher.png (192 × 192px) AndroidManifest.xml 會是這樣：\n android:icon=\"@mipmap/ic_launcher\"   Round Launcher Icon 圓形 app icon 是 Android 7.1 新增的 launcher icon 式樣。如果你本身的 launcher icon 不是圓形的話，可以在 AndroidManifest.xml 用 android:roundIcon 設定圓形 app icon。會否使用圓形 icon 視乎 launcher 而定。\n設計範本都是用剛才 launcher icon 的範本，裏面有圓形格線及形狀可供參考使用。完成後同樣使用上一部分的規格匯出，並將 PNG 檔案按以下的目錄結構放好：\n. ├── mipmap-hdpi │ └── ic_launcher_round.png (72 × 72px) ├── mipmap-mdpi │ └── ic_launcher_round.png (48 × 48px) ├── mipmap-xhdpi │ └── ic_launcher_round.png (96 × 96px) ├── mipmap-xxhdpi │ └── ic_launcher_round.png (144 × 144px) └── mipmap-xxxhdpi └── ic_launcher_round.png (192 × 192px) AndroidManifest.xml 會是這樣：\n android:roundIcon=\"@mipmap/ic_launcher_round\"   Adaptive Launcher Icon 這個由 Android 8 推出的 icon 形式官方中文譯名為「自動調整圖示」，可以說是解決各大廠商自行改變 launcher icon 形狀的終極方案：就是讓 launcher 決定 icon 的形狀，不一定是圓角方形，也不一定是圓形。但規格有訂明保證能被顯示的範圍（一個直徑 66dp 的圓形），範圍以外視作出血位，有機會被 launcher 裁走。而 icon 外圍的陰影都會由 launcher 負責。這其實和 iOS 有幾分相似，但它最大特色是 icon 圖片不是一張圖片，是兩張圖片（前景和背景）。\nAndroidManifest.xml 如果要使用 adaptive launcher icon 就是和之前的沒有分別：\n android:icon=\"@mipmap/ic_launcher\" android:roundIcon=\"@mipmap/ic_launcher_round\"   但是特別之處是在 mipmap-anydpi-v26 資料夾加入 ic_launcher.xml 和 ic_launcher_round.xml。兩個 XML 檔案內容是一樣的：\n  xmlns:android=\"http://schemas.android.com/apk/res/android\"  android:drawable=\"@mipmap/ic_launcher_background\"/  android:drawable=\"@mipmap/ic_launcher_foreground\"/  準備兩張 108 × 108dp 圖片：ic_launcher_foreground.png 和 ic_launcher_background.png，分別是前景圖和背景圖。前景要有透明底色，而背景圖就不可以有透明底色。範本可以在 Google Design 的 Medium 文章內找到。留意這個格線和先前那些範本不同，所以需要再調整一下圖案。\n  前景圖連格線示範     背景圖連格線示範   如果連同先前介紹的 icon 規格的話，要準備好以下的檔案：\n. ├── mipmap-anydpi-v26 │ ├── ic_launcher.xml │ └── ic_launcher_round.xml (Same content as ic_launcher.xml) ├── mipmap-hdpi │ ├── ic_launcher.png (Launcher icon, 72 × 72px) │ ├── ic_launcher_background.png (Adaptive launcher icon background, 162 × 162px) │ ├── ic_launcher_foreground.png (Adaptive launcher icon foreground, 162 × 162px) │ └── ic_launcher_round.png (Round launcher icon, 72 × 72px) ├── mipmap-mdpi │ ├── ic_launcher.png (Launcher icon, 48 × 48px) │ ├── ic_launcher_background.png (Adaptive launcher icon background, 108 × 108px) │ ├── ic_launcher_foreground.png (Adaptive launcher icon foreground, 108 × 108px) │ └── ic_launcher_round.png (Round launcher icon, 48 × 48px) ├── mipmap-xhdpi │ ├── ic_launcher.png (Launcher icon, 96 × 96px) │ ├── ic_launcher_background.png (Adaptive launcher icon background, 216 × 216px) │ ├── ic_launcher_foreground.png (Adaptive launcher icon foreground, 216 × 216px) │ └── ic_launcher_round.png (Round launcher icon, 96 × 96px) ├── mipmap-xxhdpi │ ├── ic_launcher.png (Launcher icon, 144 × 144px) │ ├── ic_launcher_background.png (Adaptive launcher icon background, 324 × 324px) │ ├── ic_launcher_foreground.png (Adaptive launcher icon foreground, 324 × 324px) │ └── ic_launcher_round.png (Round launcher icon, 144 × 144px) └── mipmap-xxxhdpi ├── ic_launcher.png (Launcher icon, 192 × 192px) ├── ic_launcher_background.png (Adaptive launcher icon background, 432 × 432px) ├── ic_launcher_foreground.png (Adaptive launcher icon foreground, 432 × 432px) └── ic_launcher_round.png (Round launcher icon, 192 × 192px) 設定好之後，視乎 launcher app 的設定，你的 adaptive icon 可能會被套用不同形狀的遮色片。部分 launcher 更會在用戶用手左右掃主畫面和按下 icon 時有動畫效果（以不同的速度移動 icon 的前景和背景圖片、放大縮小前景和背景圖片之類）。\n  動畫示範   因為 adaptive launcher icon 是一樣比較新的 icon 形式，其實是可以用 vector drawable 而不需要準備一堆 PNG 檔案（雖然是 XML，但不是 SVG 格式，vector drawable 不支援所有 SVG 的功能）。但 vector drawable 是另一個大課題，如果同時講解 vector drawable 可能會令設計師看不懂，而且篇幅太長。所以這篇文章全部使用 PNG 作示範。\nGoogle Play Icon   Google Play icon 例子   這個 icon 其實是不會放進 app 入面，只是用於 Google Play 上架。即是在 Google Play 看到的 app icon。尺寸只有一個：512 × 512px。這個 icon 的規格比其他 icon 相對簡單，簡單來說就是和 iOS app icon 差不多。都是 PNG 格式，只是圓角不一樣：圓角半徑為圖示大小的 20% (102.4px)。\n另外，圖片不可以有透明背景。亦不用為 icon 加上圓角外框，因為 Google Play 網頁和 app 會即場為你的 app icon 裁圓角和加上陰影。\n  Google Play Console 的新式 app icon   這個 icon 規格是在近期（2019 年 6 月 24 日起）正式實行。如果還未轉用新規格的話 Google Play 會把現有的 icon 縮小到 75% 並置中在白色背景的圓角方形內（即舊版模式）。\n  Google Play Console 內的舊版模式示範   詳細的規格可以參閱 Google Play 圖示設計規範，該頁最底有 Sketch、Illustrator 和 Photoshop 範本，範本內有格線可供參考。雖然格線和 adaptive launcher icon 如果你的 app icon 圖像的關鍵部分是形狀的話，就應該按照格線調整形狀的大小和位置。如果純粹把整個 adaptive launcher icon 縮放到 512 × 512px 是錯誤的，應該要為 Google Play icon 重新調整 icon 內的圖形。\n  Google Play icon 連格線範例   其他 Icon Status Bar Icon Android 和 iOS 不同的地方是頂部通知欄會顯示 icon，這個 icon 有不少人忽略。有些 app 做得不仔細的話會直接用 launcher icon。但效果會非常差，在 Android 5.0 (API level 21) 開始往往只顯示一個圓角方形的白色形狀。按照 Android 官方說法，status bar icon 是系統按照情況為 icon 填上白色、灰色、由 app 定義的 accent 色等等。以前曾聽過有些客戶要求 status bar icon 要以彩色顯示，其實這並不符合 Android 的要求，而且不能保證全部設備都能做到彩色效果。另一方面，由於 status bar icon 只有 24 × 24dp，所以不可能只把 launcher icon 縮細就當作 status bar icon 來用。正確做法是要把主體圖形抽出再作簡化，這樣用戶才能瞄一眼就知道這個通知是那一個 app 發出。\nAndroid 開發者網站經過多次改版後已經找不到 status bar icon 的設計指引，只可以從鏡像網站看到當年 (Android 4.0) 年代的設計指引。自從 Android 4.0 之後 Android 都再沒有推出針對 status bar icon 的指引，所以這個鏡像網站所提的設計指引應可作現今的指引參考。同時亦可參照 Material Design 的 system icons 部分來設計。因為 status bar icon 和 Material Design system icon 的尺寸都是 24dp，而且它提供比當年 Android 4.0 status bar icon 更清晰的設計指引。所以我覺得現時可以參考 Material Design 的指引來準備 status bar icon，但顏色方面只可以用白色 (#FFFFFF)，不要用半透明填色。\nTV Banner 如果要準備 Android TV app 的話，需要額外準備 TV banner 作為 Android TV launcher 的 app icon。引用自 TV app quality 中 TV-LB 一段：\n The app displays a 320 × 180px full-size banner as its launcher icon in the Android TV Launcher.\n 這個 320 × 180px 的 banner 就是在 XHDPI 的情況下的尺寸是 320 × 180px。如果換算成 dp 的話就是 160 × 91dp。\n  TV banner 範例   Banner 放在 drawable 資料夾就可以了，不用放在 mipmap 資料夾。如果講究的話可以準備不同 DPI 的圖片。但最少要有一張 320 × 180px。\n以 MDPI 為基準繪製 160 × 91px 的圖片，把匯出的 PNG 檔案按以下的目錄結構放好：\n. ├── drawable-hdpi │ └── banner.png (240 × 136px) ├── drawable-mdpi │ └── banner.png (160 × 91px) ├── drawable-xhdpi │ └── banner.png (320 × 180px) ├── drawable-xxhdpi │ └── banner.png (480 × 271px) └── drawable-xxxhdpi └── banner.png (640 × 360px) AndroidManifest.xml 會是這樣：\n android:banner=\"@drawable/banner\"    其實這個 banner 有個潛規則：不可以使用黑色、深灰色之類的背景顏色。因為 Android TV 的 launcher 背景色是深色為主，如果 banner 背景顏色都是用深色的話就難以從背景色中分離出來。Banner 背景顏色太深色的話 Google 是不會讓你的 app 上架。（Android TV 新 app 上架和 iOS App Store 一樣都需要送檢，但之後的更新就不用送檢。）如果想了解更多的話可以參考我之前上架 TrainBoard 的例子。\n順帶一提，Android TV design guidelines 提到在電視屏幕上不應使用純白色 (#FFFFFF)。因為太鮮色會刺眼。如果要用白色的話應該使用淺灰色 (#EEEEEE)。\n參考及閱讀更多  Android Notification Icon 製作要點\nNotification icon 的規格，但 icon 應該要在在 drawable 資料夾而不是 mipmap 資料夾。 Getting Your Apps Ready for Nexus 6 and Nexus 9\n內有提及為何 launcher icon 要放入 mipmap 資料夾而不是 drawable 資料夾的原因。 Android Asset Studio\n網上製作各式 icon 的工具，大部分功能經已內建在 Android Studio 內。 Philips Hue adaptive icon\n示範了如何準備 adaptive launcher icon。 Adapticon\nAdaptive launcher icon 效果示範和範例。 Understanding Android Adaptive Icons\n介紹引入 adaptive launcher icon 的原因。 Designing Adaptive Icons\n設計 adaptive launcher icon 要留意的地方。 Image Resolution: PPI, DPI, Image Quality and Everything You Need to Know\n介紹 PPI 跟 DPI 的分別。  ","wordCount":"4425","inLanguage":"en","datePublished":"2019-07-20T13:43:37+08:00","dateModified":"2019-07-20T13:43:37+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2019/07/android-app-icon-specification/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script></head><body id=top><script>if(localStorage.getItem("pref-theme")==="dark"){document.body.classList.add('dark');}else if(localStorage.getItem("pref-theme")==="light"){document.body.classList.remove('dark')}else if(window.matchMedia('(prefers-color-scheme: dark)').matches){document.body.classList.add('dark');}</script><noscript><style type=text/css>.theme-toggle,.top-link{display:none}</style></noscript><header class=header><nav class=nav><div class=logo><a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
-<span class=logo-switches><span class=theme-toggle title="(Alt + T)"><a id=theme-toggle accesskey=t><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></a></span></span></div><ul class=menu id=menu onscroll=menu_on_scroll()><li><a href=https://eric.swiftzer.net/fonts/ title=Fonts><span>Fonts</span></a></li><li><a href=https://eric.swiftzer.net/archives/ title=Archives><span>Archives</span></a></li><li><a href=https://eric.swiftzer.net/tags/ title=Tags><span>Tags</span></a></li><li><a href=https://eric.swiftzer.net/about/ title=About><span>About</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><h1 class=post-title>Android App Icon 規格</h1><div class=post-meta>July 20, 2019</div></header><div class=post-content><p>一個 app 的第一印象應該是它的 app icon (launcher icon)。在 Android，在不同的時期前後出了好幾個 app icon 規格。但是 Android 介紹不同種類的 app icon 的文件放得非常分散，如果平時沒有一直留意的話都幾乎肯定會做錯或者做漏。以下是全部 Android app 都會用到 app icon：</p><ul><li>Launcher icon</li><li>Launcher icon（圓形）</li><li>Adaptive launcher icon</li><li>Google Play icon</li></ul><p>如果想簡單地做出全部 icon 的話，可以用 Android Studio 內置的 <a href=https://developer.android.com/studio/write/image-asset-studio>Image Asset Studio</a>。但如果想追求完美的話，還是自行準備圖片比較好。這篇文章整理了不同 icon 的基本規格，寫的時候盡量考慮到設計師。如果有需要的話可以分享給設計師同事參考。</p><figure><img src=android-studio-image-asset.png><figcaption>Android Studio 的 Image Asset Studio</figcaption></figure><h2 id=背景知識>背景知識<a hidden class=anchor aria-hidden=true href=#背景知識>#</a></h2><h3 id=屏幕密度>屏幕密度<a hidden class=anchor aria-hidden=true href=#屏幕密度>#</a></h3><p>因為 Android 設備有太多款，所以 Android 在處理不同屏幕方面比起 iOS 更細緻：由最基本的屏幕密度到控制在不同屏幕尺寸下的界面排版都比 iOS 有更多設置。如果是設計 app icon 的話，主要留意的是屏幕密度。iOS 目前有<a href=https://developer.apple.com/design/human-interface-guidelines/ios/icons-and-images/image-size-and-resolution/>三款密度</a>：1x、2x (<code>@2x</code>) 和 3x (<code>@3x</code>)﹔而 Android 的<a href=https://developer.android.com/training/multiscreen/screendensities#TaskProvideAltBmp>密度</a>就有 1x (MDPI)、1.5x (HDPI)、2x (XHDPI)、3x (XXHDPI) 和 4x (XXXHDPI)。建議大家使用向量圖準備原檔，並且以 1x 的尺寸準備圖片。在匯出圖片時才一次過匯出全部密度的 PNG 圖片。</p><p>在 Android，一般會使用 dp 這個長度單位來設計 UI。如果不清楚 dp 是甚麼意思的話，可以參考 Material Design 的 <a href=https://material.io/design/layout/pixel-density.html>Pixel density 部分</a>。但在高密度的屏幕下，如果要把圖案顯示到和低密度屏幕一樣大小（把間尺放在屏幕上量度那個圖案）而又不模糊的話，是要用更多的像素 (pixel, px)。所以就發明了 dp 這個單位來描述尺寸，即使在不同密度的屏幕下 dp 都是一樣。簡單來說，在 1x 的情況下，1dp = 1px。你要在 1x 的情景下繪畫你的圖案，然後按照上一段的 1.5x、2x、3x……倍數匯出成不同尺寸的圖片。</p><p>舉個例子：如果要準備一張 32 × 32dp 的圖片，你要匯出以下的 PNG 檔案：</p><table><thead><tr><th>密度</th><th>放大倍數</th><th>PNG 圖片闊度及高度 (px)</th></tr></thead><tbody><tr><td>MDPI</td><td>1x</td><td>32</td></tr><tr><td>HDPI</td><td>1.5x</td><td>48</td></tr><tr><td>XHDPI</td><td>2x</td><td>64</td></tr><tr><td>XXHDPI</td><td>3x</td><td>96</td></tr><tr><td>XXXHDPI</td><td>4x</td><td>128</td></tr></tbody></table><p>PNG 檔案名稱需要一致，只可以用小楷英文字母、底線 (<code>_</code>) 和數字（數字不可在作為名稱開首），並將圖片放到對應的資料夾內（例如 <code>drawable-hdpi</code>）。</p><h3 id=主畫面>主畫面<a hidden class=anchor aria-hidden=true href=#主畫面>#</a></h3><p>Android 的主畫面是叫作 launcher，它的功能除了主畫面外，還包括讓用戶選擇要啟動的 app（app 列表）。Launcher 本身是一個 app。和其他 app 一樣，用戶可以在 Google Play 下載其他 launcher 來替代預設的 launcher。不同的 launcher 在顯示 app icon 方面都有不同的效果。<strong>簡單來說，app icon 顯示效果取決於 Android 版本和用戶所選用的 launcher。</strong></p><h2 id=launcher-icon>Launcher Icon<a hidden class=anchor aria-hidden=true href=#launcher-icon>#</a></h2><p>這個是最基本的 app icon，就是 Android 最先出現的 app icon 形式。稱為 launcher icon 就是因為它主要在 launcher 內顯示。（其實也會在設定頁的應用程式清單中看到）</p><p>和 <a href=https://developer.apple.com/library/archive/qa/qa1686/_index.html>iOS</a> 不同，Android 的 launcher icon 是沒有規定形狀。在 <a href=https://stuff.mit.edu/afs/sipb/project/android/docs/guide/practices/ui_guidelines/icon_design_launcher.html>Android 4 時代的指引（鏡像網站）</a>是鼓勵 icon 的形狀要有特色，不要套上圓角方形之類的遮色片 (clipping mask) 或完全填滿全部像素來侷限 icon 設計。但太多人受到 iOS 的影響，都把 launcher icon 做成像 iOS 般的圓角方形。有些甚至用盡 launcher icon 尺寸，沒有按規格在四邊留足夠空間來加上陰影。結果不同款色的 launcher icon 放在同一個 launcher 時視覺完全不協調。一些 Android 設備品牌為了解決這個問題，在它們的預設 launcher 會做到像 iOS 般為所有 app icon 加上圓角方形的遮色片。亦有一些 launcher 會為所有 app icon 加上托底，令原先不同形狀的 app icon 看上來都統一。加上 Google Play Store 上架無需人工審批，即使 launcher icon 設計不符指引也沒有問題。結果直到現在看到的 app icon 設計都是不統一。</p><p>在後期的 Android 版本為了解決這個問題先後出了好幾款的 app icon 形式（就是之後介紹那些）。但這個 launcher icon 形式仍是必須的。</p><p>規格方面，尺寸是 48 × 48dp。有關設計原則、格線、形狀、高光、陰影之類可以直接查閱 <a href=https://material.io/design/iconography/product-icons.html>Material Design 網站</a>。Illustrator 範本可在舊版 Material Design 網站的 <a href=https://material.io/archive/guidelines/resources/sticker-sheets-icons.html#sticker-sheets-icons-components>Resources – Sticker sheets & icons</a>（Product icons 部分）下載，那些 AI 檔案已經包含了格線、基本形狀、高光、陰影的示範。</p><figure><img src=ic_launcher.png><figcaption>Launcher icon 連格線示範</figcaption></figure><p>不過要留意一點：這個範本的尺寸是 192 × 192pt，而不是 48 × 48px。因為 launcher icon 指引建議大家放大 400% 來設計（但需要以 4pt 的格線來繪制），然後在匯出時是縮小成不同的 PNG 檔案而不是像平時般放大圖片。</p><p>完成設計後按以下的規格匯出：</p><table><thead><tr><th>闊度及高度 (px)</th><th>密度</th><th>放大倍數</th></tr></thead><tbody><tr><td>48</td><td>MDPI</td><td>0.25x</td></tr><tr><td>72</td><td>HDPI</td><td>0.375x</td></tr><tr><td>96</td><td>XHDPI</td><td>0.5x</td></tr><tr><td>144</td><td>XXHDPI</td><td>0.75x</td></tr><tr><td>192</td><td>XXXHDPI</td><td>1x</td></tr></tbody></table><p>把匯出的 PNG 檔案按以下的目錄結構放好：</p><div class=highlight><pre class=chroma><code class=language-text data-lang=text>.
+<!doctype html><html lang=zh-hant-hk dir=auto>
+<head><meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=robots content="index, follow">
+<title>Android App Icon 規格 | EricLog</title>
+<meta name=keywords content="Android">
+<meta name=description content="一個 app 的第一印象應該是它的 app icon (launcher icon)。在 Android，在不同的時期前後出了好幾個 app icon 規格。但是 Android 介紹不同種類的 app icon 的文件放得非常分散">
+<meta name=author content>
+<link rel=canonical href=https://eric.swiftzer.net/2019/07/android-app-icon-specification/>
+<link href=/assets/css/stylesheet.min.fb7ad69a514b80a660b6c35150bc2988c0a53cecc30f28f0c4742d7b89d9ef6a.css integrity="sha256-+3rWmlFLgKZgtsNRULwpiMClPOzDDyjwxHQte4nZ72o=" rel="preload stylesheet" as=style>
+<link rel=icon href=https://eric.swiftzer.net/favicon.ico>
+<link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png>
+<link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png>
+<link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png>
+<link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg>
+<meta name=theme-color content="#2e2e33">
+<meta name=msapplication-TileColor content="#2e2e33">
+<meta name=generator content="Hugo 0.88.1">
+<link rel=preconnect href=https://fonts.gstatic.com>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-1268728-8','auto'),ga('send','pageview'))</script>
+<script async src=https://www.google-analytics.com/analytics.js></script>
+<meta property="og:title" content="Android App Icon 規格">
+<meta property="og:description" content="一個 app 的第一印象應該是它的 app icon (launcher icon)。在 Android，在不同的時期前後出了好幾個 app icon 規格。但是 Android 介紹不同種類的 app icon 的文件放得非常分散">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://eric.swiftzer.net/2019/07/android-app-icon-specification/">
+<meta property="article:published_time" content="2019-07-20T13:43:37+08:00">
+<meta property="article:modified_time" content="2019-07-20T13:43:37+08:00">
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="Android App Icon 規格">
+<meta name=twitter:description content="一個 app 的第一印象應該是它的 app icon (launcher icon)。在 Android，在不同的時期前後出了好幾個 app icon 規格。但是 Android 介紹不同種類的 app icon 的文件放得非常分散">
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Android App Icon 規格","name":"Android App Icon 規格","description":"一個 app 的第一印象應該是它的 app icon (launcher icon)。在 Android，在不同的時期前後出了好幾個 app icon 規格。但是 Android 介紹不同種類的 app icon 的文件放得非常分散","keywords":["Android"],"articleBody":"一個 app 的第一印象應該是它的 app icon (launcher icon)。在 Android，在不同的時期前後出了好幾個 app icon 規格。但是 Android 介紹不同種類的 app icon 的文件放得非常分散，如果平時沒有一直留意的話都幾乎肯定會做錯或者做漏。以下是全部 Android app 都會用到 app icon：\n Launcher icon Launcher icon（圓形） Adaptive launcher icon Google Play icon  如果想簡單地做出全部 icon 的話，可以用 Android Studio 內置的 Image Asset Studio。但如果想追求完美的話，還是自行準備圖片比較好。這篇文章整理了不同 icon 的基本規格，寫的時候盡量考慮到設計師。如果有需要的話可以分享給設計師同事參考。\n  Android Studio 的 Image Asset Studio   背景知識 屏幕密度 因為 Android 設備有太多款，所以 Android 在處理不同屏幕方面比起 iOS 更細緻：由最基本的屏幕密度到控制在不同屏幕尺寸下的界面排版都比 iOS 有更多設置。如果是設計 app icon 的話，主要留意的是屏幕密度。iOS 目前有三款密度：1x、2x (@2x) 和 3x (@3x)﹔而 Android 的密度就有 1x (MDPI)、1.5x (HDPI)、2x (XHDPI)、3x (XXHDPI) 和 4x (XXXHDPI)。建議大家使用向量圖準備原檔，並且以 1x 的尺寸準備圖片。在匯出圖片時才一次過匯出全部密度的 PNG 圖片。\n在 Android，一般會使用 dp 這個長度單位來設計 UI。如果不清楚 dp 是甚麼意思的話，可以參考 Material Design 的 Pixel density 部分。但在高密度的屏幕下，如果要把圖案顯示到和低密度屏幕一樣大小（把間尺放在屏幕上量度那個圖案）而又不模糊的話，是要用更多的像素 (pixel, px)。所以就發明了 dp 這個單位來描述尺寸，即使在不同密度的屏幕下 dp 都是一樣。簡單來說，在 1x 的情況下，1dp = 1px。你要在 1x 的情景下繪畫你的圖案，然後按照上一段的 1.5x、2x、3x……倍數匯出成不同尺寸的圖片。\n舉個例子：如果要準備一張 32 × 32dp 的圖片，你要匯出以下的 PNG 檔案：\n   密度 放大倍數 PNG 圖片闊度及高度 (px)     MDPI 1x 32   HDPI 1.5x 48   XHDPI 2x 64   XXHDPI 3x 96   XXXHDPI 4x 128    PNG 檔案名稱需要一致，只可以用小楷英文字母、底線 (_) 和數字（數字不可在作為名稱開首），並將圖片放到對應的資料夾內（例如 drawable-hdpi）。\n主畫面 Android 的主畫面是叫作 launcher，它的功能除了主畫面外，還包括讓用戶選擇要啟動的 app（app 列表）。Launcher 本身是一個 app。和其他 app 一樣，用戶可以在 Google Play 下載其他 launcher 來替代預設的 launcher。不同的 launcher 在顯示 app icon 方面都有不同的效果。簡單來說，app icon 顯示效果取決於 Android 版本和用戶所選用的 launcher。\nLauncher Icon 這個是最基本的 app icon，就是 Android 最先出現的 app icon 形式。稱為 launcher icon 就是因為它主要在 launcher 內顯示。（其實也會在設定頁的應用程式清單中看到）\n和 iOS 不同，Android 的 launcher icon 是沒有規定形狀。在 Android 4 時代的指引（鏡像網站）是鼓勵 icon 的形狀要有特色，不要套上圓角方形之類的遮色片 (clipping mask) 或完全填滿全部像素來侷限 icon 設計。但太多人受到 iOS 的影響，都把 launcher icon 做成像 iOS 般的圓角方形。有些甚至用盡 launcher icon 尺寸，沒有按規格在四邊留足夠空間來加上陰影。結果不同款色的 launcher icon 放在同一個 launcher 時視覺完全不協調。一些 Android 設備品牌為了解決這個問題，在它們的預設 launcher 會做到像 iOS 般為所有 app icon 加上圓角方形的遮色片。亦有一些 launcher 會為所有 app icon 加上托底，令原先不同形狀的 app icon 看上來都統一。加上 Google Play Store 上架無需人工審批，即使 launcher icon 設計不符指引也沒有問題。結果直到現在看到的 app icon 設計都是不統一。\n在後期的 Android 版本為了解決這個問題先後出了好幾款的 app icon 形式（就是之後介紹那些）。但這個 launcher icon 形式仍是必須的。\n規格方面，尺寸是 48 × 48dp。有關設計原則、格線、形狀、高光、陰影之類可以直接查閱 Material Design 網站。Illustrator 範本可在舊版 Material Design 網站的 Resources – Sticker sheets \u0026 icons（Product icons 部分）下載，那些 AI 檔案已經包含了格線、基本形狀、高光、陰影的示範。\n  Launcher icon 連格線示範   不過要留意一點：這個範本的尺寸是 192 × 192pt，而不是 48 × 48px。因為 launcher icon 指引建議大家放大 400% 來設計（但需要以 4pt 的格線來繪制），然後在匯出時是縮小成不同的 PNG 檔案而不是像平時般放大圖片。\n完成設計後按以下的規格匯出：\n   闊度及高度 (px) 密度 放大倍數     48 MDPI 0.25x   72 HDPI 0.375x   96 XHDPI 0.5x   144 XXHDPI 0.75x   192 XXXHDPI 1x    把匯出的 PNG 檔案按以下的目錄結構放好：\n. ├── mipmap-hdpi │ └── ic_launcher.png (72 × 72px) ├── mipmap-mdpi │ └── ic_launcher.png (48 × 48px) ├── mipmap-xhdpi │ └── ic_launcher.png (96 × 96px) ├── mipmap-xxhdpi │ └── ic_launcher.png (144 × 144px) └── mipmap-xxxhdpi └── ic_launcher.png (192 × 192px) AndroidManifest.xml 會是這樣：\n android:icon=\"@mipmap/ic_launcher\"   Round Launcher Icon 圓形 app icon 是 Android 7.1 新增的 launcher icon 式樣。如果你本身的 launcher icon 不是圓形的話，可以在 AndroidManifest.xml 用 android:roundIcon 設定圓形 app icon。會否使用圓形 icon 視乎 launcher 而定。\n設計範本都是用剛才 launcher icon 的範本，裏面有圓形格線及形狀可供參考使用。完成後同樣使用上一部分的規格匯出，並將 PNG 檔案按以下的目錄結構放好：\n. ├── mipmap-hdpi │ └── ic_launcher_round.png (72 × 72px) ├── mipmap-mdpi │ └── ic_launcher_round.png (48 × 48px) ├── mipmap-xhdpi │ └── ic_launcher_round.png (96 × 96px) ├── mipmap-xxhdpi │ └── ic_launcher_round.png (144 × 144px) └── mipmap-xxxhdpi └── ic_launcher_round.png (192 × 192px) AndroidManifest.xml 會是這樣：\n android:roundIcon=\"@mipmap/ic_launcher_round\"   Adaptive Launcher Icon 這個由 Android 8 推出的 icon 形式官方中文譯名為「自動調整圖示」，可以說是解決各大廠商自行改變 launcher icon 形狀的終極方案：就是讓 launcher 決定 icon 的形狀，不一定是圓角方形，也不一定是圓形。但規格有訂明保證能被顯示的範圍（一個直徑 66dp 的圓形），範圍以外視作出血位，有機會被 launcher 裁走。而 icon 外圍的陰影都會由 launcher 負責。這其實和 iOS 有幾分相似，但它最大特色是 icon 圖片不是一張圖片，是兩張圖片（前景和背景）。\nAndroidManifest.xml 如果要使用 adaptive launcher icon 就是和之前的沒有分別：\n android:icon=\"@mipmap/ic_launcher\" android:roundIcon=\"@mipmap/ic_launcher_round\"   但是特別之處是在 mipmap-anydpi-v26 資料夾加入 ic_launcher.xml 和 ic_launcher_round.xml。兩個 XML 檔案內容是一樣的：\n  xmlns:android=\"http://schemas.android.com/apk/res/android\"  android:drawable=\"@mipmap/ic_launcher_background\"/  android:drawable=\"@mipmap/ic_launcher_foreground\"/  準備兩張 108 × 108dp 圖片：ic_launcher_foreground.png 和 ic_launcher_background.png，分別是前景圖和背景圖。前景要有透明底色，而背景圖就不可以有透明底色。範本可以在 Google Design 的 Medium 文章內找到。留意這個格線和先前那些範本不同，所以需要再調整一下圖案。\n  前景圖連格線示範     背景圖連格線示範   如果連同先前介紹的 icon 規格的話，要準備好以下的檔案：\n. ├── mipmap-anydpi-v26 │ ├── ic_launcher.xml │ └── ic_launcher_round.xml (Same content as ic_launcher.xml) ├── mipmap-hdpi │ ├── ic_launcher.png (Launcher icon, 72 × 72px) │ ├── ic_launcher_background.png (Adaptive launcher icon background, 162 × 162px) │ ├── ic_launcher_foreground.png (Adaptive launcher icon foreground, 162 × 162px) │ └── ic_launcher_round.png (Round launcher icon, 72 × 72px) ├── mipmap-mdpi │ ├── ic_launcher.png (Launcher icon, 48 × 48px) │ ├── ic_launcher_background.png (Adaptive launcher icon background, 108 × 108px) │ ├── ic_launcher_foreground.png (Adaptive launcher icon foreground, 108 × 108px) │ └── ic_launcher_round.png (Round launcher icon, 48 × 48px) ├── mipmap-xhdpi │ ├── ic_launcher.png (Launcher icon, 96 × 96px) │ ├── ic_launcher_background.png (Adaptive launcher icon background, 216 × 216px) │ ├── ic_launcher_foreground.png (Adaptive launcher icon foreground, 216 × 216px) │ └── ic_launcher_round.png (Round launcher icon, 96 × 96px) ├── mipmap-xxhdpi │ ├── ic_launcher.png (Launcher icon, 144 × 144px) │ ├── ic_launcher_background.png (Adaptive launcher icon background, 324 × 324px) │ ├── ic_launcher_foreground.png (Adaptive launcher icon foreground, 324 × 324px) │ └── ic_launcher_round.png (Round launcher icon, 144 × 144px) └── mipmap-xxxhdpi ├── ic_launcher.png (Launcher icon, 192 × 192px) ├── ic_launcher_background.png (Adaptive launcher icon background, 432 × 432px) ├── ic_launcher_foreground.png (Adaptive launcher icon foreground, 432 × 432px) └── ic_launcher_round.png (Round launcher icon, 192 × 192px) 設定好之後，視乎 launcher app 的設定，你的 adaptive icon 可能會被套用不同形狀的遮色片。部分 launcher 更會在用戶用手左右掃主畫面和按下 icon 時有動畫效果（以不同的速度移動 icon 的前景和背景圖片、放大縮小前景和背景圖片之類）。\n  動畫示範   因為 adaptive launcher icon 是一樣比較新的 icon 形式，其實是可以用 vector drawable 而不需要準備一堆 PNG 檔案（雖然是 XML，但不是 SVG 格式，vector drawable 不支援所有 SVG 的功能）。但 vector drawable 是另一個大課題，如果同時講解 vector drawable 可能會令設計師看不懂，而且篇幅太長。所以這篇文章全部使用 PNG 作示範。\nGoogle Play Icon   Google Play icon 例子   這個 icon 其實是不會放進 app 入面，只是用於 Google Play 上架。即是在 Google Play 看到的 app icon。尺寸只有一個：512 × 512px。這個 icon 的規格比其他 icon 相對簡單，簡單來說就是和 iOS app icon 差不多。都是 PNG 格式，只是圓角不一樣：圓角半徑為圖示大小的 20% (102.4px)。\n另外，圖片不可以有透明背景。亦不用為 icon 加上圓角外框，因為 Google Play 網頁和 app 會即場為你的 app icon 裁圓角和加上陰影。\n  Google Play Console 的新式 app icon   這個 icon 規格是在近期（2019 年 6 月 24 日起）正式實行。如果還未轉用新規格的話 Google Play 會把現有的 icon 縮小到 75% 並置中在白色背景的圓角方形內（即舊版模式）。\n  Google Play Console 內的舊版模式示範   詳細的規格可以參閱 Google Play 圖示設計規範，該頁最底有 Sketch、Illustrator 和 Photoshop 範本，範本內有格線可供參考。雖然格線和 adaptive launcher icon 如果你的 app icon 圖像的關鍵部分是形狀的話，就應該按照格線調整形狀的大小和位置。如果純粹把整個 adaptive launcher icon 縮放到 512 × 512px 是錯誤的，應該要為 Google Play icon 重新調整 icon 內的圖形。\n  Google Play icon 連格線範例   其他 Icon Status Bar Icon Android 和 iOS 不同的地方是頂部通知欄會顯示 icon，這個 icon 有不少人忽略。有些 app 做得不仔細的話會直接用 launcher icon。但效果會非常差，在 Android 5.0 (API level 21) 開始往往只顯示一個圓角方形的白色形狀。按照 Android 官方說法，status bar icon 是系統按照情況為 icon 填上白色、灰色、由 app 定義的 accent 色等等。以前曾聽過有些客戶要求 status bar icon 要以彩色顯示，其實這並不符合 Android 的要求，而且不能保證全部設備都能做到彩色效果。另一方面，由於 status bar icon 只有 24 × 24dp，所以不可能只把 launcher icon 縮細就當作 status bar icon 來用。正確做法是要把主體圖形抽出再作簡化，這樣用戶才能瞄一眼就知道這個通知是那一個 app 發出。\nAndroid 開發者網站經過多次改版後已經找不到 status bar icon 的設計指引，只可以從鏡像網站看到當年 (Android 4.0) 年代的設計指引。自從 Android 4.0 之後 Android 都再沒有推出針對 status bar icon 的指引，所以這個鏡像網站所提的設計指引應可作現今的指引參考。同時亦可參照 Material Design 的 system icons 部分來設計。因為 status bar icon 和 Material Design system icon 的尺寸都是 24dp，而且它提供比當年 Android 4.0 status bar icon 更清晰的設計指引。所以我覺得現時可以參考 Material Design 的指引來準備 status bar icon，但顏色方面只可以用白色 (#FFFFFF)，不要用半透明填色。\nTV Banner 如果要準備 Android TV app 的話，需要額外準備 TV banner 作為 Android TV launcher 的 app icon。引用自 TV app quality 中 TV-LB 一段：\n The app displays a 320 × 180px full-size banner as its launcher icon in the Android TV Launcher.\n 這個 320 × 180px 的 banner 就是在 XHDPI 的情況下的尺寸是 320 × 180px。如果換算成 dp 的話就是 160 × 91dp。\n  TV banner 範例   Banner 放在 drawable 資料夾就可以了，不用放在 mipmap 資料夾。如果講究的話可以準備不同 DPI 的圖片。但最少要有一張 320 × 180px。\n以 MDPI 為基準繪製 160 × 91px 的圖片，把匯出的 PNG 檔案按以下的目錄結構放好：\n. ├── drawable-hdpi │ └── banner.png (240 × 136px) ├── drawable-mdpi │ └── banner.png (160 × 91px) ├── drawable-xhdpi │ └── banner.png (320 × 180px) ├── drawable-xxhdpi │ └── banner.png (480 × 271px) └── drawable-xxxhdpi └── banner.png (640 × 360px) AndroidManifest.xml 會是這樣：\n android:banner=\"@drawable/banner\"    其實這個 banner 有個潛規則：不可以使用黑色、深灰色之類的背景顏色。因為 Android TV 的 launcher 背景色是深色為主，如果 banner 背景顏色都是用深色的話就難以從背景色中分離出來。Banner 背景顏色太深色的話 Google 是不會讓你的 app 上架。（Android TV 新 app 上架和 iOS App Store 一樣都需要送檢，但之後的更新就不用送檢。）如果想了解更多的話可以參考我之前上架 TrainBoard 的例子。\n順帶一提，Android TV design guidelines 提到在電視屏幕上不應使用純白色 (#FFFFFF)。因為太鮮色會刺眼。如果要用白色的話應該使用淺灰色 (#EEEEEE)。\n參考及閱讀更多  Android Notification Icon 製作要點\nNotification icon 的規格，但 icon 應該要在在 drawable 資料夾而不是 mipmap 資料夾。 Getting Your Apps Ready for Nexus 6 and Nexus 9\n內有提及為何 launcher icon 要放入 mipmap 資料夾而不是 drawable 資料夾的原因。 Android Asset Studio\n網上製作各式 icon 的工具，大部分功能經已內建在 Android Studio 內。 Philips Hue adaptive icon\n示範了如何準備 adaptive launcher icon。 Adapticon\nAdaptive launcher icon 效果示範和範例。 Understanding Android Adaptive Icons\n介紹引入 adaptive launcher icon 的原因。 Designing Adaptive Icons\n設計 adaptive launcher icon 要留意的地方。 Image Resolution: PPI, DPI, Image Quality and Everything You Need to Know\n介紹 PPI 跟 DPI 的分別。  ","wordCount":"4425","inLanguage":"en","datePublished":"2019-07-20T13:43:37+08:00","dateModified":"2019-07-20T13:43:37+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2019/07/android-app-icon-specification/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
+</head>
+<body id=top>
+<script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
+<noscript>
+<style type=text/css>.theme-toggle,.top-link{display:none}</style>
+</noscript>
+<header class=header>
+<nav class=nav>
+<div class=logo>
+<a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
+<span class=logo-switches>
+<span class=theme-toggle title="(Alt + T)">
+<a id=theme-toggle accesskey=t><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+</a>
+</span>
+</span>
+</div>
+<ul class=menu id=menu onscroll=menu_on_scroll()>
+<li>
+<a href=https://eric.swiftzer.net/fonts/ title=Fonts>
+<span>Fonts</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/archives/ title=Archives>
+<span>Archives</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/tags/ title=Tags>
+<span>Tags</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/about/ title=About>
+<span>About</span>
+</a>
+</li></ul>
+</nav>
+</header>
+<main class=main>
+<article class=post-single>
+<header class=post-header>
+<h1 class=post-title>
+Android App Icon 規格
+</h1>
+<div class=post-meta>July 20, 2019
+</div>
+</header>
+<div class=post-content>
+<p>一個 app 的第一印象應該是它的 app icon (launcher icon)。在 Android，在不同的時期前後出了好幾個 app icon 規格。但是 Android 介紹不同種類的 app icon 的文件放得非常分散，如果平時沒有一直留意的話都幾乎肯定會做錯或者做漏。以下是全部 Android app 都會用到 app icon：</p>
+<ul>
+<li>Launcher icon</li>
+<li>Launcher icon（圓形）</li>
+<li>Adaptive launcher icon</li>
+<li>Google Play icon</li>
+</ul>
+<p>如果想簡單地做出全部 icon 的話，可以用 Android Studio 內置的 <a href=https://developer.android.com/studio/write/image-asset-studio>Image Asset Studio</a>。但如果想追求完美的話，還是自行準備圖片比較好。這篇文章整理了不同 icon 的基本規格，寫的時候盡量考慮到設計師。如果有需要的話可以分享給設計師同事參考。</p>
+<figure>
+<img src=android-studio-image-asset.png> <figcaption>
+Android Studio 的 Image Asset Studio
+</figcaption>
+</figure>
+<h2 id=背景知識>背景知識<a hidden class=anchor aria-hidden=true href=#背景知識>#</a></h2>
+<h3 id=屏幕密度>屏幕密度<a hidden class=anchor aria-hidden=true href=#屏幕密度>#</a></h3>
+<p>因為 Android 設備有太多款，所以 Android 在處理不同屏幕方面比起 iOS 更細緻：由最基本的屏幕密度到控制在不同屏幕尺寸下的界面排版都比 iOS 有更多設置。如果是設計 app icon 的話，主要留意的是屏幕密度。iOS 目前有<a href=https://developer.apple.com/design/human-interface-guidelines/ios/icons-and-images/image-size-and-resolution/>三款密度</a>：1x、2x (<code>@2x</code>) 和 3x (<code>@3x</code>)﹔而 Android 的<a href=https://developer.android.com/training/multiscreen/screendensities#TaskProvideAltBmp>密度</a>就有 1x (MDPI)、1.5x (HDPI)、2x (XHDPI)、3x (XXHDPI) 和 4x (XXXHDPI)。建議大家使用向量圖準備原檔，並且以 1x 的尺寸準備圖片。在匯出圖片時才一次過匯出全部密度的 PNG 圖片。</p>
+<p>在 Android，一般會使用 dp 這個長度單位來設計 UI。如果不清楚 dp 是甚麼意思的話，可以參考 Material Design 的 <a href=https://material.io/design/layout/pixel-density.html>Pixel density 部分</a>。但在高密度的屏幕下，如果要把圖案顯示到和低密度屏幕一樣大小（把間尺放在屏幕上量度那個圖案）而又不模糊的話，是要用更多的像素 (pixel, px)。所以就發明了 dp 這個單位來描述尺寸，即使在不同密度的屏幕下 dp 都是一樣。簡單來說，在 1x 的情況下，1dp = 1px。你要在 1x 的情景下繪畫你的圖案，然後按照上一段的 1.5x、2x、3x……倍數匯出成不同尺寸的圖片。</p>
+<p>舉個例子：如果要準備一張 32 × 32dp 的圖片，你要匯出以下的 PNG 檔案：</p>
+<table>
+<thead>
+<tr>
+<th>密度</th>
+<th>放大倍數</th>
+<th>PNG 圖片闊度及高度 (px)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MDPI</td>
+<td>1x</td>
+<td>32</td>
+</tr>
+<tr>
+<td>HDPI</td>
+<td>1.5x</td>
+<td>48</td>
+</tr>
+<tr>
+<td>XHDPI</td>
+<td>2x</td>
+<td>64</td>
+</tr>
+<tr>
+<td>XXHDPI</td>
+<td>3x</td>
+<td>96</td>
+</tr>
+<tr>
+<td>XXXHDPI</td>
+<td>4x</td>
+<td>128</td>
+</tr>
+</tbody>
+</table>
+<p>PNG 檔案名稱需要一致，只可以用小楷英文字母、底線 (<code>_</code>) 和數字（數字不可在作為名稱開首），並將圖片放到對應的資料夾內（例如 <code>drawable-hdpi</code>）。</p>
+<h3 id=主畫面>主畫面<a hidden class=anchor aria-hidden=true href=#主畫面>#</a></h3>
+<p>Android 的主畫面是叫作 launcher，它的功能除了主畫面外，還包括讓用戶選擇要啟動的 app（app 列表）。Launcher 本身是一個 app。和其他 app 一樣，用戶可以在 Google Play 下載其他 launcher 來替代預設的 launcher。不同的 launcher 在顯示 app icon 方面都有不同的效果。<strong>簡單來說，app icon 顯示效果取決於 Android 版本和用戶所選用的 launcher。</strong></p>
+<h2 id=launcher-icon>Launcher Icon<a hidden class=anchor aria-hidden=true href=#launcher-icon>#</a></h2>
+<p>這個是最基本的 app icon，就是 Android 最先出現的 app icon 形式。稱為 launcher icon 就是因為它主要在 launcher 內顯示。（其實也會在設定頁的應用程式清單中看到）</p>
+<p>和 <a href=https://developer.apple.com/library/archive/qa/qa1686/_index.html>iOS</a> 不同，Android 的 launcher icon 是沒有規定形狀。在 <a href=https://stuff.mit.edu/afs/sipb/project/android/docs/guide/practices/ui_guidelines/icon_design_launcher.html>Android 4 時代的指引（鏡像網站）</a>是鼓勵 icon 的形狀要有特色，不要套上圓角方形之類的遮色片 (clipping mask) 或完全填滿全部像素來侷限 icon 設計。但太多人受到 iOS 的影響，都把 launcher icon 做成像 iOS 般的圓角方形。有些甚至用盡 launcher icon 尺寸，沒有按規格在四邊留足夠空間來加上陰影。結果不同款色的 launcher icon 放在同一個 launcher 時視覺完全不協調。一些 Android 設備品牌為了解決這個問題，在它們的預設 launcher 會做到像 iOS 般為所有 app icon 加上圓角方形的遮色片。亦有一些 launcher 會為所有 app icon 加上托底，令原先不同形狀的 app icon 看上來都統一。加上 Google Play Store 上架無需人工審批，即使 launcher icon 設計不符指引也沒有問題。結果直到現在看到的 app icon 設計都是不統一。</p>
+<p>在後期的 Android 版本為了解決這個問題先後出了好幾款的 app icon 形式（就是之後介紹那些）。但這個 launcher icon 形式仍是必須的。</p>
+<p>規格方面，尺寸是 48 × 48dp。有關設計原則、格線、形狀、高光、陰影之類可以直接查閱 <a href=https://material.io/design/iconography/product-icons.html>Material Design 網站</a>。Illustrator 範本可在舊版 Material Design 網站的 <a href=https://material.io/archive/guidelines/resources/sticker-sheets-icons.html#sticker-sheets-icons-components>Resources – Sticker sheets & icons</a>（Product icons 部分）下載，那些 AI 檔案已經包含了格線、基本形狀、高光、陰影的示範。</p>
+<figure>
+<img src=ic_launcher.png> <figcaption>
+Launcher icon 連格線示範
+</figcaption>
+</figure>
+<p>不過要留意一點：這個範本的尺寸是 192 × 192pt，而不是 48 × 48px。因為 launcher icon 指引建議大家放大 400% 來設計（但需要以 4pt 的格線來繪制），然後在匯出時是縮小成不同的 PNG 檔案而不是像平時般放大圖片。</p>
+<p>完成設計後按以下的規格匯出：</p>
+<table>
+<thead>
+<tr>
+<th>闊度及高度 (px)</th>
+<th>密度</th>
+<th>放大倍數</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>48</td>
+<td>MDPI</td>
+<td>0.25x</td>
+</tr>
+<tr>
+<td>72</td>
+<td>HDPI</td>
+<td>0.375x</td>
+</tr>
+<tr>
+<td>96</td>
+<td>XHDPI</td>
+<td>0.5x</td>
+</tr>
+<tr>
+<td>144</td>
+<td>XXHDPI</td>
+<td>0.75x</td>
+</tr>
+<tr>
+<td>192</td>
+<td>XXXHDPI</td>
+<td>1x</td>
+</tr>
+</tbody>
+</table>
+<p>把匯出的 PNG 檔案按以下的目錄結構放好：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>.
 ├── mipmap-hdpi
 │   └── ic_launcher.png (72 × 72px)
 ├── mipmap-mdpi
@@ -10,10 +198,15 @@
 │   └── ic_launcher.png (144 × 144px)
 └── mipmap-xxxhdpi
     └── ic_launcher.png (192 × 192px)
-</code></pre></div><p><em>AndroidManifest.xml</em> 會是這樣：</p><div class=highlight><pre class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;application</span>
+</code></pre></div><p><em>AndroidManifest.xml</em> 會是這樣：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;application</span>
     <span class=na>android:icon=</span><span class=s>&#34;@mipmap/ic_launcher&#34;</span><span class=nt>&gt;</span>
     <span class=c>&lt;!-- 略 --&gt;</span>
-<span class=nt>&lt;/application&gt;</span></code></pre></div><h2 id=round-launcher-icon>Round Launcher Icon<a hidden class=anchor aria-hidden=true href=#round-launcher-icon>#</a></h2><p>圓形 app icon 是 <a href=https://developer.android.com/about/versions/nougat/android-7.1.html#circular-icons>Android 7.1</a> 新增的 launcher icon 式樣。如果你本身的 launcher icon 不是圓形的話，可以在 <em>AndroidManifest.xml</em> 用 <code>android:roundIcon</code> 設定圓形 app icon。會否使用圓形 icon 視乎 launcher 而定。</p><p>設計範本都是用剛才 launcher icon 的範本，裏面有圓形格線及形狀可供參考使用。完成後同樣使用上一部分的規格匯出，並將 PNG 檔案按以下的目錄結構放好：</p><div class=highlight><pre class=chroma><code class=language-text data-lang=text>.
+<span class=nt>&lt;/application&gt;</span></code></pre></div>
+<h2 id=round-launcher-icon>Round Launcher Icon<a hidden class=anchor aria-hidden=true href=#round-launcher-icon>#</a></h2>
+<p>圓形 app icon 是 <a href=https://developer.android.com/about/versions/nougat/android-7.1.html#circular-icons>Android 7.1</a> 新增的 launcher icon 式樣。如果你本身的 launcher icon 不是圓形的話，可以在 <em>AndroidManifest.xml</em> 用 <code>android:roundIcon</code> 設定圓形 app icon。會否使用圓形 icon 視乎 launcher 而定。</p>
+<p>設計範本都是用剛才 launcher icon 的範本，裏面有圓形格線及形狀可供參考使用。完成後同樣使用上一部分的規格匯出，並將 PNG 檔案按以下的目錄結構放好：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>.
 ├── mipmap-hdpi
 │   └── ic_launcher_round.png (72 × 72px)
 ├── mipmap-mdpi
@@ -24,18 +217,38 @@
 │   └── ic_launcher_round.png (144 × 144px)
 └── mipmap-xxxhdpi
     └── ic_launcher_round.png (192 × 192px)
-</code></pre></div><p><em>AndroidManifest.xml</em> 會是這樣：</p><div class=highlight><pre class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;application</span>
+</code></pre></div><p><em>AndroidManifest.xml</em> 會是這樣：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;application</span>
     <span class=na>android:roundIcon=</span><span class=s>&#34;@mipmap/ic_launcher_round&#34;</span><span class=nt>&gt;</span>
     <span class=c>&lt;!-- 略 --&gt;</span>
-<span class=nt>&lt;/application&gt;</span></code></pre></div><h2 id=adaptive-launcher-icon>Adaptive Launcher Icon<a hidden class=anchor aria-hidden=true href=#adaptive-launcher-icon>#</a></h2><p>這個由 Android 8 推出的 icon 形式官方中文譯名為「<a href="https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive?hl=zh-tw">自動調整圖示</a>」，可以說是解決各大廠商自行改變 launcher icon 形狀的終極方案：就是讓 launcher 決定 icon 的形狀，不一定是圓角方形，也不一定是圓形。但規格有訂明保證能被顯示的範圍（一個直徑 66dp 的圓形），範圍以外視作出血位，有機會被 launcher 裁走。而 icon 外圍的陰影都會由 launcher 負責。這其實和 iOS 有幾分相似，但它最大特色是 icon 圖片不是一張圖片，是兩張圖片（前景和背景）。</p><p><em>AndroidManifest.xml</em> 如果要使用 adaptive launcher icon 就是和之前的沒有分別：</p><div class=highlight><pre class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;application</span>
+<span class=nt>&lt;/application&gt;</span></code></pre></div>
+<h2 id=adaptive-launcher-icon>Adaptive Launcher Icon<a hidden class=anchor aria-hidden=true href=#adaptive-launcher-icon>#</a></h2>
+<p>這個由 Android 8 推出的 icon 形式官方中文譯名為「<a href="https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive?hl=zh-tw">自動調整圖示</a>」，可以說是解決各大廠商自行改變 launcher icon 形狀的終極方案：就是讓 launcher 決定 icon 的形狀，不一定是圓角方形，也不一定是圓形。但規格有訂明保證能被顯示的範圍（一個直徑 66dp 的圓形），範圍以外視作出血位，有機會被 launcher 裁走。而 icon 外圍的陰影都會由 launcher 負責。這其實和 iOS 有幾分相似，但它最大特色是 icon 圖片不是一張圖片，是兩張圖片（前景和背景）。</p>
+<p><em>AndroidManifest.xml</em> 如果要使用 adaptive launcher icon 就是和之前的沒有分別：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;application</span>
     <span class=na>android:icon=</span><span class=s>&#34;@mipmap/ic_launcher&#34;</span>
     <span class=na>android:roundIcon=</span><span class=s>&#34;@mipmap/ic_launcher_round&#34;</span><span class=nt>&gt;</span>
     <span class=c>&lt;!-- 略 --&gt;</span>
-<span class=nt>&lt;/application&gt;</span></code></pre></div><p>但是特別之處是在 <em>mipmap-anydpi-v26</em> 資料夾加入 <em>ic_launcher.xml</em> 和 <em>ic_launcher_round.xml</em>。兩個 XML 檔案內容是一樣的：</p><div class=highlight><pre class=chroma><code class=language-xml data-lang=xml><span class=cp>&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+<span class=nt>&lt;/application&gt;</span></code></pre></div>
+<p>但是特別之處是在 <em>mipmap-anydpi-v26</em> 資料夾加入 <em>ic_launcher.xml</em> 和 <em>ic_launcher_round.xml</em>。兩個 XML 檔案內容是一樣的：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=cp>&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
 <span class=nt>&lt;adaptive-icon</span> <span class=na>xmlns:android=</span><span class=s>&#34;http://schemas.android.com/apk/res/android&#34;</span><span class=nt>&gt;</span>
     <span class=nt>&lt;background</span> <span class=na>android:drawable=</span><span class=s>&#34;@mipmap/ic_launcher_background&#34;</span><span class=nt>/&gt;</span>
     <span class=nt>&lt;foreground</span> <span class=na>android:drawable=</span><span class=s>&#34;@mipmap/ic_launcher_foreground&#34;</span><span class=nt>/&gt;</span>
-<span class=nt>&lt;/adaptive-icon&gt;</span></code></pre></div><p>準備兩張 108 × 108dp 圖片：<em>ic_launcher_foreground.png</em> 和 <em>ic_launcher_background.png</em>，分別是前景圖和背景圖。前景要有透明底色，而背景圖就不可以有透明底色。範本可以在 <a href=https://medium.com/google-design/designing-adaptive-icons-515af294c783>Google Design 的 Medium 文章</a>內找到。留意這個格線和先前那些範本不同，所以需要再調整一下圖案。</p><figure><img src=foreground-with-guidelines.png><figcaption>前景圖連格線示範</figcaption></figure><figure><img src=background-with-guidelines.png><figcaption>背景圖連格線示範</figcaption></figure><p>如果連同先前介紹的 icon 規格的話，要準備好以下的檔案：</p><div class=highlight><pre class=chroma><code class=language-text data-lang=text>.
+<span class=nt>&lt;/adaptive-icon&gt;</span></code></pre></div>
+<p>準備兩張 108 × 108dp 圖片：<em>ic_launcher_foreground.png</em> 和 <em>ic_launcher_background.png</em>，分別是前景圖和背景圖。前景要有透明底色，而背景圖就不可以有透明底色。範本可以在 <a href=https://medium.com/google-design/designing-adaptive-icons-515af294c783>Google Design 的 Medium 文章</a>內找到。留意這個格線和先前那些範本不同，所以需要再調整一下圖案。</p>
+<figure>
+<img src=foreground-with-guidelines.png> <figcaption>
+前景圖連格線示範
+</figcaption>
+</figure>
+<figure>
+<img src=background-with-guidelines.png> <figcaption>
+背景圖連格線示範
+</figcaption>
+</figure>
+<p>如果連同先前介紹的 icon 規格的話，要準備好以下的檔案：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>.
 ├── mipmap-anydpi-v26
 │   ├── ic_launcher.xml
 │   └── ic_launcher_round.xml (Same content as ic_launcher.xml)
@@ -64,7 +277,56 @@
     ├── ic_launcher_background.png (Adaptive launcher icon background, 432 × 432px)
     ├── ic_launcher_foreground.png (Adaptive launcher icon foreground, 432 × 432px)
     └── ic_launcher_round.png (Round launcher icon, 192 × 192px)
-</code></pre></div><p>設定好之後，視乎 launcher app 的設定，你的 adaptive icon 可能會被套用不同形狀的遮色片。部分 launcher 更會在用戶用手左右掃主畫面和按下 icon 時有動畫效果（以不同的速度移動 icon 的前景和背景圖片、放大縮小前景和背景圖片之類）。</p><figure><img src=adaptive-animation.gif><figcaption>動畫示範</figcaption></figure><p>因為 adaptive launcher icon 是一樣比較新的 icon 形式，其實是可以用 <a href=https://developer.android.com/guide/topics/graphics/vector-drawable-resources>vector drawable</a> 而不需要準備一堆 PNG 檔案（雖然是 XML，但不是 SVG 格式，vector drawable 不支援所有 SVG 的功能）。但 vector drawable 是另一個大課題，如果同時講解 vector drawable 可能會令設計師看不懂，而且篇幅太長。所以這篇文章全部使用 PNG 作示範。</p><h2 id=google-play-icon>Google Play Icon<a hidden class=anchor aria-hidden=true href=#google-play-icon>#</a></h2><figure><img src=google-play-icon-sample.png><figcaption>Google Play icon 例子</figcaption></figure><p>這個 icon 其實是不會放進 app 入面，只是用於 Google Play 上架。即是在 Google Play 看到的 app icon。尺寸只有一個：512 × 512px。這個 icon 的規格比其他 icon 相對簡單，簡單來說就是和 iOS app icon 差不多。都是 PNG 格式，只是圓角不一樣：圓角半徑為圖示大小的 20% (102.4px)。</p><p>另外，圖片不可以有透明背景。亦不用為 icon 加上圓角外框，因為 Google Play 網頁和 app 會即場為你的 app icon 裁圓角和加上陰影。</p><figure><img src=google-play-icon-new.png><figcaption>Google Play Console 的新式 app icon</figcaption></figure><p>這個 icon 規格是在近期（2019 年 6 月 24 日起）正式實行。如果還未轉用新規格的話 Google Play 會把現有的 icon 縮小到 75% 並置中在白色背景的圓角方形內（即舊版模式）。</p><figure><img src=google-play-icon-legacy.png><figcaption>Google Play Console 內的舊版模式示範</figcaption></figure><p>詳細的規格可以參閱 <a href="https://developer.android.com/google-play/resources/icon-design-specifications?hl=zh-tw">Google Play 圖示設計規範</a>，該頁最底有 Sketch、Illustrator 和 Photoshop 範本，範本內有格線可供參考。雖然格線和 adaptive launcher icon 如果你的 app icon 圖像的關鍵部分是形狀的話，就應該按照格線調整形狀的大小和位置。如果純粹把整個 adaptive launcher icon 縮放到 512 × 512px 是錯誤的，應該要為 Google Play icon 重新調整 icon 內的圖形。</p><figure><img src=play-store-icon.png><figcaption>Google Play icon 連格線範例</figcaption></figure><h2 id=其他-icon>其他 Icon<a hidden class=anchor aria-hidden=true href=#其他-icon>#</a></h2><h3 id=status-bar-icon>Status Bar Icon<a hidden class=anchor aria-hidden=true href=#status-bar-icon>#</a></h3><p>Android 和 iOS 不同的地方是頂部通知欄會顯示 icon，這個 icon 有不少人忽略。有些 app 做得不仔細的話會直接用 launcher icon。但效果會非常差，在 Android 5.0 (API level 21) 開始往往<a href=https://stackoverflow.com/questions/30795431/android-push-notifications-icon-not-displaying-in-notification-white-square-sh>只顯示一個圓角方形的白色形狀</a>。按照 <a href=https://material.io/design/platform-guidance/android-notifications.html>Android 官方說法</a>，status bar icon 是系統按照情況為 icon 填上白色、灰色、由 app 定義的 accent 色等等。以前曾聽過有些客戶要求 status bar icon 要以彩色顯示，其實這並不符合 Android 的要求，而且不能保證全部設備都能做到彩色效果。另一方面，由於 status bar icon 只有 24 × 24dp，所以不可能只把 launcher icon 縮細就當作 status bar icon 來用。正確做法是要把主體圖形抽出再作簡化，這樣用戶才能瞄一眼就知道這個通知是那一個 app 發出。</p><p>Android 開發者網站經過多次改版後已經找不到 status bar icon 的設計指引，只可以從<a href=https://stuff.mit.edu/afs/sipb/project/android/docs/guide/practices/ui_guidelines/icon_design_status_bar.html>鏡像網站</a>看到當年 (Android 4.0) 年代的設計指引。自從 Android 4.0 之後 Android 都再沒有推出針對 status bar icon 的指引，所以這個鏡像網站所提的設計指引應可作現今的指引參考。同時亦可參照 <a href=https://material.io/design/iconography/system-icons.html>Material Design 的 system icons 部分</a>來設計。因為 status bar icon 和 Material Design system icon 的尺寸都是 24dp，而且它提供比當年 Android 4.0 status bar icon 更清晰的設計指引。所以我覺得現時可以參考 Material Design 的指引來準備 status bar icon，但顏色方面只可以用白色 (<code>#FFFFFF</code>)，不要用半透明填色。</p><h3 id=tv-banner>TV Banner<a hidden class=anchor aria-hidden=true href=#tv-banner>#</a></h3><p>如果要準備 Android TV app 的話，需要額外準備 TV banner 作為 Android TV launcher 的 app icon。引用自 <a href=https://developer.android.com/docs/quality-guidelines/tv-app-quality>TV app quality</a> 中 TV-LB 一段：</p><blockquote><p>The app displays a 320 × 180px full-size banner as its launcher icon in the Android TV Launcher.</p></blockquote><p>這個 320 × 180px 的 banner 就是在 XHDPI 的情況下的尺寸是 320 × 180px。如果換算成 dp 的話就是 160 × 91dp。</p><figure><img src=banner.png><figcaption>TV banner 範例</figcaption></figure><p>Banner 放在 <code>drawable</code> 資料夾就可以了，不用放在 <code>mipmap</code> 資料夾。如果講究的話可以準備不同 DPI 的圖片。但最少要有一張 320 × 180px。</p><p>以 MDPI 為基準繪製 160 × 91px 的圖片，把匯出的 PNG 檔案按以下的目錄結構放好：</p><div class=highlight><pre class=chroma><code class=language-text data-lang=text>.
+</code></pre></div><p>設定好之後，視乎 launcher app 的設定，你的 adaptive icon 可能會被套用不同形狀的遮色片。部分 launcher 更會在用戶用手左右掃主畫面和按下 icon 時有動畫效果（以不同的速度移動 icon 的前景和背景圖片、放大縮小前景和背景圖片之類）。</p>
+<figure>
+<img src=adaptive-animation.gif> <figcaption>
+動畫示範
+</figcaption>
+</figure>
+<p>因為 adaptive launcher icon 是一樣比較新的 icon 形式，其實是可以用 <a href=https://developer.android.com/guide/topics/graphics/vector-drawable-resources>vector drawable</a> 而不需要準備一堆 PNG 檔案（雖然是 XML，但不是 SVG 格式，vector drawable 不支援所有 SVG 的功能）。但 vector drawable 是另一個大課題，如果同時講解 vector drawable 可能會令設計師看不懂，而且篇幅太長。所以這篇文章全部使用 PNG 作示範。</p>
+<h2 id=google-play-icon>Google Play Icon<a hidden class=anchor aria-hidden=true href=#google-play-icon>#</a></h2>
+<figure>
+<img src=google-play-icon-sample.png> <figcaption>
+Google Play icon 例子
+</figcaption>
+</figure>
+<p>這個 icon 其實是不會放進 app 入面，只是用於 Google Play 上架。即是在 Google Play 看到的 app icon。尺寸只有一個：512 × 512px。這個 icon 的規格比其他 icon 相對簡單，簡單來說就是和 iOS app icon 差不多。都是 PNG 格式，只是圓角不一樣：圓角半徑為圖示大小的 20% (102.4px)。</p>
+<p>另外，圖片不可以有透明背景。亦不用為 icon 加上圓角外框，因為 Google Play 網頁和 app 會即場為你的 app icon 裁圓角和加上陰影。</p>
+<figure>
+<img src=google-play-icon-new.png> <figcaption>
+Google Play Console 的新式 app icon
+</figcaption>
+</figure>
+<p>這個 icon 規格是在近期（2019 年 6 月 24 日起）正式實行。如果還未轉用新規格的話 Google Play 會把現有的 icon 縮小到 75% 並置中在白色背景的圓角方形內（即舊版模式）。</p>
+<figure>
+<img src=google-play-icon-legacy.png> <figcaption>
+Google Play Console 內的舊版模式示範
+</figcaption>
+</figure>
+<p>詳細的規格可以參閱 <a href="https://developer.android.com/google-play/resources/icon-design-specifications?hl=zh-tw">Google Play 圖示設計規範</a>，該頁最底有 Sketch、Illustrator 和 Photoshop 範本，範本內有格線可供參考。雖然格線和 adaptive launcher icon 如果你的 app icon 圖像的關鍵部分是形狀的話，就應該按照格線調整形狀的大小和位置。如果純粹把整個 adaptive launcher icon 縮放到 512 × 512px 是錯誤的，應該要為 Google Play icon 重新調整 icon 內的圖形。</p>
+<figure>
+<img src=play-store-icon.png> <figcaption>
+Google Play icon 連格線範例
+</figcaption>
+</figure>
+<h2 id=其他-icon>其他 Icon<a hidden class=anchor aria-hidden=true href=#其他-icon>#</a></h2>
+<h3 id=status-bar-icon>Status Bar Icon<a hidden class=anchor aria-hidden=true href=#status-bar-icon>#</a></h3>
+<p>Android 和 iOS 不同的地方是頂部通知欄會顯示 icon，這個 icon 有不少人忽略。有些 app 做得不仔細的話會直接用 launcher icon。但效果會非常差，在 Android 5.0 (API level 21) 開始往往<a href=https://stackoverflow.com/questions/30795431/android-push-notifications-icon-not-displaying-in-notification-white-square-sh>只顯示一個圓角方形的白色形狀</a>。按照 <a href=https://material.io/design/platform-guidance/android-notifications.html>Android 官方說法</a>，status bar icon 是系統按照情況為 icon 填上白色、灰色、由 app 定義的 accent 色等等。以前曾聽過有些客戶要求 status bar icon 要以彩色顯示，其實這並不符合 Android 的要求，而且不能保證全部設備都能做到彩色效果。另一方面，由於 status bar icon 只有 24 × 24dp，所以不可能只把 launcher icon 縮細就當作 status bar icon 來用。正確做法是要把主體圖形抽出再作簡化，這樣用戶才能瞄一眼就知道這個通知是那一個 app 發出。</p>
+<p>Android 開發者網站經過多次改版後已經找不到 status bar icon 的設計指引，只可以從<a href=https://stuff.mit.edu/afs/sipb/project/android/docs/guide/practices/ui_guidelines/icon_design_status_bar.html>鏡像網站</a>看到當年 (Android 4.0) 年代的設計指引。自從 Android 4.0 之後 Android 都再沒有推出針對 status bar icon 的指引，所以這個鏡像網站所提的設計指引應可作現今的指引參考。同時亦可參照 <a href=https://material.io/design/iconography/system-icons.html>Material Design 的 system icons 部分</a>來設計。因為 status bar icon 和 Material Design system icon 的尺寸都是 24dp，而且它提供比當年 Android 4.0 status bar icon 更清晰的設計指引。所以我覺得現時可以參考 Material Design 的指引來準備 status bar icon，但顏色方面只可以用白色 (<code>#FFFFFF</code>)，不要用半透明填色。</p>
+<h3 id=tv-banner>TV Banner<a hidden class=anchor aria-hidden=true href=#tv-banner>#</a></h3>
+<p>如果要準備 Android TV app 的話，需要額外準備 TV banner 作為 Android TV launcher 的 app icon。引用自 <a href=https://developer.android.com/docs/quality-guidelines/tv-app-quality>TV app quality</a> 中 TV-LB 一段：</p>
+<blockquote>
+<p>The app displays a 320 × 180px full-size banner as its launcher icon in the Android TV Launcher.</p>
+</blockquote>
+<p>這個 320 × 180px 的 banner 就是在 XHDPI 的情況下的尺寸是 320 × 180px。如果換算成 dp 的話就是 160 × 91dp。</p>
+<figure>
+<img src=banner.png> <figcaption>
+TV banner 範例
+</figcaption>
+</figure>
+<p>Banner 放在 <code>drawable</code> 資料夾就可以了，不用放在 <code>mipmap</code> 資料夾。如果講究的話可以準備不同 DPI 的圖片。但最少要有一張 320 × 180px。</p>
+<p>以 MDPI 為基準繪製 160 × 91px 的圖片，把匯出的 PNG 檔案按以下的目錄結構放好：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>.
 ├── drawable-hdpi
 │   └── banner.png (240 × 136px)
 ├── drawable-mdpi
@@ -75,16 +337,54 @@
 │   └── banner.png (480 × 271px)
 └── drawable-xxxhdpi
     └── banner.png (640 × 360px)
-</code></pre></div><p><em>AndroidManifest.xml</em> 會是這樣：</p><div class=highlight><pre class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;application</span>
+</code></pre></div><p><em>AndroidManifest.xml</em> 會是這樣：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;application</span>
     <span class=na>android:banner=</span><span class=s>&#34;@drawable/banner&#34;</span> <span class=nt>&gt;</span>
     <span class=c>&lt;!-- 略 --&gt;</span>
 <span class=nt>&lt;/application&gt;</span>
-</code></pre></div><p>其實這個 banner 有個潛規則：不可以使用黑色、深灰色之類的背景顏色。因為 Android TV 的 launcher 背景色是深色為主，如果 banner 背景顏色都是用深色的話就難以從背景色中分離出來。Banner 背景顏色太深色的話 Google 是不會讓你的 app 上架。（Android TV 新 app 上架和 iOS App Store 一樣都需要送檢，但之後的更新就不用送檢。）如果想了解更多的話可以參考我之前上架 <a href=https://eric.swiftzer.net/2017/06/trainboard-for-android-tv/>TrainBoard</a> 的例子。</p><p>順帶一提，<a href=https://designguidelines.withgoogle.com/android-tv/style/color.html>Android TV design guidelines</a> 提到在電視屏幕上不應使用純白色 (<code>#FFFFFF</code>)。因為太鮮色會刺眼。如果要用白色的話應該使用淺灰色 (<code>#EEEEEE</code>)。</p><h2 id=參考及閱讀更多>參考及閱讀更多<a hidden class=anchor aria-hidden=true href=#參考及閱讀更多>#</a></h2><ul><li><a href=https://medium.com/@binglu/android-notification-icon-%E8%A3%BD%E4%BD%9C%E8%A6%81%E9%BB%9E-ad50869f418f>Android Notification Icon 製作要點</a><br>Notification icon 的規格，但 icon 應該要在在 <code>drawable</code> 資料夾而不是 <code>mipmap</code> 資料夾。</li><li><a href=https://android-developers.googleblog.com/2014/10/getting-your-apps-ready-for-nexus-6-and.html>Getting Your Apps Ready for Nexus 6 and Nexus 9</a><br>內有提及為何 launcher icon 要放入 <code>mipmap</code> 資料夾而不是 <code>drawable</code> 資料夾的原因。</li><li><a href=https://romannurik.github.io/AndroidAssetStudio/>Android Asset Studio</a><br>網上製作各式 icon 的工具，大部分功能經已內建在 Android Studio 內。</li><li><a href=https://jeroenmols.com/blog/2019/07/03/adaptiveicon/>Philips Hue adaptive icon</a><br>示範了如何準備 adaptive launcher icon。</li><li><a href=https://adapticon.tooo.io/>Adapticon</a><br>Adaptive launcher icon 效果示範和範例。</li><li><a href=https://medium.com/google-design/understanding-android-adaptive-icons-cee8a9de93e2>Understanding Android Adaptive Icons</a><br>介紹引入 adaptive launcher icon 的原因。</li><li><a href=https://medium.com/google-design/designing-adaptive-icons-515af294c783>Designing Adaptive Icons</a><br>設計 adaptive launcher icon 要留意的地方。</li><li><a href=https://www.videoproc.com/resource/image-resolution.htm>Image Resolution: PPI, DPI, Image Quality and Everything You Need to Know</a><br>介紹 PPI 跟 DPI 的分別。</li></ul></div><footer class=post-footer><ul class=post-tags><li><a href=https://eric.swiftzer.net/tags/android/>Android</a></li></ul></footer><div id=disqus_thread></div><script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return;}
-var d=document,s=d.createElement('script');s.async=true;s.src='//'+"efilm"+'.disqus.com/embed.js';s.setAttribute('data-timestamp',+new Date());(d.head||d.body).appendChild(s);})();</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></article></main><footer class=footer><span>&copy; 2021 <a href=https://eric.swiftzer.net/>EricLog</a></span>
+</code></pre></div><p>其實這個 banner 有個潛規則：不可以使用黑色、深灰色之類的背景顏色。因為 Android TV 的 launcher 背景色是深色為主，如果 banner 背景顏色都是用深色的話就難以從背景色中分離出來。Banner 背景顏色太深色的話 Google 是不會讓你的 app 上架。（Android TV 新 app 上架和 iOS App Store 一樣都需要送檢，但之後的更新就不用送檢。）如果想了解更多的話可以參考我之前上架 <a href=https://eric.swiftzer.net/2017/06/trainboard-for-android-tv/>TrainBoard</a> 的例子。</p>
+<p>順帶一提，<a href=https://designguidelines.withgoogle.com/android-tv/style/color.html>Android TV design guidelines</a> 提到在電視屏幕上不應使用純白色 (<code>#FFFFFF</code>)。因為太鮮色會刺眼。如果要用白色的話應該使用淺灰色 (<code>#EEEEEE</code>)。</p>
+<h2 id=參考及閱讀更多>參考及閱讀更多<a hidden class=anchor aria-hidden=true href=#參考及閱讀更多>#</a></h2>
+<ul>
+<li><a href=https://medium.com/@binglu/android-notification-icon-%E8%A3%BD%E4%BD%9C%E8%A6%81%E9%BB%9E-ad50869f418f>Android Notification Icon 製作要點</a><br>
+Notification icon 的規格，但 icon 應該要在在 <code>drawable</code> 資料夾而不是 <code>mipmap</code> 資料夾。</li>
+<li><a href=https://android-developers.googleblog.com/2014/10/getting-your-apps-ready-for-nexus-6-and.html>Getting Your Apps Ready for Nexus 6 and Nexus 9</a><br>
+內有提及為何 launcher icon 要放入 <code>mipmap</code> 資料夾而不是 <code>drawable</code> 資料夾的原因。</li>
+<li><a href=https://romannurik.github.io/AndroidAssetStudio/>Android Asset Studio</a><br>
+網上製作各式 icon 的工具，大部分功能經已內建在 Android Studio 內。</li>
+<li><a href=https://jeroenmols.com/blog/2019/07/03/adaptiveicon/>Philips Hue adaptive icon</a><br>
+示範了如何準備 adaptive launcher icon。</li>
+<li><a href=https://adapticon.tooo.io/>Adapticon</a><br>
+Adaptive launcher icon 效果示範和範例。</li>
+<li><a href=https://medium.com/google-design/understanding-android-adaptive-icons-cee8a9de93e2>Understanding Android Adaptive Icons</a><br>
+介紹引入 adaptive launcher icon 的原因。</li>
+<li><a href=https://medium.com/google-design/designing-adaptive-icons-515af294c783>Designing Adaptive Icons</a><br>
+設計 adaptive launcher icon 要留意的地方。</li>
+<li><a href=https://www.videoproc.com/resource/image-resolution.htm>Image Resolution: PPI, DPI, Image Quality and Everything You Need to Know</a><br>
+介紹 PPI 跟 DPI 的分別。</li>
+</ul>
+</div>
+<footer class=post-footer>
+<ul class=post-tags>
+<li><a href=https://eric.swiftzer.net/tags/android/>Android</a></li>
+</ul>
+</footer><div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//efilm.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</article>
+</main><footer class=footer>
+<span>&copy; 2021 <a href=https://eric.swiftzer.net/>EricLog</a></span>
 <span>&#183;</span>
 <span>Powered by <a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a></span>
 <span>&#183;</span>
-<span>Theme <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)"><button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg></button></a>
-<script>window.onload=function(){if(localStorage.getItem("menu-scroll-position")){document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position");}}
-document.querySelectorAll('a[href^="#"]').forEach(anchor=>{anchor.addEventListener("click",function(e){e.preventDefault();var id=this.getAttribute("href").substr(1);if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({behavior:"smooth"});}else{document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();}
-if(id==="top"){history.replaceState(null,null," ");}else{history.pushState(null,null,`#${id}`);}});});var mybutton=document.getElementById("top-link");window.onscroll=function(){if(document.body.scrollTop>800||document.documentElement.scrollTop>800){mybutton.style.visibility="visible";mybutton.style.opacity="1";}else{mybutton.style.visibility="hidden";mybutton.style.opacity="0";}};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft);}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{if(document.body.className.includes("dark")){document.body.classList.remove('dark');localStorage.setItem("pref-theme",'light');}else{document.body.classList.add('dark');localStorage.setItem("pref-theme",'dark');}})</script></body></html>
+<span>Theme <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span>
+</footer>
+<a href=#top aria-label="go to top" title="Go to Top (Alt + G)">
+<button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</button>
+</a>
+<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))},document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})});var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}</script>
+<script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
+</body>
+</html>
