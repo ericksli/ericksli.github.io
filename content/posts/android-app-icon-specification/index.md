@@ -258,7 +258,7 @@ Banner 放在 `drawable` 資料夾就可以了，不用放在 `mipmap` 資料夾
 
 順帶一提，[Android TV design guidelines](https://designguidelines.withgoogle.com/android-tv/style/color.html) 提到在電視屏幕上不應使用純白色 (`#FFFFFF`)。因為太鮮色會刺眼。如果要用白色的話應該使用淺灰色 (`#EEEEEE`)。
 
-## 參考
+## 參考及閱讀更多
 
 - [Android Notification Icon 製作要點](https://medium.com/@binglu/android-notification-icon-%E8%A3%BD%E4%BD%9C%E8%A6%81%E9%BB%9E-ad50869f418f)<br>
   Notification icon 的規格，但 icon 應該要在在 `drawable` 資料夾而不是 `mipmap` 資料夾。
@@ -274,3 +274,5 @@ Banner 放在 `drawable` 資料夾就可以了，不用放在 `mipmap` 資料夾
   介紹引入 adaptive launcher icon 的原因。
 - [Designing Adaptive Icons](https://medium.com/google-design/designing-adaptive-icons-515af294c783)<br>
   設計 adaptive launcher icon 要留意的地方。
+- [Image Resolution: PPI, DPI, Image Quality and Everything You Need to Know](https://www.videoproc.com/resource/image-resolution.htm)<br>
+  介紹 PPI 跟 DPI 的分別。
