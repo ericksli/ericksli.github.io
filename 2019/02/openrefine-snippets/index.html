@@ -16,7 +16,7 @@ OpenRefine 內置了一種程式語言，名為 General Refine Expression Langua
 值得一提的是 OpenRefine 以前由 Google 負責維護，所以介面會有以前 Google 產品的影子。">
 <meta name=author content>
 <link rel=canonical href=https://eric.swiftzer.net/2019/02/openrefine-snippets/>
-<link href=/assets/css/stylesheet.min.fb7ad69a514b80a660b6c35150bc2988c0a53cecc30f28f0c4742d7b89d9ef6a.css integrity="sha256-+3rWmlFLgKZgtsNRULwpiMClPOzDDyjwxHQte4nZ72o=" rel="preload stylesheet" as=style>
+<link href=/assets/css/stylesheet.min.d1fc837a267f77f6ede89d1a89c4880a90c381d9e6673ad4a76a3ad1900b65f9.css integrity="sha256-0fyDeiZ/d/bt6J0aicSICpDDgdnmZzrUp2o60ZALZfk=" rel="preload stylesheet" as=style>
 <link rel=icon href=https://eric.swiftzer.net/favicon.ico>
 <link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png>
 <link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png>
@@ -40,7 +40,7 @@ OpenRefine 內置了一種程式語言，名為 General Refine Expression Langua
 OpenRefine 內置了一種程式語言，名為 General Refine Expression Language (GREL)，和 Excel 可以用公式差不多。我們用 OpenRefine 就是透過這種語言來把資料批量轉換成自己想要的東西。
 值得一提的是 OpenRefine 以前由 Google 負責維護，所以介面會有以前 Google 產品的影子。">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://eric.swiftzer.net/2019/02/openrefine-snippets/">
+<meta property="og:url" content="https://eric.swiftzer.net/2019/02/openrefine-snippets/"><meta property="article:section" content="posts">
 <meta property="article:published_time" content="2019-02-20T23:53:05+08:00">
 <meta property="article:modified_time" content="2019-02-20T23:53:05+08:00">
 <meta name=twitter:card content="summary">
@@ -54,25 +54,25 @@ OpenRefine 內置了一種程式語言，名為 General Refine Expression Langua
 
 OpenRefine 內置了一種程式語言，名為 General Refine Expression Language (GREL)，和 Excel 可以用公式差不多。我們用 OpenRefine 就是透過這種語言來把資料批量轉換成自己想要的東西。
 值得一提的是 OpenRefine 以前由 Google 負責維護，所以介面會有以前 Google 產品的影子。">
-<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"OpenRefine GREL 筆記","name":"OpenRefine GREL 筆記","description":"OpenRefine 是一個開源的工具，用作檢視資料、加工處理後作其他用途。簡單的例子有一堆街名，部分街名用了全寫、部分用了縮寫，想將它們全部統一用全寫。它的定位是介乎 Excel 和自己寫程式之間。有時資料用 Excel 不太方便處理，但如果自己寫程式處理又因為程式只會用一次，感覺太麻煩。OpenRefine 相信可以解決到你的需要。\n  Text …","keywords":["openrefine"],"articleBody":"OpenRefine 是一個開源的工具，用作檢視資料、加工處理後作其他用途。簡單的例子有一堆街名，部分街名用了全寫、部分用了縮寫，想將它們全部統一用全寫。它的定位是介乎 Excel 和自己寫程式之間。有時資料用 Excel 不太方便處理，但如果自己寫程式處理又因為程式只會用一次，感覺太麻煩。OpenRefine 相信可以解決到你的需要。\n  Text facet 功能可以批量修改相近的資料，而不用寫程式   OpenRefine 內置了一種程式語言，名為 General Refine Expression Language (GREL)，和 Excel 可以用公式差不多。我們用 OpenRefine 就是透過這種語言來把資料批量轉換成自己想要的東西。\n值得一提的是 OpenRefine 以前由 Google 負責維護，所以介面會有以前 Google 產品的影子。\n移除𥤧白字元 value.replace(/\\s+/,\"\") HK1980 方格網坐標轉換成 WGS84 香港政府測量是用自己的 HK1980 方格網坐標，所以在香港政府資料一線通下載和坐標相關的資料都能找到 HK1980 坐標。最初他們只提供 HK1980 座標，近年才同時提供 WGS84 十進制坐標（即是 Google Maps API 用的坐標系統）。\n如果你有 HK1980 坐標的話，可以在 OpenRefine 經地政總署提供的坐標轉換應用程式界面 (API)把坐標轉成 WGS84 十進制坐標。\n假設你的表格有 hk80_northing 和 hk80_easting 兩欄。在其中一欄點選右邊選單按鈕  Edit column  Add column by fetching URLs…，然後輸入下面的表達式：\n\"http://www.geodetic.gov.hk/transform/v2/?inSys=hkgrid\u0026n=\"+cells['hk80_northing'].value+\"\u0026e=\"+cells['hk80_easting'].value 之後新加入的一欄會有這個 API 的 JSON response。下面是以 (828386N, 815035E) 作示範：\n{\"wgsLat\": 22.394601560,\"wgsLong\": 113.970677223,\"hkLat\": 22.396125640,\"hkLong\": 113.968227240,\"utmGridZone\": \"49Q\",\"utmGridE\": 805878,\"utmGridN\": 2479527,\"utmRefZone\": \"49Q-HE\",\"utmRefE\": \"058\",\"utmRefN\": \"795\"} OpenRefine 有 parse JSON 的 function，我們可以再在 JSON response 那一欄點選右邊選單按鈕  Edit column  Add column based on this column…，然後輸入下面的表達式：\nvalue.parseJson()[\"wgsLat\"] value.parseJson()[\"wgsLong\"] 便可取得 WGS84 坐標。\n當然，如果有大量坐標要轉換的話都是用程式轉換比較好。但數量不大的話這個方法比較方便。\n街燈柱編號轉換 \"https://www.map.gov.hk/gih-ws2/lp/\"+value 例子：\n[{\"UTILITYNUMBER\":\"FA2385\",\"UTILITYPOINTID\":1107263606,\"X\":815027.67999,\"Y\":829842.619999999,\"NAME\":\"Tuen Mun\",\"NAME_C\":\"屯門\"}] X 是 HK1980 Easting；Y 是 HK1980 Norting。\n","wordCount":"713","inLanguage":"en","datePublished":"2019-02-20T23:53:05+08:00","dateModified":"2019-02-20T23:53:05+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2019/02/openrefine-snippets/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"OpenRefine GREL 筆記","item":"https://eric.swiftzer.net/2019/02/openrefine-snippets/"}]}</script>
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"OpenRefine GREL 筆記","name":"OpenRefine GREL 筆記","description":"OpenRefine 是一個開源的工具，用作檢視資料、加工處理後作其他用途。簡單的例子有一堆街名，部分街名用了全寫、部分用了縮寫，想將它們全部統一用全寫。它的定位是介乎 Excel 和自己寫程式之間。有時資料用 Excel 不太方便處理，但如果自己寫程式處理又因為程式只會用一次，感覺太麻煩。OpenRefine 相信可以解決到你的需要。\n  Text facet 功能可以批量修改相近的資料，而不用寫程式   OpenRefine 內置了一種程式語言，名為 General Refine Expression Language (GREL)，和 Excel 可以用公式差不多。我們用 OpenRefine 就是透過這種語言來把資料批量轉換成自己想要的東西。\n值得一提的是 OpenRefine 以前由 Google 負責維護，所以介面會有以前 Google 產品的影子。\n","keywords":["openrefine"],"articleBody":"OpenRefine 是一個開源的工具，用作檢視資料、加工處理後作其他用途。簡單的例子有一堆街名，部分街名用了全寫、部分用了縮寫，想將它們全部統一用全寫。它的定位是介乎 Excel 和自己寫程式之間。有時資料用 Excel 不太方便處理，但如果自己寫程式處理又因為程式只會用一次，感覺太麻煩。OpenRefine 相信可以解決到你的需要。\n  Text facet 功能可以批量修改相近的資料，而不用寫程式   OpenRefine 內置了一種程式語言，名為 General Refine Expression Language (GREL)，和 Excel 可以用公式差不多。我們用 OpenRefine 就是透過這種語言來把資料批量轉換成自己想要的東西。\n值得一提的是 OpenRefine 以前由 Google 負責維護，所以介面會有以前 Google 產品的影子。\n移除𥤧白字元 value.replace(/\\s+/,\"\") HK1980 方格網坐標轉換成 WGS84 香港政府測量是用自己的 HK1980 方格網坐標，所以在香港政府資料一線通下載和坐標相關的資料都能找到 HK1980 坐標。最初他們只提供 HK1980 座標，近年才同時提供 WGS84 十進制坐標（即是 Google Maps API 用的坐標系統）。\n如果你有 HK1980 坐標的話，可以在 OpenRefine 經地政總署提供的坐標轉換應用程式界面 (API)把坐標轉成 WGS84 十進制坐標。\n假設你的表格有 hk80_northing 和 hk80_easting 兩欄。在其中一欄點選右邊選單按鈕  Edit column  Add column by fetching URLs…，然後輸入下面的表達式：\n\"http://www.geodetic.gov.hk/transform/v2/?inSys=hkgrid\u0026n=\"+cells['hk80_northing'].value+\"\u0026e=\"+cells['hk80_easting'].value 之後新加入的一欄會有這個 API 的 JSON response。下面是以 (828386N, 815035E) 作示範：\n{\"wgsLat\": 22.394601560,\"wgsLong\": 113.970677223,\"hkLat\": 22.396125640,\"hkLong\": 113.968227240,\"utmGridZone\": \"49Q\",\"utmGridE\": 805878,\"utmGridN\": 2479527,\"utmRefZone\": \"49Q-HE\",\"utmRefE\": \"058\",\"utmRefN\": \"795\"} OpenRefine 有 parse JSON 的 function，我們可以再在 JSON response 那一欄點選右邊選單按鈕  Edit column  Add column based on this column…，然後輸入下面的表達式：\nvalue.parseJson()[\"wgsLat\"] value.parseJson()[\"wgsLong\"] 便可取得 WGS84 坐標。\n當然，如果有大量坐標要轉換的話都是用程式轉換比較好。但數量不大的話這個方法比較方便。\n街燈柱編號轉換 \"https://www.map.gov.hk/gih-ws2/lp/\"+value 例子：\n[{\"UTILITYNUMBER\":\"FA2385\",\"UTILITYPOINTID\":1107263606,\"X\":815027.67999,\"Y\":829842.619999999,\"NAME\":\"Tuen Mun\",\"NAME_C\":\"屯門\"}] X 是 HK1980 Easting；Y 是 HK1980 Norting。\n","wordCount":"713","inLanguage":"en","datePublished":"2019-02-20T23:53:05+08:00","dateModified":"2019-02-20T23:53:05+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2019/02/openrefine-snippets/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
 </head>
 <body id=top>
 <script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
 <noscript>
-<style type=text/css>.theme-toggle,.top-link{display:none}</style>
+<style type=text/css>#theme-toggle,.top-link{display:none}</style>
+<style>@media(prefers-color-scheme:dark){:root{--theme:#1d1e20;--entry:#2e2e33;--primary:rgba(255, 255, 255, 0.84);--secondary:rgba(255, 255, 255, 0.56);--tertiary:rgba(255, 255, 255, 0.16);--content:rgba(255, 255, 255, 0.74);--hljs-bg:#2e2e33;--code-bg:#37383e;--border:#333}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
 </noscript>
 <header class=header>
 <nav class=nav>
 <div class=logo>
 <a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
 <span class=logo-switches>
-<span class=theme-toggle title="(Alt + T)">
-<a id=theme-toggle accesskey=t><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-</a>
-</span>
+<button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+</button>
 </span>
 </div>
-<ul class=menu id=menu onscroll=menu_on_scroll()>
+<ul id=menu onscroll=menu_on_scroll()>
 <li>
 <a href=https://eric.swiftzer.net/fonts/ title=Fonts>
 <span>Fonts</span>
@@ -107,7 +107,7 @@ OpenRefine GREL 筆記
 <div class=post-content>
 <p><a href=http://openrefine.org/>OpenRefine</a> 是一個開源的工具，用作檢視資料、加工處理後作其他用途。簡單的例子有一堆街名，部分街名用了全寫、部分用了縮寫，想將它們全部統一用全寫。它的定位是介乎 Excel 和自己寫程式之間。有時資料用 Excel 不太方便處理，但如果自己寫程式處理又因為程式只會用一次，感覺太麻煩。OpenRefine 相信可以解決到你的需要。</p>
 <figure>
-<img src=text-facet.png> <figcaption>
+<img loading=lazy src=text-facet.png> <figcaption>
 Text facet 功能可以批量修改相近的資料，而不用寫程式
 </figcaption>
 </figure>
@@ -153,7 +153,8 @@ Text facet 功能可以批量修改相近的資料，而不用寫程式
 <button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
 </button>
 </a>
-<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))},document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})});var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}</script>
+<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
+<script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script>
 <script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
 </body>
 </html>

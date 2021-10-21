@@ -8,7 +8,7 @@
 <meta name=description content="在日常生活中，我們都會用到不同的量度單位。例如重量有時會用公斤 (kg)，有時會用磅 (lb)，有時又會用斤之類。如果在 Java 上表示這些數值，用 in">
 <meta name=author content>
 <link rel=canonical href=https://eric.swiftzer.net/2020/08/javax-measure/>
-<link href=/assets/css/stylesheet.min.fb7ad69a514b80a660b6c35150bc2988c0a53cecc30f28f0c4742d7b89d9ef6a.css integrity="sha256-+3rWmlFLgKZgtsNRULwpiMClPOzDDyjwxHQte4nZ72o=" rel="preload stylesheet" as=style>
+<link href=/assets/css/stylesheet.min.d1fc837a267f77f6ede89d1a89c4880a90c381d9e6673ad4a76a3ad1900b65f9.css integrity="sha256-0fyDeiZ/d/bt6J0aicSICpDDgdnmZzrUp2o60ZALZfk=" rel="preload stylesheet" as=style>
 <link rel=icon href=https://eric.swiftzer.net/favicon.ico>
 <link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png>
 <link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png>
@@ -24,31 +24,31 @@
 <meta property="og:title" content="Java 量度單位 (JSR 363 Units of Measurement API)">
 <meta property="og:description" content="在日常生活中，我們都會用到不同的量度單位。例如重量有時會用公斤 (kg)，有時會用磅 (lb)，有時又會用斤之類。如果在 Java 上表示這些數值，用 in">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://eric.swiftzer.net/2020/08/javax-measure/">
+<meta property="og:url" content="https://eric.swiftzer.net/2020/08/javax-measure/"><meta property="article:section" content="posts">
 <meta property="article:published_time" content="2020-08-13T23:50:59+08:00">
 <meta property="article:modified_time" content="2020-08-13T23:50:59+08:00">
 <meta name=twitter:card content="summary">
 <meta name=twitter:title content="Java 量度單位 (JSR 363 Units of Measurement API)">
 <meta name=twitter:description content="在日常生活中，我們都會用到不同的量度單位。例如重量有時會用公斤 (kg)，有時會用磅 (lb)，有時又會用斤之類。如果在 Java 上表示這些數值，用 in">
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"Java 量度單位 (JSR 363 Units of Measurement API)","item":"https://eric.swiftzer.net/2020/08/javax-measure/"}]}</script>
 <script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Java 量度單位 (JSR 363 Units of Measurement API)","name":"Java 量度單位 (JSR 363 Units of Measurement API)","description":"在日常生活中，我們都會用到不同的量度單位。例如重量有時會用公斤 (kg)，有時會用磅 (lb)，有時又會用斤之類。如果在 Java 上表示這些數值，用 in","keywords":["Java","Android"],"articleBody":"在日常生活中，我們都會用到不同的量度單位。例如重量有時會用公斤 (kg)，有時會用磅 (lb)，有時又會用斤之類。如果在 Java 上表示這些數值，用 int、float、double 的話有時會令人理解錯誤，就好像 UNIX timestamp 般一時會用秒一時會用毫秒。為防止人們誤解這個 variable 或 method 的時間單位，通常都要在名稱加上 millis 之類的後綴。知名例子有 System.currentTimeMillis。如果處理時間的話，現成的有 TimeUnit。不過如果去到之前的重量單位的話，JDK 就沒有現成的 class。\n如果是 Android 的話可以用 android.icu.util.Measure，但要 API level 24 (Android 7.0) 或以上才可使用，而且不包括單位轉換功能。\n如果想在 Android API level 24 以前的裝置用到的話，可以考慮用 JSR 363 (Units of Measurement API)。它提供了一套 API 來表示量度單位和數值，而且包含單位轉換和格式化。\n如果要用這個 library 的話，是需要這兩個 artifact：\nimplementation \"tech.units:indriya:2.0.2\" implementation(\"systems.uom:systems-common:2.0.2\") { exclude group: 'jakarta.annotation', module: 'jakarta.annotation-api' } tech.units:indriya 是 JSR 363 的 reference implementation。它其實是用了 javax.measure:unit-api 所定義的 interface 的一個實作。而 systems.uom:systems-common 就提供了一些主流的單位的定義，例如 SI（國際單位制）、Imperial（英制）和 USCustomary（美制）。\n要去除 jakarta.annotation-api 是因為 Android Gradle plugin desugaring 時會加入和 jakarta.annotation 同名的 class，例如 javax.annotation.Generated。\n下面是一個由公里轉成哩的例子：\nimport org.junit.Assert.assertEquals import org.junit.Test import si.uom.SI import systems.uom.common.USCustomary import tech.units.indriya.quantity.Quantities import javax.measure.MetricPrefix import javax.measure.Quantity import javax.measure.quantity.Length class MeasureTest { @Test fun kilometerToMile() { val distanceKm: QuantityLength = Quantities.getQuantity(12, MetricPrefix.KILO(SI.METRE)) val distanceMile: QuantityLength = distanceKm.to(USCustomary.MILE) assertEquals(7.45645431, distanceMile.value.toDouble(), 0.00000001) } } 用了這個 library 就是要把數值包裝成 Quantity，然後就可以押後處理數值的實際單位，只需知道它是長度單位就可以了，直到需要輸出時才考慮單位的問題。如果需要為單位加上詞頭 (prefix) 的話，可以套上 MetricPrefix 的 KILO、CENTI、NANO 之類的 decorator。\n如果需要輸出顯示的話，可以用它提供的 NumberDelimiterQuantityFormat，不過我覺得不太好用，在 Android 的話可以用 string resource 處理。\n談到文章開首提及過的斤，systems.uom:systems-common 當然是沒有提供，但可以自己定義新的單位。根據香港法例第 68 章《度量衡條例》的定義，1 斤 = 0.60478982 公斤。我們可以用 si.uom.SI.KILOGRAM 做參照來衍生出斤這個單位：\nfun cattyToKilogram() { val catty = SI.KILOGRAM.multiply(60478982).divide(100000000) SimpleUnitFormat.getInstance().label(catty, \"斤\") val twoCatty = Quantities.getQuantity(2.0, catty) val kg = twoCatty.to(SI.KILOGRAM) assertEquals(1.209580, kg.value.toDouble(), 0.000001) } 值得一提，斤在不同地方有不同定義。中國的一斤是等於 0.5 公斤；台灣的一斤是等於 0.6 公斤。\n參考  Units of Measurement The First IoT JSR: Units of Measurement JSR-363 Introduction to javax.measure  ","wordCount":"995","inLanguage":"en","datePublished":"2020-08-13T23:50:59+08:00","dateModified":"2020-08-13T23:50:59+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2020/08/javax-measure/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
 </head>
 <body id=top>
 <script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
 <noscript>
-<style type=text/css>.theme-toggle,.top-link{display:none}</style>
+<style type=text/css>#theme-toggle,.top-link{display:none}</style>
+<style>@media(prefers-color-scheme:dark){:root{--theme:#1d1e20;--entry:#2e2e33;--primary:rgba(255, 255, 255, 0.84);--secondary:rgba(255, 255, 255, 0.56);--tertiary:rgba(255, 255, 255, 0.16);--content:rgba(255, 255, 255, 0.74);--hljs-bg:#2e2e33;--code-bg:#37383e;--border:#333}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
 </noscript>
 <header class=header>
 <nav class=nav>
 <div class=logo>
 <a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
 <span class=logo-switches>
-<span class=theme-toggle title="(Alt + T)">
-<a id=theme-toggle accesskey=t><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-</a>
-</span>
+<button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+</button>
 </span>
 </div>
-<ul class=menu id=menu onscroll=menu_on_scroll()>
+<ul id=menu onscroll=menu_on_scroll()>
 <li>
 <a href=https://eric.swiftzer.net/fonts/ title=Fonts>
 <span>Fonts</span>
@@ -149,7 +149,8 @@ Java 量度單位 (JSR 363 Units of Measurement API)
 <button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
 </button>
 </a>
-<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))},document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})});var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}</script>
+<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
+<script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script>
 <script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
 </body>
 </html>

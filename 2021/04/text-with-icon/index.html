@@ -8,7 +8,7 @@
 <meta name=description content="以前試過做一些 UI 是 TextView 旁邊有一個 icon，然後同一行最右邊會有另一個 Button。如果文字過長就加上省略號，但文字不夠長的話 icon 要緊貼那個文字而">
 <meta name=author content>
 <link rel=canonical href=https://eric.swiftzer.net/2021/04/text-with-icon/>
-<link href=/assets/css/stylesheet.min.fb7ad69a514b80a660b6c35150bc2988c0a53cecc30f28f0c4742d7b89d9ef6a.css integrity="sha256-+3rWmlFLgKZgtsNRULwpiMClPOzDDyjwxHQte4nZ72o=" rel="preload stylesheet" as=style>
+<link href=/assets/css/stylesheet.min.d1fc837a267f77f6ede89d1a89c4880a90c381d9e6673ad4a76a3ad1900b65f9.css integrity="sha256-0fyDeiZ/d/bt6J0aicSICpDDgdnmZzrUp2o60ZALZfk=" rel="preload stylesheet" as=style>
 <link rel=icon href=https://eric.swiftzer.net/favicon.ico>
 <link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png>
 <link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png>
@@ -24,31 +24,31 @@
 <meta property="og:title" content="文字末端 icon 排版">
 <meta property="og:description" content="以前試過做一些 UI 是 TextView 旁邊有一個 icon，然後同一行最右邊會有另一個 Button。如果文字過長就加上省略號，但文字不夠長的話 icon 要緊貼那個文字而">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://eric.swiftzer.net/2021/04/text-with-icon/">
+<meta property="og:url" content="https://eric.swiftzer.net/2021/04/text-with-icon/"><meta property="article:section" content="posts">
 <meta property="article:published_time" content="2021-04-10T11:40:00+08:00">
 <meta property="article:modified_time" content="2021-04-10T11:40:00+08:00">
 <meta name=twitter:card content="summary">
 <meta name=twitter:title content="文字末端 icon 排版">
 <meta name=twitter:description content="以前試過做一些 UI 是 TextView 旁邊有一個 icon，然後同一行最右邊會有另一個 Button。如果文字過長就加上省略號，但文字不夠長的話 icon 要緊貼那個文字而">
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"文字末端 icon 排版","item":"https://eric.swiftzer.net/2021/04/text-with-icon/"}]}</script>
 <script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"文字末端 icon 排版","name":"文字末端 icon 排版","description":"以前試過做一些 UI 是 TextView 旁邊有一個 icon，然後同一行最右邊會有另一個 Button。如果文字過長就加上省略號，但文字不夠長的話 icon 要緊貼那個文字而","keywords":["Android"],"articleBody":"以前試過做一些 UI 是 TextView 旁邊有一個 icon，然後同一行最右邊會有另一個 Button。如果文字過長就加上省略號，但文字不夠長的話 icon 要緊貼那個文字而那個 Button 就固定在右邊。TextView 有 compound drawable，但如果想那個 icon 有 click listener 又用不了。所以最後都要分開 TextView 和 ImageView/ImageButton 兩個 view。\n失敗例子：ConstraintLayout horizontal chain  android:layout_width=\"match_parent\" android:layout_height=\"wrap_content\" android:background=\"@android:color/holo_red_light\"  android:id=\"@+id/title0\" android:layout_width=\"wrap_content\" android:layout_height=\"wrap_content\" android:layout_marginStart=\"16dp\" android:ellipsize=\"end\" android:maxLines=\"2\" android:text=\"@string/testing\" android:textAppearance=\"@style/TextAppearance.AppCompat.Body2\" app:layout_constraintBottom_toBottomOf=\"parent\" app:layout_constraintEnd_toStartOf=\"@id/icon0\" app:layout_constraintHorizontal_bias=\"0.5\" app:layout_constraintHorizontal_chainStyle=\"packed\" app:layout_constraintStart_toStartOf=\"parent\" app:layout_constraintTop_toTopOf=\"parent\" /  android:id=\"@+id/icon0\" android:layout_width=\"wrap_content\" android:layout_height=\"wrap_content\" android:contentDescription=\"@null\" android:padding=\"8dp\" android:src=\"@android:drawable/ic_secure\" app:layout_constraintBottom_toBottomOf=\"parent\" app:layout_constraintEnd_toStartOf=\"@+id/space0\" app:layout_constraintHorizontal_bias=\"0.5\" app:layout_constraintStart_toEndOf=\"@id/title0\" app:layout_constraintTop_toTopOf=\"parent\" /  android:id=\"@+id/space0\" android:layout_width=\"0dp\" android:layout_height=\"0dp\" app:layout_constraintBottom_toBottomOf=\"parent\" app:layout_constraintEnd_toStartOf=\"@id/button0\" app:layout_constraintHorizontal_weight=\"1\" app:layout_constraintStart_toEndOf=\"@id/icon0\" app:layout_constraintTop_toTopOf=\"parent\" /  android:id=\"@+id/button0\" android:layout_width=\"wrap_content\" android:layout_height=\"wrap_content\" android:layout_marginEnd=\"16dp\" android:text=\"@string/button\" app:layout_constraintBottom_toBottomOf=\"parent\" app:layout_constraintEnd_toEndOf=\"parent\" app:layout_constraintStart_toEndOf=\"@id/space0\" app:layout_constraintTop_toTopOf=\"parent\" /  上面是果單純用 ConstraintLayout 配搭 horizontal chain。Space 的作用就是為了逼 ImageView 和 TextView 緊貼在一起。但如果文字過長就會出界，做不到期望的效果。\n  因為 TextView 文字過長導致 TextView 和 ImageView 出界   TableLayout 加 TableRow 在 ConstraintLayout 還未出 2.0 的時候試過用 TableLayout 加 TableRow 包住 TextView 和 ImageView 來做到 icon 緊貼文字的效果，但就令 layout hierarchy 加深。加上外面本來就是用 ConstraintLayout 排版，再加個 TableLayout 就失去了用 ConstraintLayout 扁平化 layout hierarchy 的意義。\n android:layout_width=\"match_parent\" android:layout_height=\"wrap_content\" android:background=\"@android:color/holo_blue_bright\"  android:id=\"@+id/tableLayout1\" android:layout_width=\"0dp\" android:layout_height=\"wrap_content\" android:layout_marginStart=\"16dp\" android:shrinkColumns=\"0\" app:layout_constraintBottom_toBottomOf=\"parent\" app:layout_constraintEnd_toStartOf=\"@id/button1\" app:layout_constraintHorizontal_chainStyle=\"spread\" app:layout_constraintStart_toStartOf=\"parent\" app:layout_constraintTop_toTopOf=\"parent\"  android:layout_width=\"wrap_content\" android:layout_height=\"wrap_content\" android:gravity=\"center_vertical\" tools:ignore=\"UselessParent\"  android:id=\"@+id/title1\" android:layout_width=\"wrap_content\" android:layout_height=\"wrap_content\" android:ellipsize=\"end\" android:maxLines=\"2\" android:text=\"@string/testing\" android:textAppearance=\"@style/TextAppearance.AppCompat.Body2\" /  android:id=\"@+id/icon1\" android:layout_width=\"wrap_content\" android:layout_height=\"wrap_content\" android:contentDescription=\"@null\" android:padding=\"8dp\" android:src=\"@android:drawable/ic_secure\" /    android:id=\"@+id/button1\" android:layout_width=\"wrap_content\" android:layout_height=\"wrap_content\" android:layout_marginEnd=\"16dp\" android:text=\"@string/button\" app:layout_constraintBottom_toBottomOf=\"parent\" app:layout_constraintEnd_toEndOf=\"parent\" app:layout_constraintStart_toEndOf=\"@id/tableLayout1\" app:layout_constraintTop_toTopOf=\"parent\" /    TableLayout 效果   ConstraintLayout flow ConstraintLayout 2.0 出了之後，多了 Flow 可以用，這樣就可以不需要用 TableLayout 了。這次的重點是 TextView 用了 app:layout_constrainedWidth=\"true\"，這樣 TextView 就不會出界。\n android:layout_width=\"match_parent\" android:layout_height=\"wrap_content\" android:background=\"@android:color/holo_green_light\"  android:id=\"@+id/titleFlow2\" android:layout_width=\"0dp\" android:layout_height=\"wrap_content\" android:layout_marginStart=\"16dp\" app:constraint_referenced_ids=\"title2,icon2\" app:flow_horizontalBias=\"0\" app:flow_horizontalStyle=\"packed\" app:flow_verticalAlign=\"center\" app:layout_constraintBottom_toBottomOf=\"parent\" app:layout_constraintEnd_toStartOf=\"@id/button2\" app:layout_constraintHorizontal_chainStyle=\"spread\" app:layout_constraintStart_toStartOf=\"parent\" app:layout_constraintTop_toTopOf=\"parent\" /  android:id=\"@+id/title2\" android:layout_width=\"wrap_content\" android:layout_height=\"wrap_content\" android:ellipsize=\"end\" android:maxLines=\"2\" android:text=\"@string/testing\" android:textAppearance=\"@style/TextAppearance.AppCompat.Body2\" app:layout_constrainedWidth=\"true\" /  android:id=\"@+id/icon2\" android:layout_width=\"wrap_content\" android:layout_height=\"wrap_content\" android:contentDescription=\"@null\" android:padding=\"8dp\" android:src=\"@android:drawable/ic_secure\" /  android:id=\"@+id/button2\" android:layout_width=\"wrap_content\" android:layout_height=\"wrap_content\" android:layout_marginEnd=\"16dp\" android:text=\"@string/button\" app:layout_constraintBottom_toBottomOf=\"parent\" app:layout_constraintEnd_toEndOf=\"parent\" app:layout_constraintStart_toEndOf=\"@id/titleFlow2\" app:layout_constraintTop_toTopOf=\"parent\" /    Flow 效果   實際效果 下圖示範了上面介紹的方法在實際運行時的效果：\n由上至下：\n ConstraintLayout horizontal chain TableLayout 加 TableRow ConstraintLayout flow ConstraintLayout flow（Button 在左邊）  左邊是文字不太長的情況，右邊是文字過長的情況。\n  短文字和長文字的效果   完整的 XML layout file 已經放在 Gist。\n","wordCount":"659","inLanguage":"en","datePublished":"2021-04-10T11:40:00+08:00","dateModified":"2021-04-10T11:40:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2021/04/text-with-icon/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
 </head>
 <body id=top>
 <script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
 <noscript>
-<style type=text/css>.theme-toggle,.top-link{display:none}</style>
+<style type=text/css>#theme-toggle,.top-link{display:none}</style>
+<style>@media(prefers-color-scheme:dark){:root{--theme:#1d1e20;--entry:#2e2e33;--primary:rgba(255, 255, 255, 0.84);--secondary:rgba(255, 255, 255, 0.56);--tertiary:rgba(255, 255, 255, 0.16);--content:rgba(255, 255, 255, 0.74);--hljs-bg:#2e2e33;--code-bg:#37383e;--border:#333}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
 </noscript>
 <header class=header>
 <nav class=nav>
 <div class=logo>
 <a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
 <span class=logo-switches>
-<span class=theme-toggle title="(Alt + T)">
-<a id=theme-toggle accesskey=t><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-</a>
-</span>
+<button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+</button>
 </span>
 </div>
-<ul class=menu id=menu onscroll=menu_on_scroll()>
+<ul id=menu onscroll=menu_on_scroll()>
 <li>
 <a href=https://eric.swiftzer.net/fonts/ title=Fonts>
 <span>Fonts</span>
@@ -140,7 +140,7 @@
 <span class=nt>&lt;/androidx.constraintlayout.widget.ConstraintLayout&gt;</span>
 </code></pre></div><p>上面是果單純用 <a href=https://developer.android.com/training/constraint-layout><code>ConstraintLayout</code></a> 配搭 horizontal chain。<code>Space</code> 的作用就是為了逼 <code>ImageView</code> 和 <code>TextView</code> 緊貼在一起。但如果文字過長就會出界，做不到期望的效果。</p>
 <figure>
-<img src=chain.png> <figcaption>
+<img loading=lazy src=chain.png> <figcaption>
 因為 TextView 文字過長導致 TextView 和 ImageView 出界
 </figcaption>
 </figure>
@@ -200,7 +200,7 @@
         <span class=na>app:layout_constraintTop_toTopOf=</span><span class=s>&#34;parent&#34;</span> <span class=nt>/&gt;</span>
 <span class=nt>&lt;/androidx.constraintlayout.widget.ConstraintLayout&gt;</span>
 </code></pre></div><figure>
-<img src=table-layout.png> <figcaption>
+<img loading=lazy src=table-layout.png> <figcaption>
 TableLayout 效果
 </figcaption>
 </figure>
@@ -256,7 +256,7 @@ TableLayout 效果
         <span class=na>app:layout_constraintTop_toTopOf=</span><span class=s>&#34;parent&#34;</span> <span class=nt>/&gt;</span>
 <span class=nt>&lt;/androidx.constraintlayout.widget.ConstraintLayout&gt;</span>
 </code></pre></div><figure>
-<img src=flow.png> <figcaption>
+<img loading=lazy src=flow.png> <figcaption>
 Flow 效果
 </figcaption>
 </figure>
@@ -271,7 +271,7 @@ Flow 效果
 </ol>
 <p>左邊是文字不太長的情況，右邊是文字過長的情況。</p>
 <figure>
-<img src=demo.png> <figcaption>
+<img loading=lazy src=demo.png> <figcaption>
 短文字和長文字的效果
 </figcaption>
 </figure>
@@ -297,7 +297,8 @@ Flow 效果
 <button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
 </button>
 </a>
-<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))},document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})});var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}</script>
+<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
+<script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script>
 <script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
 </body>
 </html>

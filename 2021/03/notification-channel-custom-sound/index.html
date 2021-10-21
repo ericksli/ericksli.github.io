@@ -8,7 +8,7 @@
 <meta name=description content="自從由 Android 8 開始，如果要顯示 notification 的話就一定要指定一個 notification channel，否則系統不會顯示。Notification channel 的目的是讓用戶能自行調節 app 的各">
 <meta name=author content>
 <link rel=canonical href=https://eric.swiftzer.net/2021/03/notification-channel-custom-sound/>
-<link href=/assets/css/stylesheet.min.fb7ad69a514b80a660b6c35150bc2988c0a53cecc30f28f0c4742d7b89d9ef6a.css integrity="sha256-+3rWmlFLgKZgtsNRULwpiMClPOzDDyjwxHQte4nZ72o=" rel="preload stylesheet" as=style>
+<link href=/assets/css/stylesheet.min.d1fc837a267f77f6ede89d1a89c4880a90c381d9e6673ad4a76a3ad1900b65f9.css integrity="sha256-0fyDeiZ/d/bt6J0aicSICpDDgdnmZzrUp2o60ZALZfk=" rel="preload stylesheet" as=style>
 <link rel=icon href=https://eric.swiftzer.net/favicon.ico>
 <link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png>
 <link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png>
@@ -24,31 +24,31 @@
 <meta property="og:title" content="Notification Channel 自訂音效">
 <meta property="og:description" content="自從由 Android 8 開始，如果要顯示 notification 的話就一定要指定一個 notification channel，否則系統不會顯示。Notification channel 的目的是讓用戶能自行調節 app 的各">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://eric.swiftzer.net/2021/03/notification-channel-custom-sound/">
+<meta property="og:url" content="https://eric.swiftzer.net/2021/03/notification-channel-custom-sound/"><meta property="article:section" content="posts">
 <meta property="article:published_time" content="2021-03-13T22:10:00+08:00">
 <meta property="article:modified_time" content="2021-03-13T22:10:00+08:00">
 <meta name=twitter:card content="summary">
 <meta name=twitter:title content="Notification Channel 自訂音效">
 <meta name=twitter:description content="自從由 Android 8 開始，如果要顯示 notification 的話就一定要指定一個 notification channel，否則系統不會顯示。Notification channel 的目的是讓用戶能自行調節 app 的各">
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"Notification Channel 自訂音效","item":"https://eric.swiftzer.net/2021/03/notification-channel-custom-sound/"}]}</script>
 <script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Notification Channel 自訂音效","name":"Notification Channel 自訂音效","description":"自從由 Android 8 開始，如果要顯示 notification 的話就一定要指定一個 notification channel，否則系統不會顯示。Notification channel 的目的是讓用戶能自行調節 app 的各","keywords":["Android"],"articleBody":"自從由 Android 8 開始，如果要顯示 notification 的話就一定要指定一個 notification channel，否則系統不會顯示。Notification channel 的目的是讓用戶能自行調節 app 的各式 notification 的提示方法，例如有沒有音效、會不會彈出 heads-up notification 之類。如果 app 想自訂 notification 的聲音亦都要經 notification channel 設定（但用戶可以之後自行變更 notification channel 的音效）\n但是要留意，設定自訂音效時那個 Uri 要用檔案名稱來設定，不要用 resource ID。以下是錯誤例子：\nval uri = Uri.Builder() .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE) .authority(context.packageName) .appendPath(R.raw.example_notification.toString()) .build() 其實上面那個 Uri 是可以播放那個音效的。但問題是那個音效設定是儲存在系統而不是在自己的 app 入面。每次 build app 的時候不會保證那個 R.raw.example_notification 的 resource ID 是固定，如果在設定 notification channel 時用了 resource ID 的話日後 raw 資料夾的檔案有增減時就播了另一個檔案（因為現在的 build tool 是順着英文字母順序編排 resource ID，只要排序前面加插一個新的檔案就會播錯音效。）由於加插 raw 檔案導致播錯音效較難察覺，而且日後在 raw 加入新檔案的機會比把音效檔案重新命名的機會較大，所以在設定 notification channel 音效的 Uri 就應該用檔案名稱，就像下面那例子：\nfun createNotificationChannel(context: Context) { if (Build.VERSION.SDK_INT  Build.VERSION_CODES.O) return val channel = NotificationChannel( \"general\", context.getString(R.string.notification_channel_title_general), NotificationManager.IMPORTANCE_HIGH ).apply { description = context.getString(R.string.notification_channel_desc_general) val uri = Uri.Builder() .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE) .authority(context.packageName) .appendPath(\"raw\") .appendPath(\"example_notification\") .build() val attributes = AudioAttributes.Builder() .setUsage(AudioAttributes.USAGE_NOTIFICATION) .build() setSound(uri, attributes) } val notificationManager = context.getSystemService(NotificationManager::class.java) notificationManager?.createNotificationChannel(channel) } 還有一點要留意：刪除 notification channel 後再重新建立相同 channel ID 的 notification channel 並不能重設用戶對 channel 的設定（包括 app 在建立 notification channel 時所定義的通知音效）。這是一個防止濫用的機制。如果那個 app 不斷彈出通知的話那用戶可以把那個 app 的 notification channel 重要性降低（例如不彈出通知），但如果 app 刪除 channel 再建立 channel 就能把那些用戶設定重設的話那 notification channel 功能就變得多餘。故此 Android notification channel 的用戶設定是有記憶的，重新建立相同 channel ID 的 notification channel 只會把之前的設定帶回來。設定頁更會顯示那個 app 刪除 notification channel 的次數來提醒用戶可能這個 app 可能有 spam。如果之前已經錯誤地用了 resource ID 來設定 notification channel 音效的話解決方法就只有改用另一個全新的 notification channel。\n參考  Android Notification Channel sounds stop working when using sound URIs that reference resource ids Categories deleted in notification settings  ","wordCount":"733","inLanguage":"en","datePublished":"2021-03-13T22:10:00+08:00","dateModified":"2021-03-13T22:10:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2021/03/notification-channel-custom-sound/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
 </head>
 <body id=top>
 <script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
 <noscript>
-<style type=text/css>.theme-toggle,.top-link{display:none}</style>
+<style type=text/css>#theme-toggle,.top-link{display:none}</style>
+<style>@media(prefers-color-scheme:dark){:root{--theme:#1d1e20;--entry:#2e2e33;--primary:rgba(255, 255, 255, 0.84);--secondary:rgba(255, 255, 255, 0.56);--tertiary:rgba(255, 255, 255, 0.16);--content:rgba(255, 255, 255, 0.74);--hljs-bg:#2e2e33;--code-bg:#37383e;--border:#333}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
 </noscript>
 <header class=header>
 <nav class=nav>
 <div class=logo>
 <a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
 <span class=logo-switches>
-<span class=theme-toggle title="(Alt + T)">
-<a id=theme-toggle accesskey=t><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-</a>
-</span>
+<button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+</button>
 </span>
 </div>
-<ul class=menu id=menu onscroll=menu_on_scroll()>
+<ul id=menu onscroll=menu_on_scroll()>
 <li>
 <a href=https://eric.swiftzer.net/fonts/ title=Fonts>
 <span>Fonts</span>
@@ -140,7 +140,8 @@ Notification Channel 自訂音效
 <button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
 </button>
 </a>
-<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))},document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})});var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}</script>
+<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
+<script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script>
 <script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
 </body>
 </html>

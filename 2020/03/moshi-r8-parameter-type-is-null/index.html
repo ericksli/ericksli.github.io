@@ -8,7 +8,7 @@
 <meta name=description content="Moshi 是一個 JSON serialization/deserialization 的 library。和 Gson 不同的是它提供了 Kotlin Codegen，它可以生成 serialization/deserialization 的 adapter class，所以可以避免使用 reflection，而且 adapter">
 <meta name=author content>
 <link rel=canonical href=https://eric.swiftzer.net/2020/03/moshi-r8-parameter-type-is-null/>
-<link href=/assets/css/stylesheet.min.fb7ad69a514b80a660b6c35150bc2988c0a53cecc30f28f0c4742d7b89d9ef6a.css integrity="sha256-+3rWmlFLgKZgtsNRULwpiMClPOzDDyjwxHQte4nZ72o=" rel="preload stylesheet" as=style>
+<link href=/assets/css/stylesheet.min.d1fc837a267f77f6ede89d1a89c4880a90c381d9e6673ad4a76a3ad1900b65f9.css integrity="sha256-0fyDeiZ/d/bt6J0aicSICpDDgdnmZzrUp2o60ZALZfk=" rel="preload stylesheet" as=style>
 <link rel=icon href=https://eric.swiftzer.net/favicon.ico>
 <link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png>
 <link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png>
@@ -24,31 +24,31 @@
 <meta property="og:title" content="Moshi Kotlin Codegen + R8 出現 parameter type is null">
 <meta property="og:description" content="Moshi 是一個 JSON serialization/deserialization 的 library。和 Gson 不同的是它提供了 Kotlin Codegen，它可以生成 serialization/deserialization 的 adapter class，所以可以避免使用 reflection，而且 adapter">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://eric.swiftzer.net/2020/03/moshi-r8-parameter-type-is-null/">
+<meta property="og:url" content="https://eric.swiftzer.net/2020/03/moshi-r8-parameter-type-is-null/"><meta property="article:section" content="posts">
 <meta property="article:published_time" content="2020-03-15T11:10:42+08:00">
 <meta property="article:modified_time" content="2020-03-15T11:10:42+08:00">
 <meta name=twitter:card content="summary">
 <meta name=twitter:title content="Moshi Kotlin Codegen + R8 出現 parameter type is null">
 <meta name=twitter:description content="Moshi 是一個 JSON serialization/deserialization 的 library。和 Gson 不同的是它提供了 Kotlin Codegen，它可以生成 serialization/deserialization 的 adapter class，所以可以避免使用 reflection，而且 adapter">
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"Moshi Kotlin Codegen + R8 出現 parameter type is null","item":"https://eric.swiftzer.net/2020/03/moshi-r8-parameter-type-is-null/"}]}</script>
 <script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Moshi Kotlin Codegen + R8 出現 parameter type is null","name":"Moshi Kotlin Codegen \u002b R8 出現 parameter type is null","description":"Moshi 是一個 JSON serialization/deserialization 的 library。和 Gson 不同的是它提供了 Kotlin Codegen，它可以生成 serialization/deserialization 的 adapter class，所以可以避免使用 reflection，而且 adapter","keywords":["Android"],"articleBody":"Moshi 是一個 JSON serialization/deserialization 的 library。和 Gson 不同的是它提供了 Kotlin Codegen，它可以生成 serialization/deserialization 的 adapter class，所以可以避免使用 reflection，而且 adapter 還會參照 Kotlin 的 non-null 和 default value。不過最近發現 production app 會出現 parameter type is null 的錯誤訊息。\n  parameter type is null   java.lang.NoSuchMethodException: parameter type is null at java.lang.Class.getConstructor0(Class.java:2322) at java.lang.Class.getDeclaredConstructor(Class.java:2166) at net.swiftzer.metroride.remote.mtrupdate.status.LineStatusResponse_LineStatusJsonAdapter.a(LineStatusResponse_LineStatusJsonAdapter.kt:70) at net.swiftzer.metroride.remote.mtrupdate.status.LineStatusResponse_LineStatusJsonAdapter.a(LineStatusResponse_LineStatusJsonAdapter.kt:19) at f.d.a.t.a.a(NullSafeJsonAdapter.java:40) at f.d.a.d.a(CollectionJsonAdapter.java:76) at f.d.a.d$b.a(CollectionJsonAdapter.java:53) at f.d.a.t.a.a(NullSafeJsonAdapter.java:40) at net.swiftzer.metroride.remote.mtrupdate.status.LineStatusResponseJsonAdapter.a(LineStatusResponseJsonAdapter.kt:47) at net.swiftzer.metroride.remote.mtrupdate.status.LineStatusResponseJsonAdapter.a(LineStatusResponseJsonAdapter.kt:21) at f.d.a.t.a.a(NullSafeJsonAdapter.java:40) at q.z.a.c.a(MoshiResponseBodyConverter.java:45) at q.z.a.c.a(MoshiResponseBodyConverter.java:27) at q.m.a(OkHttpCall.java:225) at q.m.h(OkHttpCall.java:188) at q.y.a.c.b(CallExecuteObservable.java:45) at i.a.e.a(Observable.java:12268) at q.y.a.a.b(BodyObservable.java:34) at i.a.e.a(Observable.java:12268) at i.a.p.e.b.d.b(ObservableSingleSingle.java:35) at i.a.i.a(Single.java:3603) at i.a.p.e.c.b.b(SingleMap.java:34) at i.a.i.a(Single.java:3603) at i.a.p.e.c.e.b(SingleZipArray.java:63) at i.a.i.a(Single.java:3603) at i.a.p.e.c.b.b(SingleMap.java:34) at i.a.i.a(Single.java:3603) at i.a.p.e.c.d$a.run(SingleSubscribeOn.java:89) at i.a.h$a.run(Scheduler.java:578) at i.a.p.f.h.run(ScheduledRunnable.java:66) at i.a.p.f.h.call(ScheduledRunnable.java:57) at java.util.concurrent.FutureTask.run(FutureTask.java:266) at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:301) at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1167) at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:641) at java.lang.Thread.run(Thread.java:764) Google 過才發現 R8 的問題。如果將 R8 改用 2.0.39 版就會變回正常。\nbuildscript { repositories { maven { url 'https://storage.googleapis.com/r8-releases/raw' } } dependencies { classpath 'com.android.tools:r8:2.0.39. // Must be before the Gradle Plugin for Android. classpath 'com.android.tools.build:gradle:X.Y.Z' // Your current AGP version.  } } 效果：\n  改了 R8 版本後 Moshi 能正常 deserialize JSON   參考  Moshi 1.9.2: Crash because Reflection in Codegen not handled in Proguard 4.0.0-alpha08 - java.lang.RuntimeException: Cannot create an instance of class ViewModel  註 現在（2020 年 4 月 26 日）的 R8 版本應該沒有這個問題。\n","wordCount":"309","inLanguage":"en","datePublished":"2020-03-15T11:10:42+08:00","dateModified":"2020-03-15T11:10:42+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2020/03/moshi-r8-parameter-type-is-null/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
 </head>
 <body id=top>
 <script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
 <noscript>
-<style type=text/css>.theme-toggle,.top-link{display:none}</style>
+<style type=text/css>#theme-toggle,.top-link{display:none}</style>
+<style>@media(prefers-color-scheme:dark){:root{--theme:#1d1e20;--entry:#2e2e33;--primary:rgba(255, 255, 255, 0.84);--secondary:rgba(255, 255, 255, 0.56);--tertiary:rgba(255, 255, 255, 0.16);--content:rgba(255, 255, 255, 0.74);--hljs-bg:#2e2e33;--code-bg:#37383e;--border:#333}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
 </noscript>
 <header class=header>
 <nav class=nav>
 <div class=logo>
 <a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
 <span class=logo-switches>
-<span class=theme-toggle title="(Alt + T)">
-<a id=theme-toggle accesskey=t><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-</a>
-</span>
+<button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+</button>
 </span>
 </div>
-<ul class=menu id=menu onscroll=menu_on_scroll()>
+<ul id=menu onscroll=menu_on_scroll()>
 <li>
 <a href=https://eric.swiftzer.net/fonts/ title=Fonts>
 <span>Fonts</span>
@@ -83,7 +83,7 @@ Moshi Kotlin Codegen + R8 出現 parameter type is null
 <div class=post-content>
 <p><a href=https://github.com/square/moshi>Moshi</a> 是一個 JSON serialization/deserialization 的 library。和 Gson 不同的是它提供了 Kotlin Codegen，它可以生成 serialization/deserialization 的 adapter class，所以可以避免使用 reflection，而且 adapter 還會參照 Kotlin 的 non-null 和 default value。不過最近發現 production app 會出現 parameter type is null 的錯誤訊息。</p>
 <figure>
-<img src=before-fix.png> <figcaption>
+<img loading=lazy src=before-fix.png> <figcaption>
 parameter type is null
 </figcaption>
 </figure>
@@ -139,7 +139,7 @@ parameter type is null
 <span class=o>}</span>
 </code></pre></div><p>效果：</p>
 <figure>
-<img src=after-fix.png> <figcaption>
+<img loading=lazy src=after-fix.png> <figcaption>
 改了 R8 版本後 Moshi 能正常 deserialize JSON
 </figcaption>
 </figure>
@@ -171,7 +171,8 @@ parameter type is null
 <button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
 </button>
 </a>
-<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))},document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})});var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}</script>
+<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
+<script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script>
 <script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
 </body>
 </html>
