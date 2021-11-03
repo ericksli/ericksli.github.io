@@ -89,7 +89,7 @@ public abstract val call: HttpClientCall
 public suspend fun receive(info: TypeInfo): Any
 ```
 
-這次不是 inline function，那我們可以 mock 了。首先是要 mock `HttpClientCall` 讓 `[response.call](http://response.call)` 回傳我們另一個假的 `HttpClientCall`。之後因為之前的 inline function 會 call `receive` 取得 response data class，而 `receive` 是一個 suspended function，我們要用 MockK 的 `coEvery` 控制它回傳我們想要的 object。
+這次不是 inline function，那我們可以 mock 了。首先是要 mock `HttpClientCall` 讓 `response.call` 回傳我們另一個假的 `HttpClientCall`。之後因為之前的 inline function 會 call `receive` 取得 response data class，而 `receive` 是一個 suspended function，我們要用 MockK 的 `coEvery` 控制它回傳我們想要的 object。
 
 ```kotlin
 val httpClientCall = mockk<HttpClientCall>()

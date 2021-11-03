@@ -15,7 +15,7 @@ canonicalURL: https://ithelp.ithome.com.tw/articles/10277315
 
 {{< figure src="station-list-ui.png" title="車站列表 UI" >}}
 
-這頁基本上就是一個 `RecyclerView`，當用戶點擊路綫時就會展開其車站，再點擊車站就會開啟抵站時間頁面。如果想做到縮放車站名的話，最簡單的方法就是當路綫名是一種 view type、車站名是另一種 view type，只需要準備好一個 `List` 交予 `[ListAdapter](https://developer.android.com/reference/androidx/recyclerview/widget/ListAdapter)` 讓它幫我們 render 就可以了。而路綫名旁邊的三角形 icon 會隨着車站名是否展開來決定顯示那一款 icon。這個亦可以在那個 `List` 時順帶提供給 `ListAdapter` 知道就可以了。
+這頁基本上就是一個 `RecyclerView`，當用戶點擊路綫時就會展開其車站，再點擊車站就會開啟抵站時間頁面。如果想做到縮放車站名的話，最簡單的方法就是當路綫名是一種 view type、車站名是另一種 view type，只需要準備好一個 `List` 交予 [`ListAdapter`](https://developer.android.com/reference/androidx/recyclerview/widget/ListAdapter) 讓它幫我們 render 就可以了。而路綫名旁邊的三角形 icon 會隨着車站名是否展開來決定顯示那一款 icon。這個亦可以在那個 `List` 時順帶提供給 `ListAdapter` 知道就可以了。
 
 `ListAdapter` 是 `RecyclerView.Adapter` 的 subclass，特色是它已經為我們準備了 `AsyncListDiffer` 計算更新列表時那些 list item 如何處理（例如更換現有項目、刪除項目還是中途插入一個新項目之類）和 `submitList(List)`（提交要顯示的 `List`）。我們只需要準備一個 `DiffUtil.ItemCallback` 和一些平時 `RecyclerView.Adapter` 都會做的東西（`ViewHolder` class、`onCreateViewHolder` 、`getItemViewType`、`onBindViewHolder`）就可以了，其餘那些 `notifyDataSetChanged`、在 `RecyclerView.Adapter` 準備一個 `List` field 來儲存現在顯示的內容之類我們都不用處理，因為 `ListAdapter` 已經幫我們做好了。
 

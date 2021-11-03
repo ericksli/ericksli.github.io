@@ -11,6 +11,8 @@ canonicalURL: https://ithelp.ithome.com.tw/articles/10281769
 >
 > [文章目錄]({{< ref "2021-ithome-ironman" >}})
 
+終於來到最後一篇了！不經不覺已經寫了三十篇文章。我們由 Ktor client 接駁 API 一直講到 UI，然後再做 ViewModel 的 unit testing。中間加插了時間處理、Flipper 和 proxy server 的內容。其實這些內容有部分是以前工作上跟 Android 同事定期會議分享的內容。那時已經有想法把內容放到自己的 blog 上，但最後只是放了小許。現在有這個機會就加插這些內容進去。除了用來填滿三十篇之外，就是把一些不會直接在 Android 開發教學找到但又實用的東西放進去。我在八月尾才決定題目，然後開始寫開首的文章，並且準備示範 project 的 code。初初寫的時候以為三十篇是很多，所以開頭寫的內容不夠充實。但到了多 code snippet 的部分就發覺光是 code 就很長，要分拆做好幾篇。所以三十篇入面光是不同的 unit testing 都佔了十篇。由於我是一邊寫文一邊準備示範 project，所以內容分配是頭輕尾重，尤其是後段做 UI 的部分一篇的長度比開首的文章長幾倍。還有是內容可能有時會跟前一兩篇重覆（好像 Dagger 某些內容有重覆提及）。本來還打算加插 Compose 的內容但發覺剩餘篇數太少而且寫完都不夠完整，所以改做 ViewModel 測試作罷。
+
 現在回顧那個示範 project 有個地方做錯的是改變排序不應該觸發 API call。要做到這個效果的話可以把排序的動作搬到 ViewModel 做，或者是 use case 是有自己的狀態（即是會保留之前取得的 response）。前者的話就令到 domain layer 是多餘；後者的話我又覺得班次這件事不會有其他東西觸發它改變，把它的狀態保留又有點怪。如果我們做的功能是類似 Facebook news feed，這樣 domain layer 保留一份資料就很合理。因為可以在 domain layer 整合 push notification，當有 push notification 的時候就用 push payload 更新本地現有的 news feed，然後把 news feed 外露成 `Flow`。這樣 ViewModel 就不用知道有甚麼情況那個 news feed 會被更新，只需要訂閱 news feed 就可以了。
 
 如果把排序的 logic 放到 ViewModel，這樣 use case 就只是左手交右手（把 data layer 的東西轉交予 presentation layer）。但我好難找到一個有充實 business logic 而且做完之後又可以抄到我自己的 side project 用的情景（因為選即時班次是因為我的 side project [MetroRide app](https://play.google.com/store/apps/details?id=net.swiftzer.metroride) 要做這個功能）。其實不是沒有，只是 business logic 太複雜，講解它都用不少篇幅，變相整個系列不是在示範 Android 的東西。如果個別 use case 沒有甚麼特別的 logic 的話，[為了令整個 app 的做法統一還是建議寫 use case](https://proandroiddev.com/why-you-need-use-cases-interactors-142e8a6fe576)。

@@ -67,6 +67,8 @@ fun toggleSorting() {
 
 在前篇我們看過下面這張圖，入面有好幾個錯誤狀態，我們先做那三個全頁顯示的錯誤狀態。
 
+{{< figure src="eta-screen-flow.png" title="抵站時間頁畫面流程" >}}
+
 為方便分辨錯誤的狀態，我們為 domain 的 `EtaResult` 內跟錯誤相關的 class 都幫它 implement 另一個 sealed interface `EtaFailResult`：
 
 ```kotlin

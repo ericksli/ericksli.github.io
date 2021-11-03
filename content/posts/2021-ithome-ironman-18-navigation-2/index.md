@@ -175,7 +175,7 @@ class MainActivity : AppCompatActivity() {
 2021-09-23 22:28:06.228 10900-10900/? E/AndroidRuntime: FATAL EXCEPTION: main
     Process: net.swiftzer.etademo, PID: 10900
     java.lang.RuntimeException: Unable to start activity ComponentInfo{net.swiftzer.etademo/net.swiftzer.etademo.MainActivity}: android.view.InflateException: Binary XML file line #11 in net.swiftzer.etademo:layout/main_activity: Binary XML file line #11 in net.swiftzer.etademo:layout/main_activity: Error inflating class androidx.fragment.app.FragmentContainerView
-        略……
+          略……
         Caused by: android.view.InflateException: Binary XML file line #11 in net.swiftzer.etademo:layout/main_activity: Binary XML file line #11 in net.swiftzer.etademo:layout/main_activity: Error inflating class androidx.fragment.app.FragmentContainerView
         Caused by: android.view.InflateException: Binary XML file line #11 in net.swiftzer.etademo:layout/main_activity: Error inflating class androidx.fragment.app.FragmentContainerView
         Caused by: java.lang.RuntimeException: Exception inflating net.swiftzer.etademo:navigation/eta line 24
