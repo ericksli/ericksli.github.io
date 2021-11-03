@@ -59,3 +59,5 @@ params:
   assets:
     disableHLJS: true
   comments: true
+  ShowPostNavLinks: true
+  ShowBreadCrumbs: true
