@@ -1,0 +1,305 @@
+<!doctype html><html lang=zh-hant-hk dir=auto>
+<head><meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=robots content="index, follow">
+<title>2021 iThome 鐵人賽 Day 23：ETA screen (2) | EricLog</title>
+<meta name=keywords content="2021 iThome 鐵人賽,Android">
+<meta name=description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 23 篇，你可到 iThome 查看原文。 文章目錄 SavedStateHandle 不知道大家有沒有發現在「ETA Screen (1)」貼出">
+<meta name=author content>
+<link rel=canonical href=https://ithelp.ithome.com.tw/articles/10279171>
+<link href=/assets/css/stylesheet.min.d1fc837a267f77f6ede89d1a89c4880a90c381d9e6673ad4a76a3ad1900b65f9.css integrity="sha256-0fyDeiZ/d/bt6J0aicSICpDDgdnmZzrUp2o60ZALZfk=" rel="preload stylesheet" as=style>
+<link rel=icon href=https://eric.swiftzer.net/favicon.ico>
+<link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png>
+<link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png>
+<link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png>
+<link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg>
+<meta name=theme-color content="#2e2e33">
+<meta name=msapplication-TileColor content="#2e2e33">
+<meta name=generator content="Hugo 0.88.1">
+<link rel=preconnect href=https://fonts.gstatic.com>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-1268728-8','auto'),ga('send','pageview'))</script>
+<script async src=https://www.google-analytics.com/analytics.js></script>
+<meta property="og:title" content="2021 iThome 鐵人賽 Day 23：ETA screen (2)">
+<meta property="og:description" content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 23 篇，你可到 iThome 查看原文。 文章目錄 SavedStateHandle 不知道大家有沒有發現在「ETA Screen (1)」貼出">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://eric.swiftzer.net/2021/10/2021-ithome-ironman-23-eta-screen-2/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2021-10-08T00:00:00+08:00">
+<meta property="article:modified_time" content="2021-10-08T00:00:00+08:00">
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="2021 iThome 鐵人賽 Day 23：ETA screen (2)">
+<meta name=twitter:description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 23 篇，你可到 iThome 查看原文。 文章目錄 SavedStateHandle 不知道大家有沒有發現在「ETA Screen (1)」貼出">
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"2021 iThome 鐵人賽 Day 23：ETA screen (2)","item":"https://eric.swiftzer.net/2021/10/2021-ithome-ironman-23-eta-screen-2/"}]}</script>
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"2021 iThome 鐵人賽 Day 23：ETA screen (2)","name":"2021 iThome 鐵人賽 Day 23：ETA screen (2)","description":"本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 23 篇，你可到 iThome 查看原文。 文章目錄 SavedStateHandle 不知道大家有沒有發現在「ETA Screen (1)」貼出","keywords":["2021 iThome 鐵人賽","Android"],"articleBody":" 本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 23 篇，你可到 iThome 查看原文。\n文章目錄\n SavedStateHandle 不知道大家有沒有發現在「ETA Screen (1)」貼出來的 EtaViewModel 的 constructor 有一個 SavedStateHandle？在繼續完成餘下的錯誤情景前，我們先看看 SavedStateHandle 是甚麼。\n大家看過不少有關 Architecture Components 講關於 ViewModel 的特色時都一定會提到 ViewModel 內的 variable 能在 configuration change 後都能保持着，因為 Activity 或者 Fragment 在 configuration change 後經 ViewModelProvider 拿到的 ViewModel 是之前的 instance，不像其他 View 要重新 instantiate 過，用了它就好像解決到大部分 Android 開發麻煩的問題。但有沒有考慮到如果裝置記憶體有限時要 kill app 然後用戶從 recent screen 開啟之前用過的 app 又會怎樣？很多人都忽略了這個環節，可能現在的裝置比以前多很多 RAM，少了用戶明顯為意到的 kill app 情況。但有時在一些舊裝置仍有可能發生。例如你的 app 用 activity result 打開了預設的相機 app 拍照，拍完就返回你的 app。但有可能在返回你的 app 那時整個 app 已經被系統殺掉而重新啟動，但因為你沒有特別處理這個情況導致拍照後的流程中斷了。\n要處理這個問題，以往都是建議大家用 Activity/Fragment 的 onSaveInstanceState callback 來儲存目前的 state 然後從 onCreate 或者 onRestoreInstanceState/onViewStateRestored callback 取回系統 kill app 前的 state。但現在有了 ViewModel 都會把 state 放入去而不是放在 Activity/Fragment，如果要把 ViewModel 的 state 交去 Activity/Fragment 路綫就會很迂迴。有見及此就出了 SavedStateHandle。SavedStateHandle 是從 ViewModel 的 constructor 取得，可以經它存取 key value 組合，就像 Bundle 一樣 (savedStateHandle[\"xxx\"])。但不同的是它除了取得 value 外，還可以取得 value 的 LiveData (savedStateHandle.getLiveData(\"xxx\", \"default value\"))，好讓你把 state 直接放入去 SavedStateHandle。這做法有別於以往，因為 ViewModel 沒有那些 onSaveInstanceState、onRestoreInstanceState callback。由於系統能隨時 kill app，所以就要把 SavedStateHandle 視作儲存當前 state 的地方，而不是待系統 kill app 前一刻才放資料進去。\nSavedStateHandle 另一個用途是用來取得 Activity 的 intent extras 和 Fragment argument。獲取方式跟之前的 savedStateHandle[\"xxx\"] 一樣（\"xxx\" 是 intent extras/argument 的 key）。但我們已經用了 Navigation Component 的 Safe Args plugin，用 plugin 就是為了 Bundle 做到 type-safe，現在 SavedStateHandle 要走回頭路要自已寫 key 不覺得有點怪嗎？但其實是可以自己寫一個 delegate 將 SavedStateHandle 內儲存的 key-value pair 變成 Safe Args plugin 生成的 argument class 的 object。\n@MainThread inline fun reified Args : NavArgs navArgs(savedStateHandle: SavedStateHandle) = NavArgsLazy(Args::class) { val pairs = savedStateHandle.keys() .map { PairString, Any?(it, savedStateHandle[it]) } .toTypedArray() bundleOf(*pairs) } 用法就是在「ETA Screen (1)」貼出來的 code 找到，以下是節錄：\nprivate val args by navArgsEtaFragmentArgs(savedStateHandle) // 直接用 argument 的值作為 StateFlow 的初始值 val line: StateFlowLine = MutableStateFlow(args.line) val station: StateFlowStation = MutableStateFlow(args.station) 而我們有一個功能是讓用戶改變排序方式，這個設定我們會放在 SavedStateHandle 內：\n// SavedStateHandle 放排序方式的 key private const val SORT_BY = \"sort_by\" // 把 SavedStateHandle 內的值以 LiveData 形式取出 // 但因為我們取得班次列表是用 Flow，所以要轉為 Flow 並由 Int 轉為 SortBy enum private val sortedBy = savedStateHandle.getLiveData(SORT_BY, 0).asFlow() .map { GetEtaUseCase.SortBy.values()[it] } // 用戶按下 MaterialToolbar 內的排序選單項目會觸發的 ViewModel method fun toggleSorting() { val values = GetEtaUseCase.SortBy.values() val oldSortByOrdinal: Int = savedStateHandle.getInt?(SORT_BY) ?: 0 savedStateHandle[SORT_BY] = (oldSortByOrdinal + 1) % values.size } LiveData.asFlow 這個 extension function 是由 AndroidX Lifecycle 提供，它還提供了 Flow 轉 LiveData 的 extension function。（那個五秒 timeout 就是由這裏起源的）\n各式錯誤狀態 在前篇我們看過下面這張圖，入面有好幾個錯誤狀態，我們先做那三個全頁顯示的錯誤狀態。\n為方便分辨錯誤的狀態，我們為 domain 的 EtaResult 內跟錯誤相關的 class 都幫它 implement 另一個 sealed interface EtaFailResult：\nsealed interface EtaFailResult sealed interface EtaResult { data class Success( val schedule: ListEta = emptyList(), ) : EtaResult { // ...  } object Delay : EtaResult, EtaFailResult data class Incident( val message: String = \"\", val url: String = \"\", ) : EtaResult, EtaFailResult object TooManyRequests : EtaResult, EtaFailResult object InternalServerError : EtaResult, EtaFailResult data class Error(val e: Throwable?) : EtaResult, EtaFailResult } 另外，由於三款錯誤都是一段文字再加一個按鈕，所以我們乾脆在 layout XML 共用這幾個元素。\n接下來就回到 EtaViewModel 的部分。XML layout 內的 NestedScrollView 包含了顯示錯誤的 UI，我們已經用 data binding 跟 EtaViewModel 的 showError 綁定是否顯示。以下是 showError 的內容：\nval showError = etaResult .map { it is Loadable.Loaded \u0026\u0026 it.value is EtaFailResult } .stateIn( scope = viewModelScope, started = SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MILLIS), initialValue = false, ) 可以看到我們標註了 EtaFailResult 後整個寫法變得簡單了，毋須再把 EtaResult 的 class 逐一判斷。\n然後是 NestedScrollView 內的 TextView 和 Button data binding 用到的 Flow。首先是用來決定顯示甚麼錯誤訊息的 errorResult：\nval errorResult = loadedEtaResult .filterIsInstanceEtaFailResult() .stateIn( scope = viewModelScope, started = SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MILLIS), initialValue = EtaResult.InternalServerError, ) 至於實際顯示甚麼文字的部分我們會交由 EtaPresenter 負責控制：\n@ActivityScoped class EtaPresenter @Inject constructor(@ActivityContext context: Context) { private val res = context.resources fun mapErrorMessage(result: EtaFailResult): String = when (result) { EtaResult.Delay - res.getString(R.string.delay) is EtaResult.Error, EtaResult.InternalServerError, EtaResult.TooManyRequests, - res.getString(R.string.error) is EtaResult.Incident - result.message } } 因為 data binding 寫的 expression 是要用 Java、只可以單行再加上本身是 XML 檔就有一堆字符要 escape 過才可以寫到，所以遇上比較複雜的 expression 我都會另外找個地方寫個 function 讓 layout XML call，否則會比多層 Excel formula 包圍的 expression 更難看（人家還會把開關括號配上不同顏色方便你看）。只要 function 的參數有 LiveData 或者 StateFlow data binding 都能自動更新（緊記要設定好 data binding 的 lifecycleOwner）。如果不喜歡開新 class 放這些東西可以把它放去 Activity 或者 Fragment 內，然後在 layout XML 加上那個 Activity 或者 Fragment 的 。下面是這個 TextView 的 layout XML：\n android:layout_width=\"match_parent\" android:layout_height=\"wrap_content\" android:text=\"@{etaPresenter.mapErrorMessage(viewModel.errorResult)}\" android:textAlignment=\"center\" android:textAppearance=\"?textAppearanceBody1\" tools:text=\"@string/delay\" / 然後來到文字下面的按鈕，我們為了簡化寫法，所以分開「Try again」和「View detail」兩個按鈕。\n isVisible=\"@{viewModel.showViewDetail}\" android:layout_width=\"wrap_content\" android:layout_height=\"wrap_content\" android:layout_marginTop=\"16dp\" android:onClick=\"@{() - viewModel.viewIncidentDetail()}\" android:text=\"@string/incident_cta\" /  isVisible=\"@{viewModel.showTryAgain}\" android:layout_width=\"wrap_content\" android:layout_height=\"wrap_content\" android:layout_marginTop=\"16dp\" android:onClick=\"@{() - viewModel.refresh()}\" android:text=\"@string/try_again\" / 下面是控制是否顯示那兩個按鈕的 StateFlow：\nval showViewDetail = loadedEtaResult.map { it is EtaResult.Incident }.stateIn( scope = viewModelScope, started = SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MILLIS), initialValue = false, ) val showTryAgain = loadedEtaResult.map { when (it) { EtaResult.Delay, is EtaResult.Incident, is EtaResult.Success - false is EtaResult.Error, EtaResult.InternalServerError, EtaResult.TooManyRequests - true } }.stateIn( scope = viewModelScope, started = SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MILLIS), initialValue = false, ) 其實這些 StateFlow 的出現都是因為 data binding 不能寫太複雜的 code，所以就把這些 logic 放在 ViewModel 內，然後 data binding 只需要接到 Boolean 值來控制 visibility 是 VISIBLE 還是 GONE。\n然後來到按下兩個按鈕的 click listener。「Try again」那個的做法非常簡單，只需向 triggerRefresh 發射東西就能踢起 etaResult 整串東西：\nfun refresh() { viewModelScope.launch { triggerRefresh.send(Unit) } } 而「View detail」要做的東西是開啟瀏覽器前往 API response 提供的網址。同樣地，因為開啟瀏覽器不應在 configuration change 後再次接收到上次的值，所以我們要用 Channel 來送知開啟的網址。\nprivate val _viewIncidentDetail = ChannelString(Channel.BUFFERED) val viewIncidentDetail: FlowString = _viewIncidentDetail.receiveAsFlow() fun viewIncidentDetail() { val result = etaResult.value if (result !is Loadable.Loaded) return if (result.value !is EtaResult.Incident) return viewModelScope.launch { _viewIncidentDetail.send(result.value.url) } } 在 EtaFragment 我們會 collect viewIncidentDetail：\nviewLifecycleOwner.lifecycleScope.launch { viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) { viewModel.viewIncidentDetail.collect { try { requireActivity().startActivity(Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(it) }) } catch (e: ActivityNotFoundException) { Toast.makeText( requireContext(), R.string.cannot_launch_browser, Toast.LENGTH_SHORT ).show() } } } } 留意不是所有 Android 裝置都有內置瀏覽器，為謹慎起見我們要 catch ActivityNotFoundException，並顯示 toast 提示用戶不能開啟瀏覽器。\n小結 來到這裏應該可以順利地執行 app 並運用上篇介紹的 Whistle proxy server 造出不同的 response 來測試這頁。這篇我們討論了 SavedStateHandle 和避免在 layout XML 寫複雜 binding expression 的方法。完整的 code 可以在 GitHub repo 找到，下一篇我們會把這頁做成自動更新，不用先出去再進入班次頁才能看到最新內容。\n","wordCount":"2498","inLanguage":"en","datePublished":"2021-10-08T00:00:00+08:00","dateModified":"2021-10-08T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2021/10/2021-ithome-ironman-23-eta-screen-2/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
+</head>
+<body id=top>
+<script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
+<noscript>
+<style type=text/css>#theme-toggle,.top-link{display:none}</style>
+<style>@media(prefers-color-scheme:dark){:root{--theme:#1d1e20;--entry:#2e2e33;--primary:rgba(255, 255, 255, 0.84);--secondary:rgba(255, 255, 255, 0.56);--tertiary:rgba(255, 255, 255, 0.16);--content:rgba(255, 255, 255, 0.74);--hljs-bg:#2e2e33;--code-bg:#37383e;--border:#333}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
+</noscript>
+<header class=header>
+<nav class=nav>
+<div class=logo>
+<a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
+<span class=logo-switches>
+<button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+</button>
+</span>
+</div>
+<ul id=menu onscroll=menu_on_scroll()>
+<li>
+<a href=https://eric.swiftzer.net/fonts/ title=Fonts>
+<span>Fonts</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/archives/ title=Archives>
+<span>Archives</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/tags/ title=Tags>
+<span>Tags</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/about/ title=About>
+<span>About</span>
+</a>
+</li></ul>
+</nav>
+</header>
+<main class=main>
+<article class=post-single>
+<header class=post-header>
+<div class=breadcrumbs>
+<a href=https://eric.swiftzer.net/>Home</a>&nbsp;»&nbsp;<a href=https://eric.swiftzer.net/posts/>Posts</a>
+</div>
+<h1 class=post-title>
+2021 iThome 鐵人賽 Day 23：ETA screen (2)
+</h1>
+<div class=post-meta>October 8, 2021
+</div>
+</header>
+<div class=post-content>
+<blockquote>
+<p>本篇文章是 <a href=https://ithelp.ithome.com.tw/2021ironman>2021 iThome 鐵人賽</a>參賽題目「<a href=https://ithelp.ithome.com.tw/users/20139666/ironman/4661>寫一個列車抵站時間 Android App</a>」的第 23 篇，你可到 iThome <a href=https://ithelp.ithome.com.tw/articles/10279171>查看原文</a>。</p>
+<p><a href=https://eric.swiftzer.net/2021-ithome-ironman/>文章目錄</a></p>
+</blockquote>
+<h2 id=savedstatehandle><code>SavedStateHandle</code><a hidden class=anchor aria-hidden=true href=#savedstatehandle>#</a></h2>
+<p>不知道大家有沒有發現在「ETA Screen (1)」貼出來的 <code>EtaViewModel</code> 的 constructor 有一個 <code>SavedStateHandle</code>？在繼續完成餘下的錯誤情景前，我們先看看 <code>SavedStateHandle</code> 是甚麼。</p>
+<p>大家看過不少有關 Architecture Components 講關於 <code>ViewModel</code> 的特色時都一定會提到 <code>ViewModel</code> 內的 variable 能在 configuration change 後都能保持着，因為 <code>Activity</code> 或者 <code>Fragment</code> 在 configuration change 後經 <code>ViewModelProvider</code> 拿到的 <code>ViewModel</code> 是之前的 instance，不像其他 <code>View</code> 要重新 instantiate 過，用了它就好像解決到大部分 Android 開發麻煩的問題。但有沒有考慮到如果裝置記憶體有限時要 kill app 然後用戶從 recent screen 開啟之前用過的 app 又會怎樣？很多人都忽略了這個環節，可能現在的裝置比以前多很多 RAM，少了用戶明顯為意到的 kill app 情況。但有時在一些舊裝置仍有可能發生。例如你的 app 用 activity result 打開了預設的相機 app 拍照，拍完就返回你的 app。但有可能在返回你的 app 那時整個 app 已經被系統殺掉而重新啟動，但因為你沒有特別處理這個情況導致拍照後的流程中斷了。</p>
+<p>要處理這個問題，以往都是建議大家用 <code>Activity</code>/<code>Fragment</code> 的 <code>onSaveInstanceState</code> callback 來儲存目前的 state 然後從 <code>onCreate</code> 或者 <code>onRestoreInstanceState</code>/<code>onViewStateRestored</code> callback 取回系統 kill app 前的 state。但現在有了 <code>ViewModel</code> 都會把 state 放入去而不是放在 <code>Activity</code>/<code>Fragment</code>，如果要把 <code>ViewModel</code> 的 state 交去 <code>Activity</code>/<code>Fragment</code> 路綫就會很迂迴。有見及此就出了 <code>SavedStateHandle</code>。<code>SavedStateHandle</code> 是從 <code>ViewModel</code> 的 constructor 取得，可以經它存取 key value 組合，就像 <code>Bundle</code> 一樣 (<code>savedStateHandle["xxx"]</code>)。但不同的是它除了取得 value 外，還可以取得 value 的 <code>LiveData</code> (<code>savedStateHandle.getLiveData("xxx", "default value")</code>)，好讓你把 state 直接放入去 <code>SavedStateHandle</code>。這做法有別於以往，因為 <code>ViewModel</code> 沒有那些 <code>onSaveInstanceState</code>、<code>onRestoreInstanceState</code> callback。由於系統能隨時 kill app，所以就要把 <code>SavedStateHandle</code> 視作儲存當前 state 的地方，而不是待系統 kill app 前一刻才放資料進去。</p>
+<p><code>SavedStateHandle</code> 另一個用途是用來取得 <code>Activity</code> 的 intent extras 和 <code>Fragment</code> argument。獲取方式跟之前的 <code>savedStateHandle["xxx"]</code> 一樣（<code>"xxx"</code> 是 intent extras/argument 的 key）。但我們已經用了 Navigation Component 的 Safe Args plugin，用 plugin 就是為了 <code>Bundle</code> 做到 type-safe，現在 <code>SavedStateHandle</code> 要走回頭路要自已寫 key 不覺得有點怪嗎？但其實是可以自己寫一個 delegate 將 <code>SavedStateHandle</code> 內儲存的 key-value pair 變成 Safe Args plugin 生成的 argument class 的 object。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=nd>@MainThread</span>
+<span class=k>inline</span> <span class=k>fun</span> <span class=p>&lt;</span><span class=k>reified</span> <span class=nc>Args</span> <span class=p>:</span> <span class=nc>NavArgs</span><span class=p>&gt;</span> <span class=nf>navArgs</span><span class=p>(</span><span class=n>savedStateHandle</span><span class=p>:</span> <span class=n>SavedStateHandle</span><span class=p>)</span> <span class=p>=</span>
+    <span class=n>NavArgsLazy</span><span class=p>(</span><span class=n>Args</span><span class=o>::</span><span class=k>class</span><span class=p>)</span> <span class=p>{</span>
+        <span class=k>val</span> <span class=py>pairs</span> <span class=p>=</span> <span class=n>savedStateHandle</span><span class=p>.</span><span class=n>keys</span><span class=p>()</span>
+            <span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=n>Pair</span><span class=p>&lt;</span><span class=n>String</span><span class=p>,</span> <span class=n>Any</span><span class=p>?&gt;(</span><span class=k>it</span><span class=p>,</span> <span class=n>savedStateHandle</span><span class=p>[</span><span class=k>it</span><span class=p>])</span> <span class=p>}</span>
+            <span class=p>.</span><span class=n>toTypedArray</span><span class=p>()</span>
+        <span class=n>bundleOf</span><span class=p>(*</span><span class=n>pairs</span><span class=p>)</span>
+    <span class=p>}</span>
+</code></pre></div><p>用法就是在「ETA Screen (1)」貼出來的 code 找到，以下是節錄：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>private</span> <span class=k>val</span> <span class=py>args</span> <span class=k>by</span> <span class=n>navArgs</span><span class=p>&lt;</span><span class=n>EtaFragmentArgs</span><span class=p>&gt;(</span><span class=n>savedStateHandle</span><span class=p>)</span>
+
+<span class=c1>// 直接用 argument 的值作為 StateFlow 的初始值
+</span><span class=c1></span><span class=k>val</span> <span class=py>line</span><span class=p>:</span> <span class=n>StateFlow</span><span class=p>&lt;</span><span class=n>Line</span><span class=p>&gt;</span> <span class=p>=</span> <span class=n>MutableStateFlow</span><span class=p>(</span><span class=n>args</span><span class=p>.</span><span class=n>line</span><span class=p>)</span>
+<span class=k>val</span> <span class=py>station</span><span class=p>:</span> <span class=n>StateFlow</span><span class=p>&lt;</span><span class=n>Station</span><span class=p>&gt;</span> <span class=p>=</span> <span class=n>MutableStateFlow</span><span class=p>(</span><span class=n>args</span><span class=p>.</span><span class=n>station</span><span class=p>)</span>
+</code></pre></div><p>而我們有一個功能是讓用戶改變排序方式，這個設定我們會放在 <code>SavedStateHandle</code> 內：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=c1>// SavedStateHandle 放排序方式的 key
+</span><span class=c1></span><span class=k>private</span> <span class=k>const</span> <span class=k>val</span> <span class=py>SORT_BY</span> <span class=p>=</span> <span class=s2>&#34;sort_by&#34;</span>
+
+<span class=c1>// 把 SavedStateHandle 內的值以 LiveData 形式取出
+</span><span class=c1>// 但因為我們取得班次列表是用 Flow，所以要轉為 Flow 並由 Int 轉為 SortBy enum
+</span><span class=c1></span><span class=k>private</span> <span class=k>val</span> <span class=py>sortedBy</span> <span class=p>=</span> <span class=n>savedStateHandle</span><span class=p>.</span><span class=n>getLiveData</span><span class=p>(</span><span class=n>SORT_BY</span><span class=p>,</span> <span class=m>0</span><span class=p>).</span><span class=n>asFlow</span><span class=p>()</span>
+        <span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=n>GetEtaUseCase</span><span class=p>.</span><span class=n>SortBy</span><span class=p>.</span><span class=n>values</span><span class=p>()[</span><span class=k>it</span><span class=p>]</span> <span class=p>}</span>
+
+<span class=c1>// 用戶按下 MaterialToolbar 內的排序選單項目會觸發的 ViewModel method
+</span><span class=c1></span><span class=k>fun</span> <span class=nf>toggleSorting</span><span class=p>()</span> <span class=p>{</span>
+    <span class=k>val</span> <span class=py>values</span> <span class=p>=</span> <span class=n>GetEtaUseCase</span><span class=p>.</span><span class=n>SortBy</span><span class=p>.</span><span class=n>values</span><span class=p>()</span>
+    <span class=k>val</span> <span class=py>oldSortByOrdinal</span><span class=p>:</span> <span class=n>Int</span> <span class=p>=</span> <span class=n>savedStateHandle</span><span class=p>.</span><span class=k>get</span><span class=p>&lt;</span><span class=n>Int</span><span class=p>?&gt;(</span><span class=n>SORT_BY</span><span class=p>)</span> <span class=o>?:</span> <span class=m>0</span>
+    <span class=n>savedStateHandle</span><span class=p>[</span><span class=n>SORT_BY</span><span class=p>]</span> <span class=p>=</span> <span class=p>(</span><span class=n>oldSortByOrdinal</span> <span class=p>+</span> <span class=m>1</span><span class=p>)</span> <span class=p>%</span> <span class=n>values</span><span class=p>.</span><span class=n>size</span>
+<span class=p>}</span>
+</code></pre></div><p><code>LiveData.asFlow</code> 這個 extension function 是由 <a href=https://developer.android.com/reference/kotlin/androidx/lifecycle/package-summary#asflow>AndroidX Lifecycle 提供</a>，它還提供了 <code>Flow</code> 轉 <code>LiveData</code> 的 extension function。（那個五秒 timeout 就是由這裏起源的）</p>
+<h2 id=各式錯誤狀態>各式錯誤狀態<a hidden class=anchor aria-hidden=true href=#各式錯誤狀態>#</a></h2>
+<p>在前篇我們看過下面這張圖，入面有好幾個錯誤狀態，我們先做那三個全頁顯示的錯誤狀態。</p>
+<p>為方便分辨錯誤的狀態，我們為 domain 的 <code>EtaResult</code> 內跟錯誤相關的 class 都幫它 implement 另一個 sealed interface <code>EtaFailResult</code>：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>sealed</span> <span class=k>interface</span> <span class=nc>EtaFailResult</span>
+
+<span class=k>sealed</span> <span class=k>interface</span> <span class=nc>EtaResult</span> <span class=p>{</span>
+    <span class=k>data</span> <span class=k>class</span> <span class=nc>Success</span><span class=p>(</span>
+        <span class=k>val</span> <span class=py>schedule</span><span class=p>:</span> <span class=n>List</span><span class=p>&lt;</span><span class=n>Eta</span><span class=p>&gt;</span> <span class=p>=</span> <span class=n>emptyList</span><span class=p>(),</span>
+    <span class=p>)</span> <span class=p>:</span> <span class=n>EtaResult</span> <span class=p>{</span>
+        <span class=c1>// ...
+</span><span class=c1></span>    <span class=p>}</span>
+
+    <span class=k>object</span> <span class=nc>Delay</span> <span class=p>:</span> <span class=n>EtaResult</span><span class=p>,</span> <span class=n>EtaFailResult</span>
+
+    <span class=k>data</span> <span class=k>class</span> <span class=nc>Incident</span><span class=p>(</span>
+        <span class=k>val</span> <span class=py>message</span><span class=p>:</span> <span class=n>String</span> <span class=p>=</span> <span class=s2>&#34;&#34;</span><span class=p>,</span>
+        <span class=k>val</span> <span class=py>url</span><span class=p>:</span> <span class=n>String</span> <span class=p>=</span> <span class=s2>&#34;&#34;</span><span class=p>,</span>
+    <span class=p>)</span> <span class=p>:</span> <span class=n>EtaResult</span><span class=p>,</span> <span class=n>EtaFailResult</span>
+
+    <span class=k>object</span> <span class=nc>TooManyRequests</span> <span class=p>:</span> <span class=n>EtaResult</span><span class=p>,</span> <span class=n>EtaFailResult</span>
+
+    <span class=k>object</span> <span class=nc>InternalServerError</span> <span class=p>:</span> <span class=n>EtaResult</span><span class=p>,</span> <span class=n>EtaFailResult</span>
+
+    <span class=k>data</span> <span class=k>class</span> <span class=nc>Error</span><span class=p>(</span><span class=k>val</span> <span class=py>e</span><span class=p>:</span> <span class=n>Throwable</span><span class=p>?)</span> <span class=p>:</span> <span class=n>EtaResult</span><span class=p>,</span> <span class=n>EtaFailResult</span>
+<span class=p>}</span>
+</code></pre></div><p>另外，由於三款錯誤都是一段文字再加一個按鈕，所以我們乾脆在 layout XML 共用這幾個元素。</p>
+<p>接下來就回到 <code>EtaViewModel</code> 的部分。XML layout 內的 <code>NestedScrollView</code> 包含了顯示錯誤的 UI，我們已經用 data binding 跟 <code>EtaViewModel</code> 的 <code>showError</code> 綁定是否顯示。以下是 <code>showError</code> 的內容：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>val</span> <span class=py>showError</span> <span class=p>=</span> <span class=n>etaResult</span>
+    <span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span> <span class=k>is</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loaded</span> <span class=o>&amp;&amp;</span> <span class=k>it</span><span class=p>.</span><span class=n>value</span> <span class=k>is</span> <span class=n>EtaFailResult</span> <span class=p>}</span>
+    <span class=p>.</span><span class=n>stateIn</span><span class=p>(</span>
+        <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
+        <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
+        <span class=n>initialValue</span> <span class=p>=</span> <span class=k>false</span><span class=p>,</span>
+    <span class=p>)</span>
+</code></pre></div><p>可以看到我們標註了 <code>EtaFailResult</code> 後整個寫法變得簡單了，毋須再把 <code>EtaResult</code> 的 class 逐一判斷。</p>
+<p>然後是 <code>NestedScrollView</code> 內的 <code>TextView</code> 和 <code>Button</code> data binding 用到的 <code>Flow</code>。首先是用來決定顯示甚麼錯誤訊息的 <code>errorResult</code>：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>val</span> <span class=py>errorResult</span> <span class=p>=</span> <span class=n>loadedEtaResult</span>
+    <span class=p>.</span><span class=n>filterIsInstance</span><span class=p>&lt;</span><span class=n>EtaFailResult</span><span class=p>&gt;()</span>
+    <span class=p>.</span><span class=n>stateIn</span><span class=p>(</span>
+        <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
+        <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
+        <span class=n>initialValue</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>InternalServerError</span><span class=p>,</span>
+    <span class=p>)</span>
+</code></pre></div><p>至於實際顯示甚麼文字的部分我們會交由 <code>EtaPresenter</code> 負責控制：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=nd>@ActivityScoped</span>
+<span class=k>class</span> <span class=nc>EtaPresenter</span> <span class=nd>@Inject</span> <span class=k>constructor</span><span class=p>(</span><span class=nd>@ActivityContext</span> <span class=n>context</span><span class=p>:</span> <span class=n>Context</span><span class=p>)</span> <span class=p>{</span>
+    <span class=k>private</span> <span class=k>val</span> <span class=py>res</span> <span class=p>=</span> <span class=n>context</span><span class=p>.</span><span class=n>resources</span>
+
+    <span class=k>fun</span> <span class=nf>mapErrorMessage</span><span class=p>(</span><span class=n>result</span><span class=p>:</span> <span class=n>EtaFailResult</span><span class=p>):</span> <span class=n>String</span> <span class=p>=</span> <span class=k>when</span> <span class=p>(</span><span class=n>result</span><span class=p>)</span> <span class=p>{</span>
+        <span class=n>EtaResult</span><span class=p>.</span><span class=n>Delay</span> <span class=o>-&gt;</span> <span class=n>res</span><span class=p>.</span><span class=n>getString</span><span class=p>(</span><span class=n>R</span><span class=p>.</span><span class=n>string</span><span class=p>.</span><span class=n>delay</span><span class=p>)</span>
+        <span class=k>is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Error</span><span class=p>,</span>
+        <span class=n>EtaResult</span><span class=p>.</span><span class=n>InternalServerError</span><span class=p>,</span>
+        <span class=n>EtaResult</span><span class=p>.</span><span class=n>TooManyRequests</span><span class=p>,</span>
+        <span class=o>-&gt;</span> <span class=n>res</span><span class=p>.</span><span class=n>getString</span><span class=p>(</span><span class=n>R</span><span class=p>.</span><span class=n>string</span><span class=p>.</span><span class=n>error</span><span class=p>)</span>
+        <span class=k>is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Incident</span> <span class=o>-&gt;</span> <span class=n>result</span><span class=p>.</span><span class=n>message</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>因為 data binding 寫的 expression 是要用 Java、只可以單行再加上本身是 XML 檔就有一堆字符要 escape 過才可以寫到，所以遇上比較複雜的 expression 我都會另外找個地方寫個 function 讓 layout XML call，否則會比多層 Excel formula 包圍的 expression 更難看（人家還會把開關括號配上不同顏色方便你看）。只要 function 的參數有 <code>LiveData</code> 或者 <code>StateFlow</code> data binding 都能自動更新（緊記要設定好 data binding 的 <code>lifecycleOwner</code>）。如果不喜歡開新 class 放這些東西可以把它放去 <code>Activity</code> 或者 <code>Fragment</code> 內，然後在 layout XML 加上那個 <code>Activity</code> 或者 <code>Fragment</code> 的 <code>&lt;variable></code>。下面是這個 <code>TextView</code> 的 layout XML：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;com.google.android.material.textview.MaterialTextView</span>
+    <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
+    <span class=na>android:layout_height=</span><span class=s>&#34;wrap_content&#34;</span>
+    <span class=na>android:text=</span><span class=s>&#34;@{etaPresenter.mapErrorMessage(viewModel.errorResult)}&#34;</span>
+    <span class=na>android:textAlignment=</span><span class=s>&#34;center&#34;</span>
+    <span class=na>android:textAppearance=</span><span class=s>&#34;?textAppearanceBody1&#34;</span>
+    <span class=na>tools:text=</span><span class=s>&#34;@string/delay&#34;</span> <span class=nt>/&gt;</span>
+</code></pre></div><p>然後來到文字下面的按鈕，我們為了簡化寫法，所以分開「Try again」和「View detail」兩個按鈕。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;com.google.android.material.button.MaterialButton</span>
+    <span class=na>isVisible=</span><span class=s>&#34;@{viewModel.showViewDetail}&#34;</span>
+    <span class=na>android:layout_width=</span><span class=s>&#34;wrap_content&#34;</span>
+    <span class=na>android:layout_height=</span><span class=s>&#34;wrap_content&#34;</span>
+    <span class=na>android:layout_marginTop=</span><span class=s>&#34;16dp&#34;</span>
+    <span class=na>android:onClick=</span><span class=s>&#34;@{() -&gt; viewModel.viewIncidentDetail()}&#34;</span>
+    <span class=na>android:text=</span><span class=s>&#34;@string/incident_cta&#34;</span> <span class=nt>/&gt;</span>
+
+<span class=nt>&lt;com.google.android.material.button.MaterialButton</span>
+    <span class=na>isVisible=</span><span class=s>&#34;@{viewModel.showTryAgain}&#34;</span>
+    <span class=na>android:layout_width=</span><span class=s>&#34;wrap_content&#34;</span>
+    <span class=na>android:layout_height=</span><span class=s>&#34;wrap_content&#34;</span>
+    <span class=na>android:layout_marginTop=</span><span class=s>&#34;16dp&#34;</span>
+    <span class=na>android:onClick=</span><span class=s>&#34;@{() -&gt; viewModel.refresh()}&#34;</span>
+    <span class=na>android:text=</span><span class=s>&#34;@string/try_again&#34;</span> <span class=nt>/&gt;</span>
+</code></pre></div><p>下面是控制是否顯示那兩個按鈕的 <code>StateFlow</code>：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>val</span> <span class=py>showViewDetail</span> <span class=p>=</span> <span class=n>loadedEtaResult</span><span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span> <span class=k>is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Incident</span> <span class=p>}.</span><span class=n>stateIn</span><span class=p>(</span>
+    <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
+    <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
+    <span class=n>initialValue</span> <span class=p>=</span> <span class=k>false</span><span class=p>,</span>
+<span class=p>)</span>
+<span class=k>val</span> <span class=py>showTryAgain</span> <span class=p>=</span> <span class=n>loadedEtaResult</span><span class=p>.</span><span class=n>map</span> <span class=p>{</span>
+    <span class=k>when</span> <span class=p>(</span><span class=k>it</span><span class=p>)</span> <span class=p>{</span>
+        <span class=n>EtaResult</span><span class=p>.</span><span class=n>Delay</span><span class=p>,</span>
+        <span class=k>is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Incident</span><span class=p>,</span>
+        <span class=k>is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span> <span class=o>-&gt;</span> <span class=k>false</span>
+        <span class=k>is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Error</span><span class=p>,</span>
+        <span class=n>EtaResult</span><span class=p>.</span><span class=n>InternalServerError</span><span class=p>,</span>
+        <span class=n>EtaResult</span><span class=p>.</span><span class=n>TooManyRequests</span> <span class=o>-&gt;</span> <span class=k>true</span>
+    <span class=p>}</span>
+<span class=p>}.</span><span class=n>stateIn</span><span class=p>(</span>
+    <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
+    <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
+    <span class=n>initialValue</span> <span class=p>=</span> <span class=k>false</span><span class=p>,</span>
+<span class=p>)</span>
+</code></pre></div><p>其實這些 <code>StateFlow</code> 的出現都是因為 data binding 不能寫太複雜的 code，所以就把這些 logic 放在 <code>ViewModel</code> 內，然後 data binding 只需要接到 Boolean 值來控制 visibility 是 <code>VISIBLE</code> 還是 <code>GONE</code>。</p>
+<p>然後來到按下兩個按鈕的 click listener。「Try again」那個的做法非常簡單，只需向 <code>triggerRefresh</code> 發射東西就能踢起 <code>etaResult</code> 整串東西：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>fun</span> <span class=nf>refresh</span><span class=p>()</span> <span class=p>{</span>
+    <span class=n>viewModelScope</span><span class=p>.</span><span class=n>launch</span> <span class=p>{</span>
+        <span class=n>triggerRefresh</span><span class=p>.</span><span class=n>send</span><span class=p>(</span><span class=n>Unit</span><span class=p>)</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>而「View detail」要做的東西是開啟瀏覽器前往 API response 提供的網址。同樣地，因為開啟瀏覽器不應在 configuration change 後再次接收到上次的值，所以我們要用 <code>Channel</code> 來送知開啟的網址。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>private</span> <span class=k>val</span> <span class=py>_viewIncidentDetail</span> <span class=p>=</span> <span class=n>Channel</span><span class=p>&lt;</span><span class=n>String</span><span class=p>&gt;(</span><span class=n>Channel</span><span class=p>.</span><span class=n>BUFFERED</span><span class=p>)</span>
+<span class=k>val</span> <span class=py>viewIncidentDetail</span><span class=p>:</span> <span class=n>Flow</span><span class=p>&lt;</span><span class=n>String</span><span class=p>&gt;</span> <span class=p>=</span> <span class=n>_viewIncidentDetail</span><span class=p>.</span><span class=n>receiveAsFlow</span><span class=p>()</span>
+
+<span class=k>fun</span> <span class=nf>viewIncidentDetail</span><span class=p>()</span> <span class=p>{</span>
+    <span class=k>val</span> <span class=py>result</span> <span class=p>=</span> <span class=n>etaResult</span><span class=p>.</span><span class=n>value</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>result</span> <span class=o>!is</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loaded</span><span class=p>)</span> <span class=k>return</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>result</span><span class=p>.</span><span class=n>value</span> <span class=o>!is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Incident</span><span class=p>)</span> <span class=k>return</span>
+    <span class=n>viewModelScope</span><span class=p>.</span><span class=n>launch</span> <span class=p>{</span>
+        <span class=n>_viewIncidentDetail</span><span class=p>.</span><span class=n>send</span><span class=p>(</span><span class=n>result</span><span class=p>.</span><span class=n>value</span><span class=p>.</span><span class=n>url</span><span class=p>)</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>在 <code>EtaFragment</code> 我們會 collect <code>viewIncidentDetail</code>：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=n>viewLifecycleOwner</span><span class=p>.</span><span class=n>lifecycleScope</span><span class=p>.</span><span class=n>launch</span> <span class=p>{</span>
+    <span class=n>viewLifecycleOwner</span><span class=p>.</span><span class=n>repeatOnLifecycle</span><span class=p>(</span><span class=n>Lifecycle</span><span class=p>.</span><span class=n>State</span><span class=p>.</span><span class=n>STARTED</span><span class=p>)</span> <span class=p>{</span>
+        <span class=n>viewModel</span><span class=p>.</span><span class=n>viewIncidentDetail</span><span class=p>.</span><span class=n>collect</span> <span class=p>{</span>
+            <span class=k>try</span> <span class=p>{</span>
+                <span class=n>requireActivity</span><span class=p>().</span><span class=n>startActivity</span><span class=p>(</span><span class=n>Intent</span><span class=p>(</span><span class=n>Intent</span><span class=p>.</span><span class=n>ACTION_VIEW</span><span class=p>).</span><span class=n>apply</span> <span class=p>{</span>
+                    <span class=k>data</span> <span class=p>=</span> <span class=n>Uri</span><span class=p>.</span><span class=n>parse</span><span class=p>(</span><span class=k>it</span><span class=p>)</span>
+                <span class=p>})</span>
+            <span class=p>}</span> <span class=k>catch</span> <span class=p>(</span><span class=n>e</span><span class=p>:</span> <span class=n>ActivityNotFoundException</span><span class=p>)</span> <span class=p>{</span>
+                <span class=n>Toast</span><span class=p>.</span><span class=n>makeText</span><span class=p>(</span>
+                    <span class=n>requireContext</span><span class=p>(),</span>
+                    <span class=n>R</span><span class=p>.</span><span class=n>string</span><span class=p>.</span><span class=n>cannot_launch_browser</span><span class=p>,</span>
+                    <span class=n>Toast</span><span class=p>.</span><span class=n>LENGTH_SHORT</span>
+                <span class=p>).</span><span class=n>show</span><span class=p>()</span>
+            <span class=p>}</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>留意不是所有 Android 裝置都有內置瀏覽器，為謹慎起見我們要 catch <code>ActivityNotFoundException</code>，並顯示 toast 提示用戶不能開啟瀏覽器。</p>
+<h2 id=小結>小結<a hidden class=anchor aria-hidden=true href=#小結>#</a></h2>
+<p>來到這裏應該可以順利地執行 app 並運用上篇介紹的 <a href=https://github.com/avwo/whistle>Whistle proxy server</a> 造出不同的 response 來測試這頁。這篇我們討論了 <code>SavedStateHandle</code> 和避免在 layout XML 寫複雜 binding expression 的方法。完整的 code 可以在 <a href=https://github.com/ericksli/eta-demo/tree/main/app/src/main/java/net/swiftzer/etademo/presentation/eta>GitHub repo</a> 找到，下一篇我們會把這頁做成自動更新，不用先出去再進入班次頁才能看到最新內容。</p>
+</div>
+<footer class=post-footer>
+<ul class=post-tags>
+<li><a href=https://eric.swiftzer.net/tags/2021-ithome-%E9%90%B5%E4%BA%BA%E8%B3%BD/>2021 iThome 鐵人賽</a></li>
+<li><a href=https://eric.swiftzer.net/tags/android/>Android</a></li>
+</ul>
+<nav class=paginav>
+<a class=prev href=https://eric.swiftzer.net/2021/10/2021-ithome-ironman-24-eta-screen-3/>
+<span class=title>« Prev Page</span>
+<br>
+<span>2021 iThome 鐵人賽 Day 24：ETA screen (3)</span>
+</a>
+<a class=next href=https://eric.swiftzer.net/2021/10/2021-ithome-ironman-22-whistle-proxy/>
+<span class=title>Next Page »</span>
+<br>
+<span>2021 iThome 鐵人賽 Day 22：Whistle proxy</span>
+</a>
+</nav>
+</footer><div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//efilm.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</article>
+</main><footer class=footer>
+<span>&copy; 2021 <a href=https://eric.swiftzer.net/>EricLog</a></span>
+<span>&#183;</span>
+<span>Powered by <a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a></span>
+<span>&#183;</span>
+<span>Theme <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span>
+</footer>
+<a href=#top aria-label="go to top" title="Go to Top (Alt + G)">
+<button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</button>
+</a>
+<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
+<script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script>
+<script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
+</body>
+</html>

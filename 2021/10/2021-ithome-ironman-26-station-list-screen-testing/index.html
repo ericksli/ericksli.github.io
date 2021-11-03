@@ -1,0 +1,383 @@
+<!doctype html><html lang=zh-hant-hk dir=auto>
+<head><meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=robots content="index, follow">
+<title>2021 iThome 鐵人賽 Day 26：Station list screen testing | EricLog</title>
+<meta name=keywords content="2021 iThome 鐵人賽,Android">
+<meta name=description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 26 篇，你可到 iThome 查看原文。 文章目錄 終於來到為 ViewModel 寫 unit test 的部分，亦都意味着這個系列快">
+<meta name=author content>
+<link rel=canonical href=https://ithelp.ithome.com.tw/articles/10280351>
+<link href=/assets/css/stylesheet.min.d1fc837a267f77f6ede89d1a89c4880a90c381d9e6673ad4a76a3ad1900b65f9.css integrity="sha256-0fyDeiZ/d/bt6J0aicSICpDDgdnmZzrUp2o60ZALZfk=" rel="preload stylesheet" as=style>
+<link rel=icon href=https://eric.swiftzer.net/favicon.ico>
+<link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png>
+<link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png>
+<link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png>
+<link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg>
+<meta name=theme-color content="#2e2e33">
+<meta name=msapplication-TileColor content="#2e2e33">
+<meta name=generator content="Hugo 0.88.1">
+<link rel=preconnect href=https://fonts.gstatic.com>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-1268728-8','auto'),ga('send','pageview'))</script>
+<script async src=https://www.google-analytics.com/analytics.js></script>
+<meta property="og:title" content="2021 iThome 鐵人賽 Day 26：Station list screen testing">
+<meta property="og:description" content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 26 篇，你可到 iThome 查看原文。 文章目錄 終於來到為 ViewModel 寫 unit test 的部分，亦都意味着這個系列快">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://eric.swiftzer.net/2021/10/2021-ithome-ironman-26-station-list-screen-testing/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2021-10-11T00:00:00+08:00">
+<meta property="article:modified_time" content="2021-10-11T00:00:00+08:00">
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="2021 iThome 鐵人賽 Day 26：Station list screen testing">
+<meta name=twitter:description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 26 篇，你可到 iThome 查看原文。 文章目錄 終於來到為 ViewModel 寫 unit test 的部分，亦都意味着這個系列快">
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"2021 iThome 鐵人賽 Day 26：Station list screen testing","item":"https://eric.swiftzer.net/2021/10/2021-ithome-ironman-26-station-list-screen-testing/"}]}</script>
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"2021 iThome 鐵人賽 Day 26：Station list screen testing","name":"2021 iThome 鐵人賽 Day 26：Station list screen testing","description":"本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 26 篇，你可到 iThome 查看原文。 文章目錄 終於來到為 ViewModel 寫 unit test 的部分，亦都意味着這個系列快","keywords":["2021 iThome 鐵人賽","Android"],"articleBody":" 本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 26 篇，你可到 iThome 查看原文。\n文章目錄\n 終於來到為 ViewModel 寫 unit test 的部分，亦都意味着這個系列快要完結。之前我們寫過其他 layer 的 unit test，用過 MockK 和 Strikt。來到現在偏向 UI 那邊的 unit test，我們會用到 Robolectric。\nRobolectric 在 Android SDK 入面有不少 class 是跟 Java Standard Library 一樣，但亦都有一大堆 class 是 Android SDK 才會有，例子有 Context、Uri 等等。由於 Java Standard Library 沒有這堆 class，如果無特別處理的話就不能在電腦上跑 unit test，只能拿到 Android 裝置上執行（實機或模擬器），所以就出現了 Robolectric 這個 library。它能令你在電腦上執行帶有 Android SDK 獨有 class 的 unit test，原理就是它會為每個 Android 版本都預備一個 JAR 檔案，入面載入那些 Android SDK 獨有 class 的 stub，好讓在執行 unit test 時不會找不到那些 class。當然你亦可以自己用 mock library 例如 MockK 把 Android SDK 的 class 都 mock 一次，但實際上要 mock 的話就很大機會不只要 mock 一個 class。例如 context.resources.getString 這個 method 你要先 mock Context 再 mock Resources 然後再 mock getResources 和 getString 兩個 method，所以還是用 Robolectric 比較實際。\n順帶一提，正因為 Robolectric 是製造一堆跟 Android SDK 同 signature 的 class，所以當新的 Android 版本推出時不會馬上就有對應該 Android 版本的 JAR 可供下載，要等好幾個月才會有。\n首先我們需要加入 Android 測試相關的 dependency：\ntestImplementation \"androidx.test:core-ktx:$testCoreVersion\" testImplementation \"androidx.test.ext:junit:$testExtJunitVersion\" testImplementation \"androidx.arch.core:core-testing:$coreTestingVersion\" testImplementation \"org.robolectric:robolectric:$robolectricVersion\" 然後我們會以 LineStationPresenter 先來個簡單的示範，看看如何使用 Robolectric。\n@RunWith(AndroidJUnit4::class) class LineStationPresenterTest { private lateinit var presenter: LineStationPresenter @Before fun setUp() { presenter = LineStationPresenter(ApplicationProvider.getApplicationContext()) } @Test @Config(qualifiers = \"en-rUS\") fun `mapLine english`() { expectThat(presenter.mapLine(Line.AEL)).isEqualTo(\"Airport Express\") } @Test @Config(qualifiers = \"fr-rFR\") fun `mapLine french`() { expectThat(presenter.mapLine(Line.AEL)).isEqualTo(\"Airport Express\") } @Test @Config(qualifiers = \"zh-rTW\") fun `mapLine chinese taiwan`() { expectThat(presenter.mapLine(Line.AEL)).isEqualTo(\"機場快綫\") } @Test @Config(qualifiers = \"en-rUS\") fun `mapStation english`() { expectThat(presenter.mapStation(Station.QUB)).isEqualTo(\"Quarry Bay\") } @Test @Config(qualifiers = \"fr-rFR\") fun `mapStation french`() { expectThat(presenter.mapStation(Station.QUB)).isEqualTo(\"Quarry Bay\") } @Test @Config(qualifiers = \"zh-rHK\") fun `mapStation chinese hong kong`() { expectThat(presenter.mapStation(Station.QUB)).isEqualTo(\"鰂魚涌\") } } LineStationPresenter 本身就是很簡單，只有兩個 method。由於在 constructor 需要用到 Context，所以要用到 Robolectric。當 JUnit 4 test 要用到 Robolectric 的話我們就要在 test class 加註 @RunWith(AndroidJUnit4::class)。如果要取得 Context 就要經 ApplicationProvider.getApplicationContext() 取得。\n到了 test case 的部分，除了 @Test 之外我們還加了 @Config。這個是 Robolectric 的 annotation，用來控制「裝置」的配置。由於 mapLine 和 mapStation 內裏要判斷當前系統語言來決定輸出中文還是英文名字，所以我們需要改變配置來令測試達至全面覆蓋。除了改語系之外，@Config 還可以改變其他的配置，例如屏幕密度、尺寸等等，詳情可以參閱 Robolectric 的文檔。\n可能會出現的錯誤 有時候執行 Robolectric 的 test 出現以下錯誤：\njava.lang.NullPointerException at java.base/java.io.File.(File.java:279) at com.facebook.soloader.ApplicationSoSource.(ApplicationSoSource.java:46) at com.facebook.soloader.SoLoader.initSoSources(SoLoader.java:285) at com.facebook.soloader.SoLoader.init(SoLoader.java:207) at com.facebook.soloader.SoLoader.init(SoLoader.java:189) at com.facebook.soloader.SoLoader.init(SoLoader.java:217) at net.swiftzer.etademo.flipper.FlipperHelper.init(FlipperHelper.kt:25) at net.swiftzer.etademo.EtaDemoApp.onCreate(EtaDemoApp.kt:16) at org.robolectric.android.internal.AndroidTestEnvironment.lambda$installAndCreateApplication$2(AndroidTestEnvironment.java:350) 這是因為我們的 EtaDemoApp 用了 Flipper，但其實執行 unit test 應該不會用到 Flipper。要解決這個問題有兩個做法。第一個是好像之前處理 debug 和 release build type 的做法另外做一個假的 FlipperHelper。在 app/src/test/java/net/swiftzer/etademo/flipper 建立 FlipperHelper.kt\n  FlipperHelper.kt 的位置   class FlipperHelper @Inject constructor(* @ApplicationContext private val context: Context, private val inspectorFlipperPlugin: InspectorFlipperPlugin, private val crashReporterPlugin: CrashReporterPlugin, private val databasesFlipperPlugin: DatabasesFlipperPlugin, private val sharedPreferencesFlipperPlugin: SharedPreferencesFlipperPlugin, private val networkFlipperPlugin: NetworkFlipperPlugin, ) { fun init() { // no-op  } } 另一個方法是在 app/src/test/resources 放一個名為 robolectric.properties 的檔案。\n  robolectric.properties 的位置   然後入面放這些內容：\napplication=android.app.Application 意思就是把所有 Robolectic 的 test 都轉用 android.app.Application 作為 Application class，那就避開了 EtaDemoApp 有 Flipper 的問題。先前提到 Robolectic 支援最新版 Android 會有滯後，在等待支援新版 Android 的時候我們可以在 robolectric.properties 指定 SDK level：\nsdk=30 如果 test class 或 method 出現 @Config 的話，Robolectric 會優先使用 @Config 的配置。\n測試 StationListViewModel 來到我們第一個 ViewModel 測試。由於 StationListViewModel 沒有用到 Android SDK 的東西，所以不用加 @RunWith(AndroidJUnit4::class)。我們先來試試第一個 test 看看一開始時 StationListViewModel.list 是不是只顯示路綫名稱。\nclass StationListViewModelTest { private lateinit var viewModel: StationListViewModel @MockK private lateinit var getLinesAndStations: GetLinesAndStationsUseCase @Before fun setUp() { MockKAnnotations.init(this) every { getLinesAndStations() } returns linkedMapOf( Line.TKL to linkedSetOf(Station.LHP, Station.TKO), Line.TCL to linkedSetOf(Station.TUC, Station.SUN, Station.TSY), Line.TML to linkedSetOf(Station.TUM, Station.SIH, Station.TIS), ) viewModel = StationListViewModel(getLinesAndStations) } @Test fun `station list default state`() = runBlockingTest { viewModel.list.test { expectThat(awaitItem()).hasSize(3).and { get(0).assertGroup(Line.TKL, false) get(1).assertGroup(Line.TCL, false) get(2).assertGroup(Line.TML, false) } expectNoEvents() } } private fun Assertion.BuilderStationListItem.assertGroup(line: Line, isExpanded: Boolean) = isAStationListItem.Group().and { get(StationListItem.Group::line).isEqualTo(line) get(StationListItem.Group::isExpanded).isEqualTo(isExpanded) } private fun Assertion.BuilderStationListItem.assertChild(line: Line, station: Station) = isAStationListItem.Child().and { get(StationListItem.Child::line).isEqualTo(line) get(StationListItem.Child::station).isEqualTo(station) } } 由於只是測試，我們在 setUp 隨便弄幾條路綫和車站就可以了。在 station list default state 用 viewModel.list.test 訂閱這個 Flow 並取得它的值做 assertion。那個 test { ... } 不是 Kotlin Flow 提供的，是用了 Turbine 這個 library。這樣就可以像 RxJava 般做測試。test lambda 入面寫的 code 都是在訂閱後進行的。在 test lambda 入面我們可以用 awaitItem() 等待 Flow 的最新值然後拿來做 assertion。如果你期望那個 Flow 會射出兩個值那你就要 call 兩次 awaitItem()。最尾的 expectNoEvents() 顧名思義就是說這個 Flow 應該不會再有其他東西射出來，如果真的有就會報錯。而最尾的 assertGroup 和 assertChild 是 custom assertion，之前已經介紹過。\n要用 Turbine 首先要加入這個 dependency：\ntestImplementation \"app.cash.turbine:turbine:$turbineVersion\" 然後因為 Turbine 用了未正式推出的 Kotlin Time，所以要 opt-in。\nandroid { // 略……  kotlinOptions { jvmTarget = '1.8' freeCompilerArgs += [ \"-Xuse-experimental=kotlin.time.ExperimentalTime\", ] } } 之後我們試試執行這個 test：\nException in thread \"Test worker\" java.lang.IllegalStateException: Module with the Main dispatcher had failed to initialize. For tests Dispatchers.setMain from kotlinx-coroutines-test module can be used at kotlinx.coroutines.internal.MissingMainCoroutineDispatcher.missing(MainDispatchers.kt:113) 略…… Caused by: java.lang.RuntimeException: Method getMainLooper in android.os.Looper not mocked. See http://g.co/androidstudio/not-mocked for details. at android.os.Looper.getMainLooper(Looper.java) 略…… 出現這個錯誤是因為我們在 StationListViewModel 用了 viewModelScope。而 viewModelScope 是用 Main dispatcher，Main dispatcher 在 Android 上是理解為在 UI thread 上執行。但 Kotlin Coroutine 在 Android 上用的話那個 Main dispatcher 的定義會在 kotlinx-coroutines-android 提供。如果要令 unit test 成功執行我們可以用 Dispatchers.setMain 換成 TestCoroutineDispatcher。我們一般在 ViewModel 時常用到 viewModelScope，如果每個 test method 都寫一個 Dispatchers.setMain 和 Dispatchers.resetMain 會很麻煩，所以我們可以寫 test rule。以下的 MainCoroutineScopeRule 就是從 Kotlin Coroutines codelab 抄回來的：\n@ExperimentalCoroutinesApi class MainCoroutineScopeRule( val dispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher(), ) : TestWatcher(), TestCoroutineScope by TestCoroutineScope(dispatcher) { override fun starting(description: Description?) { super.starting(description) // If your codebase allows the injection of other dispatchers like  // Dispatchers.Default and Dispatchers.IO, consider injecting all of them here  // and renaming this class to `CoroutineScopeRule`  //  // All injected dispatchers in a test should point to a single instance of  // TestCoroutineDispatcher.  Dispatchers.setMain(dispatcher) } override fun finished(description: Description?) { super.finished(description) cleanupTestCoroutines() Dispatchers.resetMain() } } 然後之前的 code 會變成這樣：\nclass StationListViewModelTest { @get:Rule val coroutineScope = MainCoroutineScopeRule() // 略……  @Test fun `station list default state`() = coroutineScope.runBlockingTest { // 略……  } } 留意要用 MainCoroutineScopeRule 的 coroutineScope 來做 runBlockingTest，否則會報錯：\nUnfinished coroutines during teardown. Ensure all coroutines are completed or cancelled by your test. kotlinx.coroutines.test.UncompletedCoroutinesError: Unfinished coroutines during teardown. Ensure all coroutines are completed or cancelled by your test. at kotlinx.coroutines.test.TestCoroutineDispatcher.cleanupTestCoroutines(TestCoroutineDispatcher.kt:178) at kotlinx.coroutines.test.TestCoroutineScopeImpl.cleanupTestCoroutines(TestCoroutineScope.kt:35) at net.swiftzer.etademo.MainCoroutineScopeRule.cleanupTestCoroutines(MainCoroutineScopeRule.kt) at net.swiftzer.etademo.MainCoroutineScopeRule.finished(MainCoroutineScopeRule.kt:78) 略…… 大意就是像 Android Dev Summit ‘19 的 Testing Coroutines on Android 所講的情況有點像：test case 的 runBlockingTest 執行完時 viewModelScope 還在執行中。\n  Test body 不知道 viewModelScope.launch 是否執行完畢（擷取自 Android Dev Summit '19 的 Testing Coroutines on Android）   當我們改用 MainCoroutineScopeRule 的 coroutineScope 來做 runBlockingTest，就能等待 viewModelScope 執行完才把 runBlockingTest 完結。\n  改了 Dispatcher.Main 後 Test body 會等到 viewModelScope.launch 執行完畢後繼續（擷取自 Android Dev Summit '19 的 Testing Coroutines on Android）   這個東西在之後測試 EtaViewModel 時很有用。\n上述圖片擷取自 Testing Coroutines on Android (Android Dev Summit ‘19)\n我們繼續寫餘下的 test case。這次我們試試展開其中一條路綫，看看那條路綫的車站有沒有放出來。\n@Test fun `station list expand line`() = coroutineScope.runBlockingTest { viewModel.list.test { expectThat(awaitItem()).hasSize(3) viewModel.toggleExpanded(Line.TCL) expectThat(awaitItem()).hasSize(6).and { get(0).assertGroup(Line.TKL, false) get(1).assertGroup(Line.TCL, true) get(2).assertChild(Line.TCL, Station.TUC) get(3).assertChild(Line.TCL, Station.SUN) get(4).assertChild(Line.TCL, Station.TSY) get(5).assertGroup(Line.TML, false) } expectNoEvents() } } 由於我們已經在另一個 test case 試過一開始時會顯示三條路綫，所以針對第一個值的 assertion 只檢查是不是有三項內容就算了。\n由於其他跟展開和收合路綫的 test case 寫法都是大同小異，我就不貼出來。現在看看當按下車站時會不會觸發導航至班次頁的 event。\n@Test fun `launch eta screen`() = coroutineScope.runBlockingTest { viewModel.launchEtaScreen.test { viewModel.onClickLineAndStation(Line.AEL, Station.AIR) expectThat(awaitItem()).isEqualTo(Line.AEL to Station.AIR) expectNoEvents() } } 這個 test 寫法很簡單，就是看看當 onClickLineAndStation 後 launchEtaScreen 有沒有發射那個路綫和車站 Pair。\n小結 我們看過 Robolectric 的設定和示範了如何在 unit test 取得 Context。有了 Robolectric 我們就可以把一些不太跟 UI 有很大關係但又用了 Android SDK 的 class 的 code 在非 Android 裝置上執行 unit test。這樣可以加快 unit test 執行速度（因為在 Android 裝置執行 unit test 必定比在普通電腦上執行 unit test 慢）。另外又示範了改變 Main dispatcher 的方法和用 Turbine 幫助測試 Kotlin Flow。下一篇我們會開始寫 EtaViewModel 的 unit test。完整的 code 可以在 GitHub repo 找到。\n參考  Testing Coroutines on Android (Android Dev Summit ‘19)  ","wordCount":"2920","inLanguage":"en","datePublished":"2021-10-11T00:00:00+08:00","dateModified":"2021-10-11T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2021/10/2021-ithome-ironman-26-station-list-screen-testing/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
+</head>
+<body id=top>
+<script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
+<noscript>
+<style type=text/css>#theme-toggle,.top-link{display:none}</style>
+<style>@media(prefers-color-scheme:dark){:root{--theme:#1d1e20;--entry:#2e2e33;--primary:rgba(255, 255, 255, 0.84);--secondary:rgba(255, 255, 255, 0.56);--tertiary:rgba(255, 255, 255, 0.16);--content:rgba(255, 255, 255, 0.74);--hljs-bg:#2e2e33;--code-bg:#37383e;--border:#333}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
+</noscript>
+<header class=header>
+<nav class=nav>
+<div class=logo>
+<a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
+<span class=logo-switches>
+<button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+</button>
+</span>
+</div>
+<ul id=menu onscroll=menu_on_scroll()>
+<li>
+<a href=https://eric.swiftzer.net/fonts/ title=Fonts>
+<span>Fonts</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/archives/ title=Archives>
+<span>Archives</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/tags/ title=Tags>
+<span>Tags</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/about/ title=About>
+<span>About</span>
+</a>
+</li></ul>
+</nav>
+</header>
+<main class=main>
+<article class=post-single>
+<header class=post-header>
+<div class=breadcrumbs>
+<a href=https://eric.swiftzer.net/>Home</a>&nbsp;»&nbsp;<a href=https://eric.swiftzer.net/posts/>Posts</a>
+</div>
+<h1 class=post-title>
+2021 iThome 鐵人賽 Day 26：Station list screen testing
+</h1>
+<div class=post-meta>October 11, 2021
+</div>
+</header>
+<div class=post-content>
+<blockquote>
+<p>本篇文章是 <a href=https://ithelp.ithome.com.tw/2021ironman>2021 iThome 鐵人賽</a>參賽題目「<a href=https://ithelp.ithome.com.tw/users/20139666/ironman/4661>寫一個列車抵站時間 Android App</a>」的第 26 篇，你可到 iThome <a href=https://ithelp.ithome.com.tw/articles/10280351>查看原文</a>。</p>
+<p><a href=https://eric.swiftzer.net/2021-ithome-ironman/>文章目錄</a></p>
+</blockquote>
+<p>終於來到為 <code>ViewModel</code> 寫 unit test 的部分，亦都意味着這個系列快要完結。之前我們寫過其他 layer 的 unit test，用過 <a href=https://mockk.io/>MockK</a> 和 <a href=https://strikt.io/>Strikt</a>。來到現在偏向 UI 那邊的 unit test，我們會用到 <a href=http://robolectric.org/>Robolectric</a>。</p>
+<h2 id=robolectric>Robolectric<a hidden class=anchor aria-hidden=true href=#robolectric>#</a></h2>
+<p>在 Android SDK 入面有不少 class 是跟 Java Standard Library 一樣，但亦都有一大堆 class 是 Android SDK 才會有，例子有 <code>Context</code>、<code>Uri</code> 等等。由於 Java Standard Library 沒有這堆 class，如果無特別處理的話就不能在電腦上跑 unit test，只能拿到 Android 裝置上執行（實機或模擬器），所以就出現了 Robolectric 這個 library。它能令你在電腦上執行帶有 Android SDK 獨有 class 的 unit test，原理就是它會為每個 Android 版本都預備一個 JAR 檔案，入面載入那些 Android SDK 獨有 class 的 stub，好讓在執行 unit test 時不會找不到那些 class。當然你亦可以自己用 mock library 例如 <a href=https://mockk.io/>MockK</a> 把 Android SDK 的 class 都 mock 一次，但實際上要 mock 的話就很大機會不只要 mock 一個 class。例如 <code>context.resources.getString</code> 這個 method 你要先 mock <code>Context</code> 再 mock <code>Resources</code> 然後再 mock <code>getResources</code> 和 <code>getString</code> 兩個 method，所以還是用 Robolectric 比較實際。</p>
+<p>順帶一提，正因為 Robolectric 是製造一堆跟 Android SDK 同 signature 的 class，所以當新的 Android 版本推出時不會馬上就有對應該 Android 版本的 JAR 可供下載，要等好幾個月才會有。</p>
+<p>首先我們需要加入 Android 測試相關的 dependency：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-groovy data-lang=groovy><span class=n>testImplementation</span> <span class=s2>&#34;androidx.test:core-ktx:$testCoreVersion&#34;</span>
+<span class=n>testImplementation</span> <span class=s2>&#34;androidx.test.ext:junit:$testExtJunitVersion&#34;</span>
+<span class=n>testImplementation</span> <span class=s2>&#34;androidx.arch.core:core-testing:$coreTestingVersion&#34;</span>
+<span class=n>testImplementation</span> <span class=s2>&#34;org.robolectric:robolectric:$robolectricVersion&#34;</span>
+</code></pre></div><p>然後我們會以 <code>LineStationPresenter</code> 先來個簡單的示範，看看如何使用 Robolectric。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=nd>@RunWith</span><span class=p>(</span><span class=n>AndroidJUnit4</span><span class=o>::</span><span class=k>class</span><span class=p>)</span>
+<span class=k>class</span> <span class=nc>LineStationPresenterTest</span> <span class=p>{</span>
+
+    <span class=k>private</span> <span class=k>lateinit</span> <span class=k>var</span> <span class=py>presenter</span><span class=p>:</span> <span class=n>LineStationPresenter</span>
+
+    <span class=nd>@Before</span>
+    <span class=k>fun</span> <span class=nf>setUp</span><span class=p>()</span> <span class=p>{</span>
+        <span class=n>presenter</span> <span class=p>=</span> <span class=n>LineStationPresenter</span><span class=p>(</span><span class=n>ApplicationProvider</span><span class=p>.</span><span class=n>getApplicationContext</span><span class=p>())</span>
+    <span class=p>}</span>
+
+    <span class=nd>@Test</span>
+    <span class=nd>@Config</span><span class=p>(</span><span class=n>qualifiers</span> <span class=p>=</span> <span class=s2>&#34;en-rUS&#34;</span><span class=p>)</span>
+    <span class=k>fun</span> <span class=nf>`mapLine english`</span><span class=p>()</span> <span class=p>{</span>
+        <span class=n>expectThat</span><span class=p>(</span><span class=n>presenter</span><span class=p>.</span><span class=n>mapLine</span><span class=p>(</span><span class=n>Line</span><span class=p>.</span><span class=n>AEL</span><span class=p>)).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=s2>&#34;Airport Express&#34;</span><span class=p>)</span>
+    <span class=p>}</span>
+
+    <span class=nd>@Test</span>
+    <span class=nd>@Config</span><span class=p>(</span><span class=n>qualifiers</span> <span class=p>=</span> <span class=s2>&#34;fr-rFR&#34;</span><span class=p>)</span>
+    <span class=k>fun</span> <span class=nf>`mapLine french`</span><span class=p>()</span> <span class=p>{</span>
+        <span class=n>expectThat</span><span class=p>(</span><span class=n>presenter</span><span class=p>.</span><span class=n>mapLine</span><span class=p>(</span><span class=n>Line</span><span class=p>.</span><span class=n>AEL</span><span class=p>)).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=s2>&#34;Airport Express&#34;</span><span class=p>)</span>
+    <span class=p>}</span>
+
+    <span class=nd>@Test</span>
+    <span class=nd>@Config</span><span class=p>(</span><span class=n>qualifiers</span> <span class=p>=</span> <span class=s2>&#34;zh-rTW&#34;</span><span class=p>)</span>
+    <span class=k>fun</span> <span class=nf>`mapLine chinese taiwan`</span><span class=p>()</span> <span class=p>{</span>
+        <span class=n>expectThat</span><span class=p>(</span><span class=n>presenter</span><span class=p>.</span><span class=n>mapLine</span><span class=p>(</span><span class=n>Line</span><span class=p>.</span><span class=n>AEL</span><span class=p>)).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=s2>&#34;機場快綫&#34;</span><span class=p>)</span>
+    <span class=p>}</span>
+
+    <span class=nd>@Test</span>
+    <span class=nd>@Config</span><span class=p>(</span><span class=n>qualifiers</span> <span class=p>=</span> <span class=s2>&#34;en-rUS&#34;</span><span class=p>)</span>
+    <span class=k>fun</span> <span class=nf>`mapStation english`</span><span class=p>()</span> <span class=p>{</span>
+        <span class=n>expectThat</span><span class=p>(</span><span class=n>presenter</span><span class=p>.</span><span class=n>mapStation</span><span class=p>(</span><span class=n>Station</span><span class=p>.</span><span class=n>QUB</span><span class=p>)).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=s2>&#34;Quarry Bay&#34;</span><span class=p>)</span>
+    <span class=p>}</span>
+
+    <span class=nd>@Test</span>
+    <span class=nd>@Config</span><span class=p>(</span><span class=n>qualifiers</span> <span class=p>=</span> <span class=s2>&#34;fr-rFR&#34;</span><span class=p>)</span>
+    <span class=k>fun</span> <span class=nf>`mapStation french`</span><span class=p>()</span> <span class=p>{</span>
+        <span class=n>expectThat</span><span class=p>(</span><span class=n>presenter</span><span class=p>.</span><span class=n>mapStation</span><span class=p>(</span><span class=n>Station</span><span class=p>.</span><span class=n>QUB</span><span class=p>)).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=s2>&#34;Quarry Bay&#34;</span><span class=p>)</span>
+    <span class=p>}</span>
+
+    <span class=nd>@Test</span>
+    <span class=nd>@Config</span><span class=p>(</span><span class=n>qualifiers</span> <span class=p>=</span> <span class=s2>&#34;zh-rHK&#34;</span><span class=p>)</span>
+    <span class=k>fun</span> <span class=nf>`mapStation chinese hong kong`</span><span class=p>()</span> <span class=p>{</span>
+        <span class=n>expectThat</span><span class=p>(</span><span class=n>presenter</span><span class=p>.</span><span class=n>mapStation</span><span class=p>(</span><span class=n>Station</span><span class=p>.</span><span class=n>QUB</span><span class=p>)).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=s2>&#34;鰂魚涌&#34;</span><span class=p>)</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p><code>LineStationPresenter</code> 本身就是很簡單，只有兩個 method。由於在 constructor 需要用到 <code>Context</code>，所以要用到 Robolectric。當 JUnit 4 test 要用到 Robolectric 的話我們就要在 test class 加註 <code>@RunWith(AndroidJUnit4::class)</code>。如果要取得 <code>Context</code> 就要經 <code>ApplicationProvider.getApplicationContext()</code> 取得。</p>
+<p>到了 test case 的部分，除了 <code>@Test</code> 之外我們還加了 <code>@Config</code>。這個是 Robolectric 的 annotation，用來控制「裝置」的配置。由於 <code>mapLine</code> 和 <code>mapStation</code> 內裏要判斷當前系統語言來決定輸出中文還是英文名字，所以我們需要改變配置來令測試達至全面覆蓋。除了改語系之外，<code>@Config</code> 還可以改變其他的配置，例如屏幕密度、尺寸等等，詳情可以參閱 <a href=http://robolectric.org/device-configuration/>Robolectric 的文檔</a>。</p>
+<h3 id=可能會出現的錯誤>可能會出現的錯誤<a hidden class=anchor aria-hidden=true href=#可能會出現的錯誤>#</a></h3>
+<p>有時候執行 Robolectric 的 test 出現以下錯誤：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>java.lang.NullPointerException
+    at java.base/java.io.File.&lt;init&gt;(File.java:279)
+    at com.facebook.soloader.ApplicationSoSource.&lt;init&gt;(ApplicationSoSource.java:46)
+    at com.facebook.soloader.SoLoader.initSoSources(SoLoader.java:285)
+    at com.facebook.soloader.SoLoader.init(SoLoader.java:207)
+    at com.facebook.soloader.SoLoader.init(SoLoader.java:189)
+    at com.facebook.soloader.SoLoader.init(SoLoader.java:217)
+    at net.swiftzer.etademo.flipper.FlipperHelper.init(FlipperHelper.kt:25)
+    at net.swiftzer.etademo.EtaDemoApp.onCreate(EtaDemoApp.kt:16)
+    at org.robolectric.android.internal.AndroidTestEnvironment.lambda$installAndCreateApplication$2(AndroidTestEnvironment.java:350)
+</code></pre></div><p>這是因為我們的 <code>EtaDemoApp</code> 用了 Flipper，但其實執行 unit test 應該不會用到 Flipper。要解決這個問題有兩個做法。第一個是好像之前處理 debug 和 release build type 的做法另外做一個假的 <code>FlipperHelper</code>。在 <em>app/src/test/java/net/swiftzer/etademo/flipper</em> 建立 <em>FlipperHelper.kt</em></p>
+<figure>
+<img loading=lazy src=flipper-helper.png> <figcaption>
+FlipperHelper.kt 的位置
+</figcaption>
+</figure>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>class</span> <span class=nc>FlipperHelper</span> <span class=nd>@Inject</span> <span class=k>constructor</span><span class=p>(*</span>
+    <span class=nd>@ApplicationContext</span> <span class=k>private</span> <span class=k>val</span> <span class=py>context</span><span class=p>:</span> <span class=n>Context</span><span class=p>,</span>
+    <span class=k>private</span> <span class=k>val</span> <span class=py>inspectorFlipperPlugin</span><span class=p>:</span> <span class=n>InspectorFlipperPlugin</span><span class=p>,</span>
+    <span class=k>private</span> <span class=k>val</span> <span class=py>crashReporterPlugin</span><span class=p>:</span> <span class=n>CrashReporterPlugin</span><span class=p>,</span>
+    <span class=k>private</span> <span class=k>val</span> <span class=py>databasesFlipperPlugin</span><span class=p>:</span> <span class=n>DatabasesFlipperPlugin</span><span class=p>,</span>
+    <span class=k>private</span> <span class=k>val</span> <span class=py>sharedPreferencesFlipperPlugin</span><span class=p>:</span> <span class=n>SharedPreferencesFlipperPlugin</span><span class=p>,</span>
+    <span class=k>private</span> <span class=k>val</span> <span class=py>networkFlipperPlugin</span><span class=p>:</span> <span class=n>NetworkFlipperPlugin</span><span class=p>,</span>
+<span class=p>)</span> <span class=p>{</span>
+    <span class=k>fun</span> <span class=nf>init</span><span class=p>()</span> <span class=p>{</span>
+        <span class=c1>// no-op
+</span><span class=c1></span>    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>另一個方法是在 <em>app/src/test/resources</em> 放一個名為 <em>robolectric.properties</em> 的檔案。</p>
+<figure>
+<img loading=lazy src=robolectric.png> <figcaption>
+robolectric.properties 的位置
+</figcaption>
+</figure>
+<p>然後入面放這些內容：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>application=android.app.Application
+</code></pre></div><p>意思就是把所有 Robolectic 的 test 都轉用 <code>android.app.Application</code> 作為 <code>Application</code> class，那就避開了 <code>EtaDemoApp</code> 有 Flipper 的問題。先前提到 Robolectic 支援最新版 Android 會有滯後，在等待支援新版 Android 的時候我們可以在 <em>robolectric.properties</em> 指定 SDK level：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>sdk=30
+</code></pre></div><p>如果 test class 或 method 出現 <code>@Config</code> 的話，Robolectric 會優先使用 <code>@Config</code> 的配置。</p>
+<h2 id=測試-stationlistviewmodel>測試 <code>StationListViewModel</code><a hidden class=anchor aria-hidden=true href=#測試-stationlistviewmodel>#</a></h2>
+<p>來到我們第一個 ViewModel 測試。由於 <code>StationListViewModel</code> 沒有用到 Android SDK 的東西，所以不用加 <code>@RunWith(AndroidJUnit4::class)</code>。我們先來試試第一個 test 看看一開始時 <code>StationListViewModel.list</code> 是不是只顯示路綫名稱。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>class</span> <span class=nc>StationListViewModelTest</span> <span class=p>{</span>
+
+    <span class=k>private</span> <span class=k>lateinit</span> <span class=k>var</span> <span class=py>viewModel</span><span class=p>:</span> <span class=n>StationListViewModel</span>
+
+    <span class=nd>@MockK</span>
+    <span class=k>private</span> <span class=k>lateinit</span> <span class=k>var</span> <span class=py>getLinesAndStations</span><span class=p>:</span> <span class=n>GetLinesAndStationsUseCase</span>
+
+    <span class=nd>@Before</span>
+    <span class=k>fun</span> <span class=nf>setUp</span><span class=p>()</span> <span class=p>{</span>
+        <span class=n>MockKAnnotations</span><span class=p>.</span><span class=k>init</span><span class=p>(</span><span class=k>this</span><span class=p>)</span>
+        <span class=n>every</span> <span class=p>{</span> <span class=n>getLinesAndStations</span><span class=p>()</span> <span class=p>}</span> <span class=n>returns</span> <span class=n>linkedMapOf</span><span class=p>(</span>
+            <span class=n>Line</span><span class=p>.</span><span class=n>TKL</span> <span class=n>to</span> <span class=n>linkedSetOf</span><span class=p>(</span><span class=n>Station</span><span class=p>.</span><span class=n>LHP</span><span class=p>,</span> <span class=n>Station</span><span class=p>.</span><span class=n>TKO</span><span class=p>),</span>
+            <span class=n>Line</span><span class=p>.</span><span class=n>TCL</span> <span class=n>to</span> <span class=n>linkedSetOf</span><span class=p>(</span><span class=n>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>,</span> <span class=n>Station</span><span class=p>.</span><span class=n>SUN</span><span class=p>,</span> <span class=n>Station</span><span class=p>.</span><span class=n>TSY</span><span class=p>),</span>
+            <span class=n>Line</span><span class=p>.</span><span class=n>TML</span> <span class=n>to</span> <span class=n>linkedSetOf</span><span class=p>(</span><span class=n>Station</span><span class=p>.</span><span class=n>TUM</span><span class=p>,</span> <span class=n>Station</span><span class=p>.</span><span class=n>SIH</span><span class=p>,</span> <span class=n>Station</span><span class=p>.</span><span class=n>TIS</span><span class=p>),</span>
+        <span class=p>)</span>
+        <span class=n>viewModel</span> <span class=p>=</span> <span class=n>StationListViewModel</span><span class=p>(</span><span class=n>getLinesAndStations</span><span class=p>)</span>
+    <span class=p>}</span>
+
+    <span class=nd>@Test</span>
+    <span class=k>fun</span> <span class=nf>`station list default state`</span><span class=p>()</span> <span class=p>=</span> <span class=n>runBlockingTest</span> <span class=p>{</span>
+        <span class=n>viewModel</span><span class=p>.</span><span class=n>list</span><span class=p>.</span><span class=n>test</span> <span class=p>{</span>
+            <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>hasSize</span><span class=p>(</span><span class=m>3</span><span class=p>).</span><span class=n>and</span> <span class=p>{</span>
+                <span class=k>get</span><span class=p>(</span><span class=m>0</span><span class=p>).</span><span class=n>assertGroup</span><span class=p>(</span><span class=n>Line</span><span class=p>.</span><span class=n>TKL</span><span class=p>,</span> <span class=k>false</span><span class=p>)</span>
+                <span class=k>get</span><span class=p>(</span><span class=m>1</span><span class=p>).</span><span class=n>assertGroup</span><span class=p>(</span><span class=n>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span> <span class=k>false</span><span class=p>)</span>
+                <span class=k>get</span><span class=p>(</span><span class=m>2</span><span class=p>).</span><span class=n>assertGroup</span><span class=p>(</span><span class=n>Line</span><span class=p>.</span><span class=n>TML</span><span class=p>,</span> <span class=k>false</span><span class=p>)</span>
+            <span class=p>}</span>
+            <span class=n>expectNoEvents</span><span class=p>()</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=k>private</span> <span class=k>fun</span> <span class=nf>Assertion</span><span class=p>.</span><span class=n>Builder</span><span class=p>&lt;</span><span class=n>StationListItem</span><span class=p>&gt;.</span><span class=n>assertGroup</span><span class=p>(</span><span class=n>line</span><span class=p>:</span> <span class=n>Line</span><span class=p>,</span> <span class=n>isExpanded</span><span class=p>:</span> <span class=n>Boolean</span><span class=p>)</span> <span class=p>=</span>
+        <span class=n>isA</span><span class=p>&lt;</span><span class=n>StationListItem</span><span class=p>.</span><span class=n>Group</span><span class=p>&gt;().</span><span class=n>and</span> <span class=p>{</span>
+            <span class=k>get</span><span class=p>(</span><span class=n>StationListItem</span><span class=p>.</span><span class=n>Group</span><span class=o>::</span><span class=n>line</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=n>line</span><span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=n>StationListItem</span><span class=p>.</span><span class=n>Group</span><span class=o>::</span><span class=n>isExpanded</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=n>isExpanded</span><span class=p>)</span>
+        <span class=p>}</span>
+
+    <span class=k>private</span> <span class=k>fun</span> <span class=nf>Assertion</span><span class=p>.</span><span class=n>Builder</span><span class=p>&lt;</span><span class=n>StationListItem</span><span class=p>&gt;.</span><span class=n>assertChild</span><span class=p>(</span><span class=n>line</span><span class=p>:</span> <span class=n>Line</span><span class=p>,</span> <span class=n>station</span><span class=p>:</span> <span class=n>Station</span><span class=p>)</span> <span class=p>=</span>
+        <span class=n>isA</span><span class=p>&lt;</span><span class=n>StationListItem</span><span class=p>.</span><span class=n>Child</span><span class=p>&gt;().</span><span class=n>and</span> <span class=p>{</span>
+            <span class=k>get</span><span class=p>(</span><span class=n>StationListItem</span><span class=p>.</span><span class=n>Child</span><span class=o>::</span><span class=n>line</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=n>line</span><span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=n>StationListItem</span><span class=p>.</span><span class=n>Child</span><span class=o>::</span><span class=n>station</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=n>station</span><span class=p>)</span>
+        <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>由於只是測試，我們在 <code>setUp</code> 隨便弄幾條路綫和車站就可以了。在 <code>station list default state</code> 用 <code>viewModel.list.test</code> 訂閱這個 <code>Flow</code> 並取得它的值做 assertion。那個 <code>test { ... }</code> 不是 Kotlin Flow 提供的，是用了 <a href=https://github.com/cashapp/turbine>Turbine</a> 這個 library。這樣就可以像 RxJava 般做測試。<code>test</code> lambda 入面寫的 code 都是在訂閱後進行的。在 <code>test</code> lambda 入面我們可以用 <code>awaitItem()</code> 等待 <code>Flow</code> 的最新值然後拿來做 assertion。如果你期望那個 <code>Flow</code> 會射出兩個值那你就要 call 兩次 <code>awaitItem()</code>。最尾的 <code>expectNoEvents()</code> 顧名思義就是說這個 <code>Flow</code> 應該不會再有其他東西射出來，如果真的有就會報錯。而最尾的 <code>assertGroup</code> 和 <code>assertChild</code> 是 custom assertion，之前已經介紹過。</p>
+<p>要用 Turbine 首先要加入這個 dependency：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-groovy data-lang=groovy><span class=n>testImplementation</span> <span class=s2>&#34;app.cash.turbine:turbine:$turbineVersion&#34;</span>
+</code></pre></div><p>然後因為 Turbine 用了未正式推出的 Kotlin Time，所以要 opt-in。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-groovy data-lang=groovy><span class=n>android</span> <span class=o>{</span>
+    <span class=c1>// 略……
+</span><span class=c1></span>    <span class=n>kotlinOptions</span> <span class=o>{</span>
+        <span class=n>jvmTarget</span> <span class=o>=</span> <span class=s1>&#39;1.8&#39;</span>
+        <span class=n>freeCompilerArgs</span> <span class=o>+=</span> <span class=o>[</span>
+                <span class=s2>&#34;-Xuse-experimental=kotlin.time.ExperimentalTime&#34;</span><span class=o>,</span>
+        <span class=o>]</span>
+    <span class=o>}</span>
+<span class=o>}</span>
+</code></pre></div><p>之後我們試試執行這個 test：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>Exception in thread &#34;Test worker&#34; java.lang.IllegalStateException: Module with the Main dispatcher had failed to initialize. For tests Dispatchers.setMain from kotlinx-coroutines-test module can be used
+    at kotlinx.coroutines.internal.MissingMainCoroutineDispatcher.missing(MainDispatchers.kt:113)
+    略……
+Caused by: java.lang.RuntimeException: Method getMainLooper in android.os.Looper not mocked. See http://g.co/androidstudio/not-mocked for details.
+    at android.os.Looper.getMainLooper(Looper.java)
+    略……
+</code></pre></div><p>出現這個錯誤是因為我們在 <code>StationListViewModel</code> 用了 <code>viewModelScope</code>。而 <code>viewModelScope</code> 是用 Main dispatcher，Main dispatcher 在 Android 上是理解為在 UI thread 上執行。但 Kotlin Coroutine 在 Android 上用的話那個 Main dispatcher 的定義會在 kotlinx-coroutines-android 提供。如果要令 unit test 成功執行我們可以用 <code>Dispatchers.setMain</code> 換成 <code>TestCoroutineDispatcher</code>。我們一般在 <code>ViewModel</code> 時常用到 <code>viewModelScope</code>，如果每個 test method 都寫一個 <code>Dispatchers.setMain</code> 和 <code>Dispatchers.resetMain</code> 會很麻煩，所以我們可以寫 test rule。以下的 <code>MainCoroutineScopeRule</code> 就是從 <a href=https://github.com/googlecodelabs/kotlin-coroutines/blob/master/coroutines-codelab/finished_code/src/test/java/com/example/android/kotlincoroutines/main/utils/MainCoroutineScopeRule.kt>Kotlin Coroutines codelab</a> 抄回來的：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=nd>@ExperimentalCoroutinesApi</span>
+<span class=k>class</span> <span class=nc>MainCoroutineScopeRule</span><span class=p>(</span>
+    <span class=k>val</span> <span class=py>dispatcher</span><span class=p>:</span> <span class=n>TestCoroutineDispatcher</span> <span class=p>=</span> <span class=n>TestCoroutineDispatcher</span><span class=p>(),</span>
+<span class=p>)</span> <span class=p>:</span> <span class=n>TestWatcher</span><span class=p>(),</span> <span class=n>TestCoroutineScope</span> <span class=k>by</span> <span class=n>TestCoroutineScope</span><span class=p>(</span><span class=n>dispatcher</span><span class=p>)</span> <span class=p>{</span>
+    <span class=k>override</span> <span class=k>fun</span> <span class=nf>starting</span><span class=p>(</span><span class=n>description</span><span class=p>:</span> <span class=n>Description</span><span class=p>?)</span> <span class=p>{</span>
+        <span class=k>super</span><span class=p>.</span><span class=n>starting</span><span class=p>(</span><span class=n>description</span><span class=p>)</span>
+        <span class=c1>// If your codebase allows the injection of other dispatchers like
+</span><span class=c1></span>        <span class=c1>// Dispatchers.Default and Dispatchers.IO, consider injecting all of them here
+</span><span class=c1></span>        <span class=c1>// and renaming this class to `CoroutineScopeRule`
+</span><span class=c1></span>        <span class=c1>//
+</span><span class=c1></span>        <span class=c1>// All injected dispatchers in a test should point to a single instance of
+</span><span class=c1></span>        <span class=c1>// TestCoroutineDispatcher.
+</span><span class=c1></span>        <span class=n>Dispatchers</span><span class=p>.</span><span class=n>setMain</span><span class=p>(</span><span class=n>dispatcher</span><span class=p>)</span>
+    <span class=p>}</span>
+
+    <span class=k>override</span> <span class=k>fun</span> <span class=nf>finished</span><span class=p>(</span><span class=n>description</span><span class=p>:</span> <span class=n>Description</span><span class=p>?)</span> <span class=p>{</span>
+        <span class=k>super</span><span class=p>.</span><span class=n>finished</span><span class=p>(</span><span class=n>description</span><span class=p>)</span>
+        <span class=n>cleanupTestCoroutines</span><span class=p>()</span>
+        <span class=n>Dispatchers</span><span class=p>.</span><span class=n>resetMain</span><span class=p>()</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>然後之前的 code 會變成這樣：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>class</span> <span class=nc>StationListViewModelTest</span> <span class=p>{</span>
+
+    <span class=nd>@get</span><span class=p>:</span><span class=n>Rule</span>
+    <span class=k>val</span> <span class=py>coroutineScope</span> <span class=p>=</span> <span class=n>MainCoroutineScopeRule</span><span class=p>()</span>
+
+    <span class=c1>// 略……
+</span><span class=c1></span>
+    <span class=nd>@Test</span>
+    <span class=k>fun</span> <span class=nf>`station list default state`</span><span class=p>()</span> <span class=p>=</span> <span class=n>coroutineScope</span><span class=p>.</span><span class=n>runBlockingTest</span> <span class=p>{</span>
+        <span class=c1>// 略……
+</span><span class=c1></span>    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>留意要用 <code>MainCoroutineScopeRule</code> 的 <code>coroutineScope</code> 來做 <code>runBlockingTest</code>，否則會報錯：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>Unfinished coroutines during teardown. Ensure all coroutines are completed or cancelled by your test.
+kotlinx.coroutines.test.UncompletedCoroutinesError: Unfinished coroutines during teardown. Ensure all coroutines are completed or cancelled by your test.
+    at kotlinx.coroutines.test.TestCoroutineDispatcher.cleanupTestCoroutines(TestCoroutineDispatcher.kt:178)
+    at kotlinx.coroutines.test.TestCoroutineScopeImpl.cleanupTestCoroutines(TestCoroutineScope.kt:35)
+    at net.swiftzer.etademo.MainCoroutineScopeRule.cleanupTestCoroutines(MainCoroutineScopeRule.kt)
+    at net.swiftzer.etademo.MainCoroutineScopeRule.finished(MainCoroutineScopeRule.kt:78)
+    略……
+</code></pre></div><p>大意就是像 Android Dev Summit &lsquo;19 的 Testing Coroutines on Android 所講的情況有點像：test case 的 <code>runBlockingTest</code> 執行完時 <code>viewModelScope</code> 還在執行中。</p>
+<figure>
+<img loading=lazy src=forked.png> <figcaption>
+Test body 不知道 viewModelScope.launch 是否執行完畢（擷取自 Android Dev Summit '19 的 Testing Coroutines on Android）
+</figcaption>
+</figure>
+<p>當我們改用 <code>MainCoroutineScopeRule</code> 的 <code>coroutineScope</code> 來做 <code>runBlockingTest</code>，就能等待 <code>viewModelScope</code> 執行完才把 <code>runBlockingTest</code> 完結。</p>
+<figure>
+<img loading=lazy src=join.png> <figcaption>
+改了 Dispatcher.Main 後 Test body 會等到 viewModelScope.launch 執行完畢後繼續（擷取自 Android Dev Summit '19 的 Testing Coroutines on Android）
+</figcaption>
+</figure>
+<p>這個東西在之後測試 <code>EtaViewModel</code> 時很有用。</p>
+<p>上述圖片擷取自 <a href="https://www.youtube.com/watch?v=KMb0Fs8rCRs">Testing Coroutines on Android (Android Dev Summit &lsquo;19)</a></p>
+<p>我們繼續寫餘下的 test case。這次我們試試展開其中一條路綫，看看那條路綫的車站有沒有放出來。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=nd>@Test</span>
+<span class=k>fun</span> <span class=nf>`station list expand line`</span><span class=p>()</span> <span class=p>=</span> <span class=n>coroutineScope</span><span class=p>.</span><span class=n>runBlockingTest</span> <span class=p>{</span>
+    <span class=n>viewModel</span><span class=p>.</span><span class=n>list</span><span class=p>.</span><span class=n>test</span> <span class=p>{</span>
+        <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>hasSize</span><span class=p>(</span><span class=m>3</span><span class=p>)</span>
+        <span class=n>viewModel</span><span class=p>.</span><span class=n>toggleExpanded</span><span class=p>(</span><span class=n>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>)</span>
+        <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>hasSize</span><span class=p>(</span><span class=m>6</span><span class=p>).</span><span class=n>and</span> <span class=p>{</span>
+            <span class=k>get</span><span class=p>(</span><span class=m>0</span><span class=p>).</span><span class=n>assertGroup</span><span class=p>(</span><span class=n>Line</span><span class=p>.</span><span class=n>TKL</span><span class=p>,</span> <span class=k>false</span><span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=m>1</span><span class=p>).</span><span class=n>assertGroup</span><span class=p>(</span><span class=n>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span> <span class=k>true</span><span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=m>2</span><span class=p>).</span><span class=n>assertChild</span><span class=p>(</span><span class=n>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span> <span class=n>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=m>3</span><span class=p>).</span><span class=n>assertChild</span><span class=p>(</span><span class=n>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span> <span class=n>Station</span><span class=p>.</span><span class=n>SUN</span><span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=m>4</span><span class=p>).</span><span class=n>assertChild</span><span class=p>(</span><span class=n>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span> <span class=n>Station</span><span class=p>.</span><span class=n>TSY</span><span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=m>5</span><span class=p>).</span><span class=n>assertGroup</span><span class=p>(</span><span class=n>Line</span><span class=p>.</span><span class=n>TML</span><span class=p>,</span> <span class=k>false</span><span class=p>)</span>
+        <span class=p>}</span>
+        <span class=n>expectNoEvents</span><span class=p>()</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>由於我們已經在另一個 test case 試過一開始時會顯示三條路綫，所以針對第一個值的 assertion 只檢查是不是有三項內容就算了。</p>
+<p>由於其他跟展開和收合路綫的 test case 寫法都是大同小異，我就不貼出來。現在看看當按下車站時會不會觸發導航至班次頁的 event。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=nd>@Test</span>
+<span class=k>fun</span> <span class=nf>`launch eta screen`</span><span class=p>()</span> <span class=p>=</span> <span class=n>coroutineScope</span><span class=p>.</span><span class=n>runBlockingTest</span> <span class=p>{</span>
+    <span class=n>viewModel</span><span class=p>.</span><span class=n>launchEtaScreen</span><span class=p>.</span><span class=n>test</span> <span class=p>{</span>
+        <span class=n>viewModel</span><span class=p>.</span><span class=n>onClickLineAndStation</span><span class=p>(</span><span class=n>Line</span><span class=p>.</span><span class=n>AEL</span><span class=p>,</span> <span class=n>Station</span><span class=p>.</span><span class=n>AIR</span><span class=p>)</span>
+        <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=n>Line</span><span class=p>.</span><span class=n>AEL</span> <span class=n>to</span> <span class=n>Station</span><span class=p>.</span><span class=n>AIR</span><span class=p>)</span>
+        <span class=n>expectNoEvents</span><span class=p>()</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>這個 test 寫法很簡單，就是看看當 <code>onClickLineAndStation</code> 後 <code>launchEtaScreen</code> 有沒有發射那個路綫和車站 <code>Pair</code>。</p>
+<h2 id=小結>小結<a hidden class=anchor aria-hidden=true href=#小結>#</a></h2>
+<p>我們看過 Robolectric 的設定和示範了如何在 unit test 取得 <code>Context</code>。有了 Robolectric 我們就可以把一些不太跟 UI 有很大關係但又用了 Android SDK 的 class 的 code 在非 Android 裝置上執行 unit test。這樣可以加快 unit test 執行速度（因為在 Android 裝置執行 unit test 必定比在普通電腦上執行 unit test 慢）。另外又示範了改變 Main dispatcher 的方法和用 Turbine 幫助測試 Kotlin Flow。下一篇我們會開始寫 <code>EtaViewModel</code> 的 unit test。完整的 code 可以在 <a href=https://github.com/ericksli/eta-demo/tree/main/app/src/test/java/net/swiftzer/etademo/presentation/stationlist>GitHub repo</a> 找到。</p>
+<h2 id=參考>參考<a hidden class=anchor aria-hidden=true href=#參考>#</a></h2>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=KMb0Fs8rCRs">Testing Coroutines on Android (Android Dev Summit &lsquo;19)</a></li>
+</ul>
+</div>
+<footer class=post-footer>
+<ul class=post-tags>
+<li><a href=https://eric.swiftzer.net/tags/2021-ithome-%E9%90%B5%E4%BA%BA%E8%B3%BD/>2021 iThome 鐵人賽</a></li>
+<li><a href=https://eric.swiftzer.net/tags/android/>Android</a></li>
+</ul>
+<nav class=paginav>
+<a class=prev href=https://eric.swiftzer.net/2021/10/2021-ithome-ironman-27-eta-screen-testing-1/>
+<span class=title>« Prev Page</span>
+<br>
+<span>2021 iThome 鐵人賽 Day 27：ETA screen testing (1)</span>
+</a>
+<a class=next href=https://eric.swiftzer.net/2021/10/2021-ithome-ironman-25-eta-screen-4/>
+<span class=title>Next Page »</span>
+<br>
+<span>2021 iThome 鐵人賽 Day 25：ETA screen (4)</span>
+</a>
+</nav>
+</footer><div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//efilm.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</article>
+</main><footer class=footer>
+<span>&copy; 2021 <a href=https://eric.swiftzer.net/>EricLog</a></span>
+<span>&#183;</span>
+<span>Powered by <a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a></span>
+<span>&#183;</span>
+<span>Theme <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span>
+</footer>
+<a href=#top aria-label="go to top" title="Go to Top (Alt + G)">
+<button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</button>
+</a>
+<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
+<script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script>
+<script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
+</body>
+</html>

@@ -1,0 +1,620 @@
+<!doctype html><html lang=zh-hant-hk dir=auto>
+<head><meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=robots content="index, follow">
+<title>2021 iThome 鐵人賽 Day 28：ETA screen testing (2) | EricLog</title>
+<meta name=keywords content="2021 iThome 鐵人賽,Android">
+<meta name=description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 28 篇，你可到 iThome 查看原文。 文章目錄 上一篇我們寫了一些 EtaViewModel 的測試，這一篇會集中寫跟時">
+<meta name=author content>
+<link rel=canonical href=https://ithelp.ithome.com.tw/articles/10281130>
+<link href=/assets/css/stylesheet.min.d1fc837a267f77f6ede89d1a89c4880a90c381d9e6673ad4a76a3ad1900b65f9.css integrity="sha256-0fyDeiZ/d/bt6J0aicSICpDDgdnmZzrUp2o60ZALZfk=" rel="preload stylesheet" as=style>
+<link rel=icon href=https://eric.swiftzer.net/favicon.ico>
+<link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png>
+<link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png>
+<link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png>
+<link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg>
+<meta name=theme-color content="#2e2e33">
+<meta name=msapplication-TileColor content="#2e2e33">
+<meta name=generator content="Hugo 0.88.1">
+<link rel=preconnect href=https://fonts.gstatic.com>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-1268728-8','auto'),ga('send','pageview'))</script>
+<script async src=https://www.google-analytics.com/analytics.js></script>
+<meta property="og:title" content="2021 iThome 鐵人賽 Day 28：ETA screen testing (2)">
+<meta property="og:description" content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 28 篇，你可到 iThome 查看原文。 文章目錄 上一篇我們寫了一些 EtaViewModel 的測試，這一篇會集中寫跟時">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://eric.swiftzer.net/2021/10/2021-ithome-ironman-28-eta-screen-testing-2/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2021-10-13T00:00:00+08:00">
+<meta property="article:modified_time" content="2021-10-13T00:00:00+08:00">
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="2021 iThome 鐵人賽 Day 28：ETA screen testing (2)">
+<meta name=twitter:description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 28 篇，你可到 iThome 查看原文。 文章目錄 上一篇我們寫了一些 EtaViewModel 的測試，這一篇會集中寫跟時">
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"2021 iThome 鐵人賽 Day 28：ETA screen testing (2)","item":"https://eric.swiftzer.net/2021/10/2021-ithome-ironman-28-eta-screen-testing-2/"}]}</script>
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"2021 iThome 鐵人賽 Day 28：ETA screen testing (2)","name":"2021 iThome 鐵人賽 Day 28：ETA screen testing (2)","description":"本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 28 篇，你可到 iThome 查看原文。 文章目錄 上一篇我們寫了一些 EtaViewModel 的測試，這一篇會集中寫跟時","keywords":["2021 iThome 鐵人賽","Android"],"articleBody":" 本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 28 篇，你可到 iThome 查看原文。\n文章目錄\n 上一篇我們寫了一些 EtaViewModel 的測試，這一篇會集中寫跟時間相關的測試。\n之前在 EtaViewModel 我們定義了更新一次的間距常數 AUTO_REFRESH_INTERVAL，現在我們要在 EtaViewModelTest 用到它，所以要把它改成 public：\nimport kotlin.time.Duration as KotlinDuration val AUTO_REFRESH_INTERVAL = KotlinDuration.seconds(10) 在看 test case 的 code 之前我們先了解 Kotlin Coroutine 如何處理時間相關的測試。如果有接觸過 RxJava 的話，要測試跟時間相關的 operator 就要用到 TestScheduler 的 advanceTimeBy method 把時間快進。Kotlin Coroutine 的作法都是差不多，寫法是在 runBlockingTest 內 call advanceTimeBy。之前我們在寫 Ktor client 的測試時因為找不到 Ktor client 如何自訂 Executor 或者 Dispatcher，所以惟有用了 runBlocking 而不是 runBlockingTest。runBlocking 跟 runBlockingTest 的分別是 runBlocking 內如果加了 delay(Duration.seconds(10)) 的話那個 test case 就真的會在等十秒才執行 delay 的下一句；但 runBlockingTest 就會自動把這些 delay 快進，直到它發現已經進入閒置狀態。這樣就可以令 test case 執行速度加快，不用再乾等十秒。\n回到我們的 EtaViewModel，我們在每次收到 getEtaUseCase 的回傳值就會在 onEach 內執行一句 delay，delay 之後就向 triggerRefresh Channel 發訊號觸發整串 etaResult 執行一遍，那之後又會再執行多次 onEach 的東西。整串 etaResult 就是一個無限循環，不會有閒置狀態。所以我們不能簡單地靠 runBlockingTest 自動快進功能來寫跟自動更新相關的 test case。那我們要做的就是手動把時間快進，然後在快進後檢查 Flow 的值。另一樣東西要留意的是我們在 startAutoRefresh 會比對上次 getEtaUseCase 回傳的時間和現在時間來決定要 delay 多久才 call 另一次 getEtaUseCase。這個部分牽涉到 EtaViewModel constructor 的 Clock。所以除了用 Coroutine test 的 advanceTimeBy 外，我們亦需要把 Clock 的時間同時快進，這樣才能正確地模擬現實情景。這亦都是我在上一篇特意引入 ThreeTen Extra 的原因。\n為了更簡單地快進兩邊的時間，我們先準備一個 extension function：\nimport kotlin.time.Duration as KotlinDuration private fun DelayController.advanceTimeBy(amount: KotlinDuration) { clock.add(amount.toJavaDuration()) advanceTimeBy(amount.inWholeMilliseconds) } 接下來我們先來看看 showFullScreenError 的 test case，showFullScreenError 就是控制是否顯示全頁式的錯誤畫面：\n@Test fun showFullScreenError() = coroutineScope.runBlockingTest { coEvery { getEtaUseCase( Language.ENGLISH, Line.TCL, Station.TUC, GetEtaUseCase.SortBy.DIRECTION, ) }.returnsMany( EtaResult.InternalServerError, EtaResult.Success(), EtaResult.TooManyRequests, EtaResult.Delay, ) val viewModel = EtaViewModel( savedStateHandle = SavedStateHandle( mapOf( \"line\" to Line.TCL, \"station\" to Station.TUC, ) ), clock = clock, getEta = getEtaUseCase, ) viewModel.showFullScreenError.test { viewModel.startAutoRefresh() expectThat(awaitItem()).isEqualTo(false) // Loading/ScreenState.LOADING  advanceTimeBy(AUTO_REFRESH_INTERVAL) expectThat(awaitItem()).isEqualTo(true) // InternalServerError/ScreenState.FULL_SCREEN_ERROR  advanceTimeBy(AUTO_REFRESH_INTERVAL) expectThat(awaitItem()).isEqualTo(false) // Success/ScreenState.ETA, TooManyRequests/ScreenState.ETA_WITH_ERROR_BANNER  advanceTimeBy(AUTO_REFRESH_INTERVAL) expectThat(awaitItem()).isEqualTo(true) // Delay/ScreenState.FULL_SCREEN_ERROR  expectNoEvents() } } 看到我們用了 returnsMany 來一次過定義好幾個 getEtaUseCase 會回傳的值，它會順序地回傳。例如第一次 call 會回傳 EtaResult.InternalServerError、第二次 call 會回傳 EtaResult.Success()……到最底的部分，我們檢查當 getEtaUseCase 回傳了不同的結果時 showFullScreenError 會發射的 Boolean 值。留意是由 EtaResult.Success() 轉到 EtaResult.TooManyRequests 時介面並不需要顯示全頁錯誤畫面，只需要顯示錯誤 banner。因為 showFullScreenError 是 StateFlow，所以並沒有連續發射出兩個 false 出來而是一個 false。\n我們再看另一個類似的 test case showEtaList：\n@Test fun showEtaList() = coroutineScope.runBlockingTest { coEvery { getEtaUseCase( Language.ENGLISH, Line.TCL, Station.TUC, GetEtaUseCase.SortBy.DIRECTION, ) }.returnsMany( EtaResult.InternalServerError, EtaResult.Success(), EtaResult.TooManyRequests, EtaResult.Delay, ) val viewModel = EtaViewModel( savedStateHandle = SavedStateHandle( mapOf( \"line\" to Line.TCL, \"station\" to Station.TUC, ) ), clock = clock, getEta = getEtaUseCase, ) viewModel.showEtaList.test { viewModel.startAutoRefresh() expectThat(awaitItem()).isEqualTo(false) // ScreenState.LOADING  advanceTimeBy(AUTO_REFRESH_INTERVAL) expectThat(awaitItem()).isEqualTo(true) // ScreenState.ETA, ScreenState.ETA_WITH_ERROR_BANNER  advanceTimeBy(AUTO_REFRESH_INTERVAL) expectNoEvents() advanceTimeBy(AUTO_REFRESH_INTERVAL) expectThat(awaitItem()).isEqualTo(false) // ScreenState.FULL_SCREEN_ERROR  expectNoEvents() } } 現在掌握到如何操縱時間後，我們就可以寫針對 etaList 的 test case。但首先要準備一下 custom assertion：\nprivate fun Assertion.BuilderEtaListItem.assertHeader( direction: EtaResult.Success.Eta.Direction, ) = isAEtaListItem.Header().and { get(EtaListItem.Header::direction).isEqualTo(direction) } private fun Assertion.BuilderEtaListItem.assertEta( direction: EtaResult.Success.Eta.Direction, destination: Station, platform: String, minuteCountdown: Int, ) = isAEtaListItem.Eta().and { get(EtaListItem.Eta::direction).isEqualTo(direction) get(EtaListItem.Eta::destination).isEqualTo(destination) get(EtaListItem.Eta::platform).isEqualTo(platform) get(EtaListItem.Eta::minuteCountdown).isEqualTo(minuteCountdown) } 現在先檢查排序切換，看看 etaList 寫的 header 加插是否正確。\n@Test fun `etaList sorting`() = coroutineScope.runBlockingTest { coEvery { getEtaUseCase( Language.ENGLISH, Line.TML, Station.KSR, any(), ) } returns EtaResult.Success( schedule = listOf( EtaResult.Success.Eta( direction = EtaResult.Success.Eta.Direction.UP, destination = Station.TUM, platform = \"1\", time = ZonedDateTime.of( DEFAULT_LOCAL_DATE, LocalTime.of(13, 1, 1), DEFAULT_TIMEZONE ).toInstant() ), EtaResult.Success.Eta( direction = EtaResult.Success.Eta.Direction.UP, destination = Station.SIH, platform = \"1\", time = ZonedDateTime.of( DEFAULT_LOCAL_DATE, LocalTime.of(13, 7, 59), DEFAULT_TIMEZONE ).toInstant() ), EtaResult.Success.Eta( direction = EtaResult.Success.Eta.Direction.DOWN, destination = Station.HUH, platform = \"2\", time = ZonedDateTime.of( DEFAULT_LOCAL_DATE, LocalTime.of(13, 2, 2), DEFAULT_TIMEZONE ).toInstant() ), ), ) val viewModel = EtaViewModel( savedStateHandle = SavedStateHandle( mapOf( \"line\" to Line.TML, \"station\" to Station.KSR, ) ), clock = clock, getEta = getEtaUseCase, ) viewModel.etaList.test { expectThat(awaitItem()).isEmpty() viewModel.startAutoRefresh() expectThat(awaitItem()).hasSize(5).and { get(0).assertHeader(EtaResult.Success.Eta.Direction.UP) get(1).assertEta( direction = EtaResult.Success.Eta.Direction.UP, destination = Station.TUM, platform = \"1\", minuteCountdown = 1, ) get(2).assertEta( direction = EtaResult.Success.Eta.Direction.UP, destination = Station.SIH, platform = \"1\", minuteCountdown = 7, ) get(3).assertHeader(EtaResult.Success.Eta.Direction.DOWN) get(4).assertEta( direction = EtaResult.Success.Eta.Direction.DOWN, destination = Station.HUH, platform = \"2\", minuteCountdown = 2, ) } viewModel.toggleSorting() expectThat(awaitItem()).hasSize(3).and { get(0).assertEta( direction = EtaResult.Success.Eta.Direction.UP, destination = Station.TUM, platform = \"1\", minuteCountdown = 1, ) get(1).assertEta( direction = EtaResult.Success.Eta.Direction.UP, destination = Station.SIH, platform = \"1\", minuteCountdown = 7, ) get(2).assertEta( direction = EtaResult.Success.Eta.Direction.DOWN, destination = Station.HUH, platform = \"2\", minuteCountdown = 2, ) } viewModel.toggleSorting() expectThat(awaitItem()).hasSize(5).and { get(0).assertHeader(EtaResult.Success.Eta.Direction.UP) get(1).assertEta( direction = EtaResult.Success.Eta.Direction.UP, destination = Station.TUM, platform = \"1\", minuteCountdown = 1, ) get(2).assertEta( direction = EtaResult.Success.Eta.Direction.UP, destination = Station.SIH, platform = \"1\", minuteCountdown = 7, ) get(3).assertHeader(EtaResult.Success.Eta.Direction.DOWN) get(4).assertEta( direction = EtaResult.Success.Eta.Direction.DOWN, destination = Station.HUH, platform = \"2\", minuteCountdown = 2, ) } expectNoEvents() } coVerify(exactly = 2) { getEtaUseCase(any(), any(), any(), GetEtaUseCase.SortBy.DIRECTION) } coVerify(exactly = 1) { getEtaUseCase(any(), any(), any(), GetEtaUseCase.SortBy.TIME) } } 看起來很長，但其實很簡單。我們這次沒有快進時間，主要是看它發射出來的班次是否正確。首先在 startAutoRefresh 之前我們先檢查 StateFlow 的初始值 empty list。然後當第一次載入時預設是按方向排序，所以會有 header。之後我們改變排序，於事就變了按時間排序。但因為實際的排序是在 GetEtaUseCaseImpl 做，我們又沒特別 mock 第二次 call getEtaUseCase 的 return value，所以實際結果的排序看起來不合理，但 header 就正如我們的期望被拿走。最後試試切換排序一次，看看是不是跟第一次的結果一樣。最尾的 coVerify 是用來檢查 getEtaUseCase 是不是被執行了兩次按方向排序和一次按時間排序，那些 any() 就是說我們不在乎那些參數的值是甚麼。當然你可以寫明參數的值來確保我們寫的 code 的確合符預期。\n其實如果不用 Turbine 的話，viewModel.etaList.test 的部分可以寫成這樣：\nval results = mutableListOfListEtaListItem() val job = launch { viewModel.etaList.toList(results) } viewModel.startAutoRefresh() viewModel.toggleSorting() viewModel.toggleSorting() job.cancel() expectThat(results).hasSize(4).and { /* 針對每個元素做檢查 */ } 有時候在寫 test case 時發覺結果不似預期，或許可以用這個寫法看看它的結果是甚麼然後才想想那裏出現問題。\n接下來是另一個 test，這是為了測試當首次載入後能否在十秒後自動 call getEtaUseCase 一次取得最新班次。\n@Test fun `etaList auto refresh automatically after loaded`() = coroutineScope.runBlockingTest { coEvery { getEtaUseCase( Language.ENGLISH, Line.TML, Station.KSR, GetEtaUseCase.SortBy.DIRECTION, ) }.returnsMany( EtaResult.Success( schedule = listOf( EtaResult.Success.Eta( direction = EtaResult.Success.Eta.Direction.UP, destination = Station.TUM, platform = \"1\", time = ZonedDateTime.of( DEFAULT_LOCAL_DATE, LocalTime.of(13, 1, 1), DEFAULT_TIMEZONE ).toInstant() ), ), ), EtaResult.Success( schedule = listOf( EtaResult.Success.Eta( direction = EtaResult.Success.Eta.Direction.DOWN, destination = Station.TIS, platform = \"8\", time = ZonedDateTime.of( DEFAULT_LOCAL_DATE, LocalTime.of(13, 14, 0), DEFAULT_TIMEZONE ).toInstant() ), ), ) ) val viewModel = EtaViewModel( savedStateHandle = SavedStateHandle( mapOf( \"line\" to Line.TML, \"station\" to Station.KSR, ) ), clock = clock, getEta = getEtaUseCase, ) viewModel.etaList.test { viewModel.startAutoRefresh() // StateFlow 初始值  expectThat(awaitItem()).isEmpty() // 第一次 getEtaUseCase  expectThat(awaitItem()).hasSize(2).and { get(0).assertHeader(EtaResult.Success.Eta.Direction.UP) get(1).assertEta( direction = EtaResult.Success.Eta.Direction.UP, destination = Station.TUM, platform = \"1\", minuteCountdown = 1, ) } // 快進到下一次更新時間  advanceTimeBy(AUTO_REFRESH_INTERVAL) // 第二次 getEtaUseCase 執行中，目前仍然是用第一次 getEtaUseCase 的結果，  // 但因為重新執行 etaList 內的 combine 所以會重新計算倒數分鐘  expectThat(awaitItem()).hasSize(2).and { get(0).assertHeader(EtaResult.Success.Eta.Direction.UP) get(1).assertEta( direction = EtaResult.Success.Eta.Direction.UP, destination = Station.TUM, platform = \"1\", minuteCountdown = 0, ) } // 第二次 getEtaUseCase  expectThat(awaitItem()).hasSize(2).and { get(0).assertHeader(EtaResult.Success.Eta.Direction.DOWN) get(1).assertEta( direction = EtaResult.Success.Eta.Direction.DOWN, destination = Station.TIS, platform = \"8\", minuteCountdown = 13, ) } expectNoEvents() } coVerify(exactly = 2) { getEtaUseCase( Language.ENGLISH, Line.TML, Station.KSR, GetEtaUseCase.SortBy.DIRECTION, ) } } 基本上寫法都是大同小異，只是要留意我們之前寫的 logic 是有載入中這個過程，當 etaResult 發射載入中的時候 etaList 還是會沿用上一次的結果來輸出，然後當新的 getEtaUseCase 結果來到後就用新的結果轉化出供 RecyclerView 顯示的內容。\n最後來多一個 test case 測試當 Fragment onPause 再 onResume 的情景。這個重新返回班次頁的情景可以分為兩個：在十秒內返回和過十秒後返回。\n@Test fun `etaList stop and resume auto refresh`() = coroutineScope.runBlockingTest { coEvery { getEtaUseCase( Language.ENGLISH, Line.TKL, Station.QUB, GetEtaUseCase.SortBy.DIRECTION, ) }.returnsMany( EtaResult.Success( schedule = listOf( EtaResult.Success.Eta( direction = EtaResult.Success.Eta.Direction.UP, destination = Station.LHP, platform = \"1\", time = ZonedDateTime.of( DEFAULT_LOCAL_DATE, LocalTime.of(13, 20, 30), DEFAULT_TIMEZONE ).toInstant(), ), ), ), EtaResult.Success( schedule = listOf( EtaResult.Success.Eta( direction = EtaResult.Success.Eta.Direction.UP, destination = Station.LHP, platform = \"2\", time = ZonedDateTime.of( DEFAULT_LOCAL_DATE, LocalTime.of(13, 30, 0), DEFAULT_TIMEZONE ).toInstant(), ), ), ), EtaResult.Success( schedule = listOf( EtaResult.Success.Eta( direction = EtaResult.Success.Eta.Direction.UP, destination = Station.LHP, platform = \"3\", time = ZonedDateTime.of( DEFAULT_LOCAL_DATE, LocalTime.of(13, 30, 0), DEFAULT_TIMEZONE ).toInstant(), ), ), ), ) val viewModel = EtaViewModel( savedStateHandle = SavedStateHandle( mapOf( \"line\" to Line.TKL, \"station\" to Station.QUB, ) ), clock = clock, getEta = getEtaUseCase, ) viewModel.etaList.test { viewModel.startAutoRefresh() // StateFlow 初始值  expectThat(awaitItem()).isEmpty() // 第一次 getEtaUseCase  expectThat(awaitItem()).hasSize(2).and { get(0).assertHeader(EtaResult.Success.Eta.Direction.UP) get(1).assertEta( direction = EtaResult.Success.Eta.Direction.UP, destination = Station.LHP, platform = \"1\", minuteCountdown = 20, ) } viewModel.stopAutoRefresh() advanceTimeBy(KotlinDuration.seconds(5)) expectNoEvents() viewModel.startAutoRefresh() // 未夠十秒，上游不會有新的值  expectNoEvents() advanceTimeBy(KotlinDuration.seconds(5)) // 第二次 getEtaUseCase  expectThat(awaitItem()).hasSize(2).and { get(0).assertHeader(EtaResult.Success.Eta.Direction.UP) get(1).assertEta( direction = EtaResult.Success.Eta.Direction.UP, destination = Station.LHP, platform = \"2\", minuteCountdown = 29, ) } expectNoEvents() viewModel.stopAutoRefresh() advanceTimeBy(KotlinDuration.minutes(20)) viewModel.startAutoRefresh() // 第三次 getEtaUseCase 執行中，仍然是用第二次 getEtaUseCase  expectThat(awaitItem()).hasSize(2).and { get(0).assertHeader(EtaResult.Success.Eta.Direction.UP) get(1).assertEta( direction = EtaResult.Success.Eta.Direction.UP, destination = Station.LHP, platform = \"2\", minuteCountdown = 9, ) } // 第三次 getEtaUseCase  expectThat(awaitItem()).hasSize(2).and { get(0).assertHeader(EtaResult.Success.Eta.Direction.UP) get(1).assertEta( direction = EtaResult.Success.Eta.Direction.UP, destination = Station.LHP, platform = \"3\", minuteCountdown = 9, ) } expectNoEvents() } coVerify(exactly = 3) { getEtaUseCase( Language.ENGLISH, Line.TKL, Station.QUB, GetEtaUseCase.SortBy.DIRECTION, ) } } 小結 這次的 code 比較長，這是因為那些 use case 的 return value 本身都很長，加上每個值都要做 assertion，但 test case 的寫法來來去去都是差不多。本篇主要介紹了 Kotlin Coroutine 測試時如何快進時間，另外亦實際示範了為甚麼我們要用 Clock 來獲取當前時間。其餘的 test case 因為性質相近所以我就不再寫了，因為現在都可以示範到那些手法。而我們的班次示範 app 來到現在都大致上完結，下篇會再抽一些題目再討論一下。這次的 code 可以在 GitHub repo 找到。\n","wordCount":"2813","inLanguage":"en","datePublished":"2021-10-13T00:00:00+08:00","dateModified":"2021-10-13T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2021/10/2021-ithome-ironman-28-eta-screen-testing-2/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
+</head>
+<body id=top>
+<script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
+<noscript>
+<style type=text/css>#theme-toggle,.top-link{display:none}</style>
+<style>@media(prefers-color-scheme:dark){:root{--theme:#1d1e20;--entry:#2e2e33;--primary:rgba(255, 255, 255, 0.84);--secondary:rgba(255, 255, 255, 0.56);--tertiary:rgba(255, 255, 255, 0.16);--content:rgba(255, 255, 255, 0.74);--hljs-bg:#2e2e33;--code-bg:#37383e;--border:#333}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
+</noscript>
+<header class=header>
+<nav class=nav>
+<div class=logo>
+<a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
+<span class=logo-switches>
+<button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+</button>
+</span>
+</div>
+<ul id=menu onscroll=menu_on_scroll()>
+<li>
+<a href=https://eric.swiftzer.net/fonts/ title=Fonts>
+<span>Fonts</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/archives/ title=Archives>
+<span>Archives</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/tags/ title=Tags>
+<span>Tags</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/about/ title=About>
+<span>About</span>
+</a>
+</li></ul>
+</nav>
+</header>
+<main class=main>
+<article class=post-single>
+<header class=post-header>
+<div class=breadcrumbs>
+<a href=https://eric.swiftzer.net/>Home</a>&nbsp;»&nbsp;<a href=https://eric.swiftzer.net/posts/>Posts</a>
+</div>
+<h1 class=post-title>
+2021 iThome 鐵人賽 Day 28：ETA screen testing (2)
+</h1>
+<div class=post-meta>October 13, 2021
+</div>
+</header>
+<div class=post-content>
+<blockquote>
+<p>本篇文章是 <a href=https://ithelp.ithome.com.tw/2021ironman>2021 iThome 鐵人賽</a>參賽題目「<a href=https://ithelp.ithome.com.tw/users/20139666/ironman/4661>寫一個列車抵站時間 Android App</a>」的第 28 篇，你可到 iThome <a href=https://ithelp.ithome.com.tw/articles/10281130>查看原文</a>。</p>
+<p><a href=https://eric.swiftzer.net/2021-ithome-ironman/>文章目錄</a></p>
+</blockquote>
+<p>上一篇我們寫了一些 <code>EtaViewModel</code> 的測試，這一篇會集中寫跟時間相關的測試。</p>
+<p>之前在 <code>EtaViewModel</code> 我們定義了更新一次的間距常數 <code>AUTO_REFRESH_INTERVAL</code>，現在我們要在 <code>EtaViewModelTest</code> 用到它，所以要把它改成 public：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>import</span> <span class=nn>kotlin.time.Duration</span> <span class=k>as</span> <span class=n>KotlinDuration</span>
+
+<span class=k>val</span> <span class=py>AUTO_REFRESH_INTERVAL</span> <span class=p>=</span> <span class=n>KotlinDuration</span><span class=p>.</span><span class=n>seconds</span><span class=p>(</span><span class=m>10</span><span class=p>)</span>
+</code></pre></div><p>在看 test case 的 code 之前我們先了解 Kotlin Coroutine 如何處理時間相關的測試。如果有接觸過 RxJava 的話，要測試跟時間相關的 operator 就要用到 <code>TestScheduler</code> 的 <code>advanceTimeBy</code> method 把時間快進。Kotlin Coroutine 的作法都是差不多，寫法是在 <code>runBlockingTest</code> 內 call <code>advanceTimeBy</code>。之前我們在寫 Ktor client 的測試時因為找不到 Ktor client 如何自訂 <code>Executor</code> 或者 <code>Dispatcher</code>，所以惟有用了 <code>runBlocking</code> 而不是 <code>runBlockingTest</code>。<code>runBlocking</code> 跟 <code>runBlockingTest</code> 的分別是 <code>runBlocking</code> 內如果加了 <code>delay(Duration.seconds(10))</code> 的話那個 test case 就真的會在等十秒才執行 <code>delay</code> 的下一句；但 <code>runBlockingTest</code> 就會自動把這些 <code>delay</code> 快進，直到它發現已經進入閒置狀態。這樣就可以令 test case 執行速度加快，不用再乾等十秒。</p>
+<p>回到我們的 <code>EtaViewModel</code>，我們在每次收到 <code>getEtaUseCase</code> 的回傳值就會在 <code>onEach</code> 內執行一句 <code>delay</code>，<code>delay</code> 之後就向 <code>triggerRefresh</code> <code>Channel</code> 發訊號觸發整串 <code>etaResult</code> 執行一遍，那之後又會再執行多次 <code>onEach</code> 的東西。整串 <code>etaResult</code> 就是一個無限循環，不會有閒置狀態。所以我們不能簡單地靠 <code>runBlockingTest</code> 自動快進功能來寫跟自動更新相關的 test case。那我們要做的就是手動把時間快進，然後在快進後檢查 <code>Flow</code> 的值。另一樣東西要留意的是我們在 <code>startAutoRefresh</code> 會比對上次 <code>getEtaUseCase</code> 回傳的時間和現在時間來決定要 <code>delay</code> 多久才 call 另一次 <code>getEtaUseCase</code>。這個部分牽涉到 <code>EtaViewModel</code> constructor 的 <code>Clock</code>。所以除了用 Coroutine test 的 <code>advanceTimeBy</code> 外，我們亦需要把 <code>Clock</code> 的時間同時快進，這樣才能正確地模擬現實情景。這亦都是我在上一篇特意引入 <a href=https://www.threeten.org/threeten-extra/>ThreeTen Extra</a> 的原因。</p>
+<p>為了更簡單地快進兩邊的時間，我們先準備一個 extension function：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>import</span> <span class=nn>kotlin.time.Duration</span> <span class=k>as</span> <span class=n>KotlinDuration</span>
+
+<span class=k>private</span> <span class=k>fun</span> <span class=nf>DelayController</span><span class=p>.</span><span class=n>advanceTimeBy</span><span class=p>(</span><span class=n>amount</span><span class=p>:</span> <span class=n>KotlinDuration</span><span class=p>)</span> <span class=p>{</span>
+    <span class=n>clock</span><span class=p>.</span><span class=n>add</span><span class=p>(</span><span class=n>amount</span><span class=p>.</span><span class=n>toJavaDuration</span><span class=p>())</span>
+    <span class=n>advanceTimeBy</span><span class=p>(</span><span class=n>amount</span><span class=p>.</span><span class=n>inWholeMilliseconds</span><span class=p>)</span>
+<span class=p>}</span>
+</code></pre></div><p>接下來我們先來看看 <code>showFullScreenError</code> 的 test case，<code>showFullScreenError</code> 就是控制是否顯示全頁式的錯誤畫面：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=nd>@Test</span>
+<span class=k>fun</span> <span class=nf>showFullScreenError</span><span class=p>()</span> <span class=p>=</span> <span class=n>coroutineScope</span><span class=p>.</span><span class=n>runBlockingTest</span> <span class=p>{</span>
+    <span class=n>coEvery</span> <span class=p>{</span>
+        <span class=n>getEtaUseCase</span><span class=p>(</span>
+            <span class=n>Language</span><span class=p>.</span><span class=n>ENGLISH</span><span class=p>,</span>
+            <span class=n>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span>
+            <span class=n>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>,</span>
+            <span class=n>GetEtaUseCase</span><span class=p>.</span><span class=n>SortBy</span><span class=p>.</span><span class=n>DIRECTION</span><span class=p>,</span>
+        <span class=p>)</span>
+    <span class=p>}.</span><span class=n>returnsMany</span><span class=p>(</span>
+        <span class=n>EtaResult</span><span class=p>.</span><span class=n>InternalServerError</span><span class=p>,</span>
+        <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>(),</span>
+        <span class=n>EtaResult</span><span class=p>.</span><span class=n>TooManyRequests</span><span class=p>,</span>
+        <span class=n>EtaResult</span><span class=p>.</span><span class=n>Delay</span><span class=p>,</span>
+    <span class=p>)</span>
+
+    <span class=k>val</span> <span class=py>viewModel</span> <span class=p>=</span> <span class=n>EtaViewModel</span><span class=p>(</span>
+        <span class=n>savedStateHandle</span> <span class=p>=</span> <span class=n>SavedStateHandle</span><span class=p>(</span>
+            <span class=n>mapOf</span><span class=p>(</span>
+                <span class=s2>&#34;line&#34;</span> <span class=n>to</span> <span class=n>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span>
+                <span class=s2>&#34;station&#34;</span> <span class=n>to</span> <span class=n>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>,</span>
+            <span class=p>)</span>
+        <span class=p>),</span>
+        <span class=n>clock</span> <span class=p>=</span> <span class=n>clock</span><span class=p>,</span>
+        <span class=n>getEta</span> <span class=p>=</span> <span class=n>getEtaUseCase</span><span class=p>,</span>
+    <span class=p>)</span>
+
+    <span class=n>viewModel</span><span class=p>.</span><span class=n>showFullScreenError</span><span class=p>.</span><span class=n>test</span> <span class=p>{</span>
+        <span class=n>viewModel</span><span class=p>.</span><span class=n>startAutoRefresh</span><span class=p>()</span>
+        <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=k>false</span><span class=p>)</span> <span class=c1>// Loading/ScreenState.LOADING
+</span><span class=c1></span>        <span class=n>advanceTimeBy</span><span class=p>(</span><span class=n>AUTO_REFRESH_INTERVAL</span><span class=p>)</span>
+        <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=k>true</span><span class=p>)</span> <span class=c1>// InternalServerError/ScreenState.FULL_SCREEN_ERROR
+</span><span class=c1></span>        <span class=n>advanceTimeBy</span><span class=p>(</span><span class=n>AUTO_REFRESH_INTERVAL</span><span class=p>)</span>
+        <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=k>false</span><span class=p>)</span> <span class=c1>// Success/ScreenState.ETA, TooManyRequests/ScreenState.ETA_WITH_ERROR_BANNER
+</span><span class=c1></span>        <span class=n>advanceTimeBy</span><span class=p>(</span><span class=n>AUTO_REFRESH_INTERVAL</span><span class=p>)</span>
+        <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=k>true</span><span class=p>)</span> <span class=c1>// Delay/ScreenState.FULL_SCREEN_ERROR
+</span><span class=c1></span>        <span class=n>expectNoEvents</span><span class=p>()</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>看到我們用了 <code>returnsMany</code> 來一次過定義好幾個 <code>getEtaUseCase</code> 會回傳的值，它會順序地回傳。例如第一次 call 會回傳 <code>EtaResult.InternalServerError</code>、第二次 call 會回傳 <code>EtaResult.Success()</code>……到最底的部分，我們檢查當 <code>getEtaUseCase</code> 回傳了不同的結果時 <code>showFullScreenError</code> 會發射的 <code>Boolean</code> 值。留意是由 <code>EtaResult.Success()</code> 轉到 <code>EtaResult.TooManyRequests</code> 時介面並不需要顯示全頁錯誤畫面，只需要顯示錯誤 banner。因為 <code>showFullScreenError</code> 是 <code>StateFlow</code>，所以並沒有連續發射出兩個 <code>false</code> 出來而是一個 <code>false</code>。</p>
+<p>我們再看另一個類似的 test case <code>showEtaList</code>：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=nd>@Test</span>
+<span class=k>fun</span> <span class=nf>showEtaList</span><span class=p>()</span> <span class=p>=</span> <span class=n>coroutineScope</span><span class=p>.</span><span class=n>runBlockingTest</span> <span class=p>{</span>
+    <span class=n>coEvery</span> <span class=p>{</span>
+        <span class=n>getEtaUseCase</span><span class=p>(</span>
+            <span class=n>Language</span><span class=p>.</span><span class=n>ENGLISH</span><span class=p>,</span>
+            <span class=n>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span>
+            <span class=n>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>,</span>
+            <span class=n>GetEtaUseCase</span><span class=p>.</span><span class=n>SortBy</span><span class=p>.</span><span class=n>DIRECTION</span><span class=p>,</span>
+        <span class=p>)</span>
+    <span class=p>}.</span><span class=n>returnsMany</span><span class=p>(</span>
+        <span class=n>EtaResult</span><span class=p>.</span><span class=n>InternalServerError</span><span class=p>,</span>
+        <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>(),</span>
+        <span class=n>EtaResult</span><span class=p>.</span><span class=n>TooManyRequests</span><span class=p>,</span>
+        <span class=n>EtaResult</span><span class=p>.</span><span class=n>Delay</span><span class=p>,</span>
+    <span class=p>)</span>
+
+    <span class=k>val</span> <span class=py>viewModel</span> <span class=p>=</span> <span class=n>EtaViewModel</span><span class=p>(</span>
+        <span class=n>savedStateHandle</span> <span class=p>=</span> <span class=n>SavedStateHandle</span><span class=p>(</span>
+            <span class=n>mapOf</span><span class=p>(</span>
+                <span class=s2>&#34;line&#34;</span> <span class=n>to</span> <span class=n>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span>
+                <span class=s2>&#34;station&#34;</span> <span class=n>to</span> <span class=n>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>,</span>
+            <span class=p>)</span>
+        <span class=p>),</span>
+        <span class=n>clock</span> <span class=p>=</span> <span class=n>clock</span><span class=p>,</span>
+        <span class=n>getEta</span> <span class=p>=</span> <span class=n>getEtaUseCase</span><span class=p>,</span>
+    <span class=p>)</span>
+
+    <span class=n>viewModel</span><span class=p>.</span><span class=n>showEtaList</span><span class=p>.</span><span class=n>test</span> <span class=p>{</span>
+        <span class=n>viewModel</span><span class=p>.</span><span class=n>startAutoRefresh</span><span class=p>()</span>
+        <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=k>false</span><span class=p>)</span> <span class=c1>// ScreenState.LOADING
+</span><span class=c1></span>        <span class=n>advanceTimeBy</span><span class=p>(</span><span class=n>AUTO_REFRESH_INTERVAL</span><span class=p>)</span>
+        <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=k>true</span><span class=p>)</span> <span class=c1>// ScreenState.ETA, ScreenState.ETA_WITH_ERROR_BANNER
+</span><span class=c1></span>        <span class=n>advanceTimeBy</span><span class=p>(</span><span class=n>AUTO_REFRESH_INTERVAL</span><span class=p>)</span>
+        <span class=n>expectNoEvents</span><span class=p>()</span>
+        <span class=n>advanceTimeBy</span><span class=p>(</span><span class=n>AUTO_REFRESH_INTERVAL</span><span class=p>)</span>
+        <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=k>false</span><span class=p>)</span> <span class=c1>// ScreenState.FULL_SCREEN_ERROR
+</span><span class=c1></span>        <span class=n>expectNoEvents</span><span class=p>()</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>現在掌握到如何操縱時間後，我們就可以寫針對 <code>etaList</code> 的 test case。但首先要準備一下 custom assertion：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>private</span> <span class=k>fun</span> <span class=nf>Assertion</span><span class=p>.</span><span class=n>Builder</span><span class=p>&lt;</span><span class=n>EtaListItem</span><span class=p>&gt;.</span><span class=n>assertHeader</span><span class=p>(</span>
+    <span class=n>direction</span><span class=p>:</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>,</span>
+<span class=p>)</span> <span class=p>=</span> <span class=n>isA</span><span class=p>&lt;</span><span class=n>EtaListItem</span><span class=p>.</span><span class=n>Header</span><span class=p>&gt;().</span><span class=n>and</span> <span class=p>{</span>
+    <span class=k>get</span><span class=p>(</span><span class=n>EtaListItem</span><span class=p>.</span><span class=n>Header</span><span class=o>::</span><span class=n>direction</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=n>direction</span><span class=p>)</span>
+<span class=p>}</span>
+
+<span class=k>private</span> <span class=k>fun</span> <span class=nf>Assertion</span><span class=p>.</span><span class=n>Builder</span><span class=p>&lt;</span><span class=n>EtaListItem</span><span class=p>&gt;.</span><span class=n>assertEta</span><span class=p>(</span>
+    <span class=n>direction</span><span class=p>:</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>,</span>
+    <span class=n>destination</span><span class=p>:</span> <span class=n>Station</span><span class=p>,</span>
+    <span class=n>platform</span><span class=p>:</span> <span class=n>String</span><span class=p>,</span>
+    <span class=n>minuteCountdown</span><span class=p>:</span> <span class=n>Int</span><span class=p>,</span>
+<span class=p>)</span> <span class=p>=</span> <span class=n>isA</span><span class=p>&lt;</span><span class=n>EtaListItem</span><span class=p>.</span><span class=n>Eta</span><span class=p>&gt;().</span><span class=n>and</span> <span class=p>{</span>
+    <span class=k>get</span><span class=p>(</span><span class=n>EtaListItem</span><span class=p>.</span><span class=n>Eta</span><span class=o>::</span><span class=n>direction</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=n>direction</span><span class=p>)</span>
+    <span class=k>get</span><span class=p>(</span><span class=n>EtaListItem</span><span class=p>.</span><span class=n>Eta</span><span class=o>::</span><span class=n>destination</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=n>destination</span><span class=p>)</span>
+    <span class=k>get</span><span class=p>(</span><span class=n>EtaListItem</span><span class=p>.</span><span class=n>Eta</span><span class=o>::</span><span class=n>platform</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=n>platform</span><span class=p>)</span>
+    <span class=k>get</span><span class=p>(</span><span class=n>EtaListItem</span><span class=p>.</span><span class=n>Eta</span><span class=o>::</span><span class=n>minuteCountdown</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=n>minuteCountdown</span><span class=p>)</span>
+<span class=p>}</span>
+</code></pre></div><p>現在先檢查排序切換，看看 <code>etaList</code> 寫的 header 加插是否正確。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=nd>@Test</span>
+<span class=k>fun</span> <span class=nf>`etaList sorting`</span><span class=p>()</span> <span class=p>=</span> <span class=n>coroutineScope</span><span class=p>.</span><span class=n>runBlockingTest</span> <span class=p>{</span>
+    <span class=n>coEvery</span> <span class=p>{</span>
+        <span class=n>getEtaUseCase</span><span class=p>(</span>
+            <span class=n>Language</span><span class=p>.</span><span class=n>ENGLISH</span><span class=p>,</span>
+            <span class=n>Line</span><span class=p>.</span><span class=n>TML</span><span class=p>,</span>
+            <span class=n>Station</span><span class=p>.</span><span class=n>KSR</span><span class=p>,</span>
+            <span class=n>any</span><span class=p>(),</span>
+        <span class=p>)</span>
+    <span class=p>}</span> <span class=n>returns</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>(</span>
+        <span class=n>schedule</span> <span class=p>=</span> <span class=n>listOf</span><span class=p>(</span>
+            <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>(</span>
+                <span class=n>direction</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>,</span>
+                <span class=n>destination</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>TUM</span><span class=p>,</span>
+                <span class=n>platform</span> <span class=p>=</span> <span class=s2>&#34;1&#34;</span><span class=p>,</span>
+                <span class=n>time</span> <span class=p>=</span> <span class=n>ZonedDateTime</span><span class=p>.</span><span class=n>of</span><span class=p>(</span>
+                    <span class=n>DEFAULT_LOCAL_DATE</span><span class=p>,</span>
+                    <span class=n>LocalTime</span><span class=p>.</span><span class=n>of</span><span class=p>(</span><span class=m>13</span><span class=p>,</span> <span class=m>1</span><span class=p>,</span> <span class=m>1</span><span class=p>),</span>
+                    <span class=n>DEFAULT_TIMEZONE</span>
+                <span class=p>).</span><span class=n>toInstant</span><span class=p>()</span>
+            <span class=p>),</span>
+            <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>(</span>
+                <span class=n>direction</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>,</span>
+                <span class=n>destination</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>SIH</span><span class=p>,</span>
+                <span class=n>platform</span> <span class=p>=</span> <span class=s2>&#34;1&#34;</span><span class=p>,</span>
+                <span class=n>time</span> <span class=p>=</span> <span class=n>ZonedDateTime</span><span class=p>.</span><span class=n>of</span><span class=p>(</span>
+                    <span class=n>DEFAULT_LOCAL_DATE</span><span class=p>,</span>
+                    <span class=n>LocalTime</span><span class=p>.</span><span class=n>of</span><span class=p>(</span><span class=m>13</span><span class=p>,</span> <span class=m>7</span><span class=p>,</span> <span class=m>59</span><span class=p>),</span>
+                    <span class=n>DEFAULT_TIMEZONE</span>
+                <span class=p>).</span><span class=n>toInstant</span><span class=p>()</span>
+            <span class=p>),</span>
+            <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>(</span>
+                <span class=n>direction</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>DOWN</span><span class=p>,</span>
+                <span class=n>destination</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>HUH</span><span class=p>,</span>
+                <span class=n>platform</span> <span class=p>=</span> <span class=s2>&#34;2&#34;</span><span class=p>,</span>
+                <span class=n>time</span> <span class=p>=</span> <span class=n>ZonedDateTime</span><span class=p>.</span><span class=n>of</span><span class=p>(</span>
+                    <span class=n>DEFAULT_LOCAL_DATE</span><span class=p>,</span>
+                    <span class=n>LocalTime</span><span class=p>.</span><span class=n>of</span><span class=p>(</span><span class=m>13</span><span class=p>,</span> <span class=m>2</span><span class=p>,</span> <span class=m>2</span><span class=p>),</span>
+                    <span class=n>DEFAULT_TIMEZONE</span>
+                <span class=p>).</span><span class=n>toInstant</span><span class=p>()</span>
+            <span class=p>),</span>
+        <span class=p>),</span>
+    <span class=p>)</span>
+
+    <span class=k>val</span> <span class=py>viewModel</span> <span class=p>=</span> <span class=n>EtaViewModel</span><span class=p>(</span>
+        <span class=n>savedStateHandle</span> <span class=p>=</span> <span class=n>SavedStateHandle</span><span class=p>(</span>
+            <span class=n>mapOf</span><span class=p>(</span>
+                <span class=s2>&#34;line&#34;</span> <span class=n>to</span> <span class=n>Line</span><span class=p>.</span><span class=n>TML</span><span class=p>,</span>
+                <span class=s2>&#34;station&#34;</span> <span class=n>to</span> <span class=n>Station</span><span class=p>.</span><span class=n>KSR</span><span class=p>,</span>
+            <span class=p>)</span>
+        <span class=p>),</span>
+        <span class=n>clock</span> <span class=p>=</span> <span class=n>clock</span><span class=p>,</span>
+        <span class=n>getEta</span> <span class=p>=</span> <span class=n>getEtaUseCase</span><span class=p>,</span>
+    <span class=p>)</span>
+
+    <span class=n>viewModel</span><span class=p>.</span><span class=n>etaList</span><span class=p>.</span><span class=n>test</span> <span class=p>{</span>
+        <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>isEmpty</span><span class=p>()</span>
+        <span class=n>viewModel</span><span class=p>.</span><span class=n>startAutoRefresh</span><span class=p>()</span>
+        <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>hasSize</span><span class=p>(</span><span class=m>5</span><span class=p>).</span><span class=n>and</span> <span class=p>{</span>
+            <span class=k>get</span><span class=p>(</span><span class=m>0</span><span class=p>).</span><span class=n>assertHeader</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=m>1</span><span class=p>).</span><span class=n>assertEta</span><span class=p>(</span>
+                <span class=n>direction</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>,</span>
+                <span class=n>destination</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>TUM</span><span class=p>,</span>
+                <span class=n>platform</span> <span class=p>=</span> <span class=s2>&#34;1&#34;</span><span class=p>,</span>
+                <span class=n>minuteCountdown</span> <span class=p>=</span> <span class=m>1</span><span class=p>,</span>
+            <span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=m>2</span><span class=p>).</span><span class=n>assertEta</span><span class=p>(</span>
+                <span class=n>direction</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>,</span>
+                <span class=n>destination</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>SIH</span><span class=p>,</span>
+                <span class=n>platform</span> <span class=p>=</span> <span class=s2>&#34;1&#34;</span><span class=p>,</span>
+                <span class=n>minuteCountdown</span> <span class=p>=</span> <span class=m>7</span><span class=p>,</span>
+            <span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=m>3</span><span class=p>).</span><span class=n>assertHeader</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>DOWN</span><span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=m>4</span><span class=p>).</span><span class=n>assertEta</span><span class=p>(</span>
+                <span class=n>direction</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>DOWN</span><span class=p>,</span>
+                <span class=n>destination</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>HUH</span><span class=p>,</span>
+                <span class=n>platform</span> <span class=p>=</span> <span class=s2>&#34;2&#34;</span><span class=p>,</span>
+                <span class=n>minuteCountdown</span> <span class=p>=</span> <span class=m>2</span><span class=p>,</span>
+            <span class=p>)</span>
+        <span class=p>}</span>
+        <span class=n>viewModel</span><span class=p>.</span><span class=n>toggleSorting</span><span class=p>()</span>
+        <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>hasSize</span><span class=p>(</span><span class=m>3</span><span class=p>).</span><span class=n>and</span> <span class=p>{</span>
+            <span class=k>get</span><span class=p>(</span><span class=m>0</span><span class=p>).</span><span class=n>assertEta</span><span class=p>(</span>
+                <span class=n>direction</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>,</span>
+                <span class=n>destination</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>TUM</span><span class=p>,</span>
+                <span class=n>platform</span> <span class=p>=</span> <span class=s2>&#34;1&#34;</span><span class=p>,</span>
+                <span class=n>minuteCountdown</span> <span class=p>=</span> <span class=m>1</span><span class=p>,</span>
+            <span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=m>1</span><span class=p>).</span><span class=n>assertEta</span><span class=p>(</span>
+                <span class=n>direction</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>,</span>
+                <span class=n>destination</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>SIH</span><span class=p>,</span>
+                <span class=n>platform</span> <span class=p>=</span> <span class=s2>&#34;1&#34;</span><span class=p>,</span>
+                <span class=n>minuteCountdown</span> <span class=p>=</span> <span class=m>7</span><span class=p>,</span>
+            <span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=m>2</span><span class=p>).</span><span class=n>assertEta</span><span class=p>(</span>
+                <span class=n>direction</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>DOWN</span><span class=p>,</span>
+                <span class=n>destination</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>HUH</span><span class=p>,</span>
+                <span class=n>platform</span> <span class=p>=</span> <span class=s2>&#34;2&#34;</span><span class=p>,</span>
+                <span class=n>minuteCountdown</span> <span class=p>=</span> <span class=m>2</span><span class=p>,</span>
+            <span class=p>)</span>
+        <span class=p>}</span>
+        <span class=n>viewModel</span><span class=p>.</span><span class=n>toggleSorting</span><span class=p>()</span>
+        <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>hasSize</span><span class=p>(</span><span class=m>5</span><span class=p>).</span><span class=n>and</span> <span class=p>{</span>
+            <span class=k>get</span><span class=p>(</span><span class=m>0</span><span class=p>).</span><span class=n>assertHeader</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=m>1</span><span class=p>).</span><span class=n>assertEta</span><span class=p>(</span>
+                <span class=n>direction</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>,</span>
+                <span class=n>destination</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>TUM</span><span class=p>,</span>
+                <span class=n>platform</span> <span class=p>=</span> <span class=s2>&#34;1&#34;</span><span class=p>,</span>
+                <span class=n>minuteCountdown</span> <span class=p>=</span> <span class=m>1</span><span class=p>,</span>
+            <span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=m>2</span><span class=p>).</span><span class=n>assertEta</span><span class=p>(</span>
+                <span class=n>direction</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>,</span>
+                <span class=n>destination</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>SIH</span><span class=p>,</span>
+                <span class=n>platform</span> <span class=p>=</span> <span class=s2>&#34;1&#34;</span><span class=p>,</span>
+                <span class=n>minuteCountdown</span> <span class=p>=</span> <span class=m>7</span><span class=p>,</span>
+            <span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=m>3</span><span class=p>).</span><span class=n>assertHeader</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>DOWN</span><span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=m>4</span><span class=p>).</span><span class=n>assertEta</span><span class=p>(</span>
+                <span class=n>direction</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>DOWN</span><span class=p>,</span>
+                <span class=n>destination</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>HUH</span><span class=p>,</span>
+                <span class=n>platform</span> <span class=p>=</span> <span class=s2>&#34;2&#34;</span><span class=p>,</span>
+                <span class=n>minuteCountdown</span> <span class=p>=</span> <span class=m>2</span><span class=p>,</span>
+            <span class=p>)</span>
+        <span class=p>}</span>
+        <span class=n>expectNoEvents</span><span class=p>()</span>
+    <span class=p>}</span>
+    <span class=n>coVerify</span><span class=p>(</span><span class=n>exactly</span> <span class=p>=</span> <span class=m>2</span><span class=p>)</span> <span class=p>{</span> <span class=n>getEtaUseCase</span><span class=p>(</span><span class=n>any</span><span class=p>(),</span> <span class=n>any</span><span class=p>(),</span> <span class=n>any</span><span class=p>(),</span> <span class=n>GetEtaUseCase</span><span class=p>.</span><span class=n>SortBy</span><span class=p>.</span><span class=n>DIRECTION</span><span class=p>)</span> <span class=p>}</span>
+    <span class=n>coVerify</span><span class=p>(</span><span class=n>exactly</span> <span class=p>=</span> <span class=m>1</span><span class=p>)</span> <span class=p>{</span> <span class=n>getEtaUseCase</span><span class=p>(</span><span class=n>any</span><span class=p>(),</span> <span class=n>any</span><span class=p>(),</span> <span class=n>any</span><span class=p>(),</span> <span class=n>GetEtaUseCase</span><span class=p>.</span><span class=n>SortBy</span><span class=p>.</span><span class=n>TIME</span><span class=p>)</span> <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>看起來很長，但其實很簡單。我們這次沒有快進時間，主要是看它發射出來的班次是否正確。首先在 <code>startAutoRefresh</code> 之前我們先檢查 <code>StateFlow</code> 的初始值 empty list。然後當第一次載入時預設是按方向排序，所以會有 header。之後我們改變排序，於事就變了按時間排序。但因為實際的排序是在 <code>GetEtaUseCaseImpl</code> 做，我們又沒特別 mock 第二次 call <code>getEtaUseCase</code> 的 return value，所以實際結果的排序看起來不合理，但 header 就正如我們的期望被拿走。最後試試切換排序一次，看看是不是跟第一次的結果一樣。最尾的 <code>coVerify</code> 是用來檢查 <code>getEtaUseCase</code> 是不是被執行了兩次按方向排序和一次按時間排序，那些 <code>any()</code> 就是說我們不在乎那些參數的值是甚麼。當然你可以寫明參數的值來確保我們寫的 code 的確合符預期。</p>
+<p>其實如果不用 <a href=https://github.com/cashapp/turbine>Turbine</a> 的話，<code>viewModel.etaList.test</code> 的部分可以寫成這樣：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>val</span> <span class=py>results</span> <span class=p>=</span> <span class=n>mutableListOf</span><span class=p>&lt;</span><span class=n>List</span><span class=p>&lt;</span><span class=n>EtaListItem</span><span class=p>&gt;&gt;()</span>
+<span class=k>val</span> <span class=py>job</span> <span class=p>=</span> <span class=n>launch</span> <span class=p>{</span>
+    <span class=n>viewModel</span><span class=p>.</span><span class=n>etaList</span><span class=p>.</span><span class=n>toList</span><span class=p>(</span><span class=n>results</span><span class=p>)</span>
+<span class=p>}</span>
+<span class=n>viewModel</span><span class=p>.</span><span class=n>startAutoRefresh</span><span class=p>()</span>
+<span class=n>viewModel</span><span class=p>.</span><span class=n>toggleSorting</span><span class=p>()</span>
+<span class=n>viewModel</span><span class=p>.</span><span class=n>toggleSorting</span><span class=p>()</span>
+<span class=n>job</span><span class=p>.</span><span class=n>cancel</span><span class=p>()</span>
+<span class=n>expectThat</span><span class=p>(</span><span class=n>results</span><span class=p>).</span><span class=n>hasSize</span><span class=p>(</span><span class=m>4</span><span class=p>).</span><span class=n>and</span> <span class=p>{</span> <span class=cm>/* 針對每個元素做檢查 */</span> <span class=p>}</span>
+</code></pre></div><p>有時候在寫 test case 時發覺結果不似預期，或許可以用這個寫法看看它的結果是甚麼然後才想想那裏出現問題。</p>
+<p>接下來是另一個 test，這是為了測試當首次載入後能否在十秒後自動 call <code>getEtaUseCase</code> 一次取得最新班次。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=nd>@Test</span>
+<span class=k>fun</span> <span class=nf>`etaList auto refresh automatically after loaded`</span><span class=p>()</span> <span class=p>=</span> <span class=n>coroutineScope</span><span class=p>.</span><span class=n>runBlockingTest</span> <span class=p>{</span>
+    <span class=n>coEvery</span> <span class=p>{</span>
+        <span class=n>getEtaUseCase</span><span class=p>(</span>
+            <span class=n>Language</span><span class=p>.</span><span class=n>ENGLISH</span><span class=p>,</span>
+            <span class=n>Line</span><span class=p>.</span><span class=n>TML</span><span class=p>,</span>
+            <span class=n>Station</span><span class=p>.</span><span class=n>KSR</span><span class=p>,</span>
+            <span class=n>GetEtaUseCase</span><span class=p>.</span><span class=n>SortBy</span><span class=p>.</span><span class=n>DIRECTION</span><span class=p>,</span>
+        <span class=p>)</span>
+    <span class=p>}.</span><span class=n>returnsMany</span><span class=p>(</span>
+        <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>(</span>
+            <span class=n>schedule</span> <span class=p>=</span> <span class=n>listOf</span><span class=p>(</span>
+                <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>(</span>
+                    <span class=n>direction</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>,</span>
+                    <span class=n>destination</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>TUM</span><span class=p>,</span>
+                    <span class=n>platform</span> <span class=p>=</span> <span class=s2>&#34;1&#34;</span><span class=p>,</span>
+                    <span class=n>time</span> <span class=p>=</span> <span class=n>ZonedDateTime</span><span class=p>.</span><span class=n>of</span><span class=p>(</span>
+                        <span class=n>DEFAULT_LOCAL_DATE</span><span class=p>,</span>
+                        <span class=n>LocalTime</span><span class=p>.</span><span class=n>of</span><span class=p>(</span><span class=m>13</span><span class=p>,</span> <span class=m>1</span><span class=p>,</span> <span class=m>1</span><span class=p>),</span>
+                        <span class=n>DEFAULT_TIMEZONE</span>
+                    <span class=p>).</span><span class=n>toInstant</span><span class=p>()</span>
+                <span class=p>),</span>
+            <span class=p>),</span>
+        <span class=p>),</span>
+        <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>(</span>
+            <span class=n>schedule</span> <span class=p>=</span> <span class=n>listOf</span><span class=p>(</span>
+                <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>(</span>
+                    <span class=n>direction</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>DOWN</span><span class=p>,</span>
+                    <span class=n>destination</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>TIS</span><span class=p>,</span>
+                    <span class=n>platform</span> <span class=p>=</span> <span class=s2>&#34;8&#34;</span><span class=p>,</span>
+                    <span class=n>time</span> <span class=p>=</span> <span class=n>ZonedDateTime</span><span class=p>.</span><span class=n>of</span><span class=p>(</span>
+                        <span class=n>DEFAULT_LOCAL_DATE</span><span class=p>,</span>
+                        <span class=n>LocalTime</span><span class=p>.</span><span class=n>of</span><span class=p>(</span><span class=m>13</span><span class=p>,</span> <span class=m>14</span><span class=p>,</span> <span class=m>0</span><span class=p>),</span>
+                        <span class=n>DEFAULT_TIMEZONE</span>
+                    <span class=p>).</span><span class=n>toInstant</span><span class=p>()</span>
+                <span class=p>),</span>
+            <span class=p>),</span>
+        <span class=p>)</span>
+    <span class=p>)</span>
+
+    <span class=k>val</span> <span class=py>viewModel</span> <span class=p>=</span> <span class=n>EtaViewModel</span><span class=p>(</span>
+        <span class=n>savedStateHandle</span> <span class=p>=</span> <span class=n>SavedStateHandle</span><span class=p>(</span>
+            <span class=n>mapOf</span><span class=p>(</span>
+                <span class=s2>&#34;line&#34;</span> <span class=n>to</span> <span class=n>Line</span><span class=p>.</span><span class=n>TML</span><span class=p>,</span>
+                <span class=s2>&#34;station&#34;</span> <span class=n>to</span> <span class=n>Station</span><span class=p>.</span><span class=n>KSR</span><span class=p>,</span>
+            <span class=p>)</span>
+        <span class=p>),</span>
+        <span class=n>clock</span> <span class=p>=</span> <span class=n>clock</span><span class=p>,</span>
+        <span class=n>getEta</span> <span class=p>=</span> <span class=n>getEtaUseCase</span><span class=p>,</span>
+    <span class=p>)</span>
+
+    <span class=n>viewModel</span><span class=p>.</span><span class=n>etaList</span><span class=p>.</span><span class=n>test</span> <span class=p>{</span>
+        <span class=n>viewModel</span><span class=p>.</span><span class=n>startAutoRefresh</span><span class=p>()</span>
+        <span class=c1>// StateFlow 初始值
+</span><span class=c1></span>        <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>isEmpty</span><span class=p>()</span>
+        <span class=c1>// 第一次 getEtaUseCase
+</span><span class=c1></span>        <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>hasSize</span><span class=p>(</span><span class=m>2</span><span class=p>).</span><span class=n>and</span> <span class=p>{</span>
+            <span class=k>get</span><span class=p>(</span><span class=m>0</span><span class=p>).</span><span class=n>assertHeader</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=m>1</span><span class=p>).</span><span class=n>assertEta</span><span class=p>(</span>
+                <span class=n>direction</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>,</span>
+                <span class=n>destination</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>TUM</span><span class=p>,</span>
+                <span class=n>platform</span> <span class=p>=</span> <span class=s2>&#34;1&#34;</span><span class=p>,</span>
+                <span class=n>minuteCountdown</span> <span class=p>=</span> <span class=m>1</span><span class=p>,</span>
+            <span class=p>)</span>
+        <span class=p>}</span>
+        <span class=c1>// 快進到下一次更新時間
+</span><span class=c1></span>        <span class=n>advanceTimeBy</span><span class=p>(</span><span class=n>AUTO_REFRESH_INTERVAL</span><span class=p>)</span>
+        <span class=c1>// 第二次 getEtaUseCase 執行中，目前仍然是用第一次 getEtaUseCase 的結果，
+</span><span class=c1></span>        <span class=c1>// 但因為重新執行 etaList 內的 combine 所以會重新計算倒數分鐘
+</span><span class=c1></span>        <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>hasSize</span><span class=p>(</span><span class=m>2</span><span class=p>).</span><span class=n>and</span> <span class=p>{</span>
+            <span class=k>get</span><span class=p>(</span><span class=m>0</span><span class=p>).</span><span class=n>assertHeader</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=m>1</span><span class=p>).</span><span class=n>assertEta</span><span class=p>(</span>
+                <span class=n>direction</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>,</span>
+                <span class=n>destination</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>TUM</span><span class=p>,</span>
+                <span class=n>platform</span> <span class=p>=</span> <span class=s2>&#34;1&#34;</span><span class=p>,</span>
+                <span class=n>minuteCountdown</span> <span class=p>=</span> <span class=m>0</span><span class=p>,</span>
+            <span class=p>)</span>
+        <span class=p>}</span>
+        <span class=c1>// 第二次 getEtaUseCase
+</span><span class=c1></span>        <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>hasSize</span><span class=p>(</span><span class=m>2</span><span class=p>).</span><span class=n>and</span> <span class=p>{</span>
+            <span class=k>get</span><span class=p>(</span><span class=m>0</span><span class=p>).</span><span class=n>assertHeader</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>DOWN</span><span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=m>1</span><span class=p>).</span><span class=n>assertEta</span><span class=p>(</span>
+                <span class=n>direction</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>DOWN</span><span class=p>,</span>
+                <span class=n>destination</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>TIS</span><span class=p>,</span>
+                <span class=n>platform</span> <span class=p>=</span> <span class=s2>&#34;8&#34;</span><span class=p>,</span>
+                <span class=n>minuteCountdown</span> <span class=p>=</span> <span class=m>13</span><span class=p>,</span>
+            <span class=p>)</span>
+        <span class=p>}</span>
+        <span class=n>expectNoEvents</span><span class=p>()</span>
+    <span class=p>}</span>
+    <span class=n>coVerify</span><span class=p>(</span><span class=n>exactly</span> <span class=p>=</span> <span class=m>2</span><span class=p>)</span> <span class=p>{</span>
+        <span class=n>getEtaUseCase</span><span class=p>(</span>
+            <span class=n>Language</span><span class=p>.</span><span class=n>ENGLISH</span><span class=p>,</span>
+            <span class=n>Line</span><span class=p>.</span><span class=n>TML</span><span class=p>,</span>
+            <span class=n>Station</span><span class=p>.</span><span class=n>KSR</span><span class=p>,</span>
+            <span class=n>GetEtaUseCase</span><span class=p>.</span><span class=n>SortBy</span><span class=p>.</span><span class=n>DIRECTION</span><span class=p>,</span>
+        <span class=p>)</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>基本上寫法都是大同小異，只是要留意我們之前寫的 logic 是有載入中這個過程，當 <code>etaResult</code> 發射載入中的時候 <code>etaList</code> 還是會沿用上一次的結果來輸出，然後當新的 <code>getEtaUseCase</code> 結果來到後就用新的結果轉化出供 <code>RecyclerView</code> 顯示的內容。</p>
+<p>最後來多一個 test case 測試當 <code>Fragment</code> <code>onPause</code> 再 <code>onResume</code> 的情景。這個重新返回班次頁的情景可以分為兩個：在十秒內返回和過十秒後返回。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=nd>@Test</span>
+<span class=k>fun</span> <span class=nf>`etaList stop and resume auto refresh`</span><span class=p>()</span> <span class=p>=</span>
+    <span class=n>coroutineScope</span><span class=p>.</span><span class=n>runBlockingTest</span> <span class=p>{</span>
+        <span class=n>coEvery</span> <span class=p>{</span>
+            <span class=n>getEtaUseCase</span><span class=p>(</span>
+                <span class=n>Language</span><span class=p>.</span><span class=n>ENGLISH</span><span class=p>,</span>
+                <span class=n>Line</span><span class=p>.</span><span class=n>TKL</span><span class=p>,</span>
+                <span class=n>Station</span><span class=p>.</span><span class=n>QUB</span><span class=p>,</span>
+                <span class=n>GetEtaUseCase</span><span class=p>.</span><span class=n>SortBy</span><span class=p>.</span><span class=n>DIRECTION</span><span class=p>,</span>
+            <span class=p>)</span>
+        <span class=p>}.</span><span class=n>returnsMany</span><span class=p>(</span>
+            <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>(</span>
+                <span class=n>schedule</span> <span class=p>=</span> <span class=n>listOf</span><span class=p>(</span>
+                    <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>(</span>
+                        <span class=n>direction</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>,</span>
+                        <span class=n>destination</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>LHP</span><span class=p>,</span>
+                        <span class=n>platform</span> <span class=p>=</span> <span class=s2>&#34;1&#34;</span><span class=p>,</span>
+                        <span class=n>time</span> <span class=p>=</span> <span class=n>ZonedDateTime</span><span class=p>.</span><span class=n>of</span><span class=p>(</span>
+                            <span class=n>DEFAULT_LOCAL_DATE</span><span class=p>,</span>
+                            <span class=n>LocalTime</span><span class=p>.</span><span class=n>of</span><span class=p>(</span><span class=m>13</span><span class=p>,</span> <span class=m>20</span><span class=p>,</span> <span class=m>30</span><span class=p>),</span>
+                            <span class=n>DEFAULT_TIMEZONE</span>
+                        <span class=p>).</span><span class=n>toInstant</span><span class=p>(),</span>
+                    <span class=p>),</span>
+                <span class=p>),</span>
+            <span class=p>),</span>
+            <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>(</span>
+                <span class=n>schedule</span> <span class=p>=</span> <span class=n>listOf</span><span class=p>(</span>
+                    <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>(</span>
+                        <span class=n>direction</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>,</span>
+                        <span class=n>destination</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>LHP</span><span class=p>,</span>
+                        <span class=n>platform</span> <span class=p>=</span> <span class=s2>&#34;2&#34;</span><span class=p>,</span>
+                        <span class=n>time</span> <span class=p>=</span> <span class=n>ZonedDateTime</span><span class=p>.</span><span class=n>of</span><span class=p>(</span>
+                            <span class=n>DEFAULT_LOCAL_DATE</span><span class=p>,</span>
+                            <span class=n>LocalTime</span><span class=p>.</span><span class=n>of</span><span class=p>(</span><span class=m>13</span><span class=p>,</span> <span class=m>30</span><span class=p>,</span> <span class=m>0</span><span class=p>),</span>
+                            <span class=n>DEFAULT_TIMEZONE</span>
+                        <span class=p>).</span><span class=n>toInstant</span><span class=p>(),</span>
+                    <span class=p>),</span>
+                <span class=p>),</span>
+            <span class=p>),</span>
+            <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>(</span>
+                <span class=n>schedule</span> <span class=p>=</span> <span class=n>listOf</span><span class=p>(</span>
+                    <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>(</span>
+                        <span class=n>direction</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>,</span>
+                        <span class=n>destination</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>LHP</span><span class=p>,</span>
+                        <span class=n>platform</span> <span class=p>=</span> <span class=s2>&#34;3&#34;</span><span class=p>,</span>
+                        <span class=n>time</span> <span class=p>=</span> <span class=n>ZonedDateTime</span><span class=p>.</span><span class=n>of</span><span class=p>(</span>
+                            <span class=n>DEFAULT_LOCAL_DATE</span><span class=p>,</span>
+                            <span class=n>LocalTime</span><span class=p>.</span><span class=n>of</span><span class=p>(</span><span class=m>13</span><span class=p>,</span> <span class=m>30</span><span class=p>,</span> <span class=m>0</span><span class=p>),</span>
+                            <span class=n>DEFAULT_TIMEZONE</span>
+                        <span class=p>).</span><span class=n>toInstant</span><span class=p>(),</span>
+                    <span class=p>),</span>
+                <span class=p>),</span>
+            <span class=p>),</span>
+        <span class=p>)</span>
+
+        <span class=k>val</span> <span class=py>viewModel</span> <span class=p>=</span> <span class=n>EtaViewModel</span><span class=p>(</span>
+            <span class=n>savedStateHandle</span> <span class=p>=</span> <span class=n>SavedStateHandle</span><span class=p>(</span>
+                <span class=n>mapOf</span><span class=p>(</span>
+                    <span class=s2>&#34;line&#34;</span> <span class=n>to</span> <span class=n>Line</span><span class=p>.</span><span class=n>TKL</span><span class=p>,</span>
+                    <span class=s2>&#34;station&#34;</span> <span class=n>to</span> <span class=n>Station</span><span class=p>.</span><span class=n>QUB</span><span class=p>,</span>
+                <span class=p>)</span>
+            <span class=p>),</span>
+            <span class=n>clock</span> <span class=p>=</span> <span class=n>clock</span><span class=p>,</span>
+            <span class=n>getEta</span> <span class=p>=</span> <span class=n>getEtaUseCase</span><span class=p>,</span>
+        <span class=p>)</span>
+
+        <span class=n>viewModel</span><span class=p>.</span><span class=n>etaList</span><span class=p>.</span><span class=n>test</span> <span class=p>{</span>
+            <span class=n>viewModel</span><span class=p>.</span><span class=n>startAutoRefresh</span><span class=p>()</span>
+            <span class=c1>// StateFlow 初始值
+</span><span class=c1></span>            <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>isEmpty</span><span class=p>()</span>
+            <span class=c1>// 第一次 getEtaUseCase
+</span><span class=c1></span>            <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>hasSize</span><span class=p>(</span><span class=m>2</span><span class=p>).</span><span class=n>and</span> <span class=p>{</span>
+                <span class=k>get</span><span class=p>(</span><span class=m>0</span><span class=p>).</span><span class=n>assertHeader</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>)</span>
+                <span class=k>get</span><span class=p>(</span><span class=m>1</span><span class=p>).</span><span class=n>assertEta</span><span class=p>(</span>
+                    <span class=n>direction</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>,</span>
+                    <span class=n>destination</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>LHP</span><span class=p>,</span>
+                    <span class=n>platform</span> <span class=p>=</span> <span class=s2>&#34;1&#34;</span><span class=p>,</span>
+                    <span class=n>minuteCountdown</span> <span class=p>=</span> <span class=m>20</span><span class=p>,</span>
+                <span class=p>)</span>
+            <span class=p>}</span>
+            <span class=n>viewModel</span><span class=p>.</span><span class=n>stopAutoRefresh</span><span class=p>()</span>
+            <span class=n>advanceTimeBy</span><span class=p>(</span><span class=n>KotlinDuration</span><span class=p>.</span><span class=n>seconds</span><span class=p>(</span><span class=m>5</span><span class=p>))</span>
+            <span class=n>expectNoEvents</span><span class=p>()</span>
+            <span class=n>viewModel</span><span class=p>.</span><span class=n>startAutoRefresh</span><span class=p>()</span>
+            <span class=c1>// 未夠十秒，上游不會有新的值
+</span><span class=c1></span>            <span class=n>expectNoEvents</span><span class=p>()</span>
+            <span class=n>advanceTimeBy</span><span class=p>(</span><span class=n>KotlinDuration</span><span class=p>.</span><span class=n>seconds</span><span class=p>(</span><span class=m>5</span><span class=p>))</span>
+            <span class=c1>// 第二次 getEtaUseCase
+</span><span class=c1></span>            <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>hasSize</span><span class=p>(</span><span class=m>2</span><span class=p>).</span><span class=n>and</span> <span class=p>{</span>
+                <span class=k>get</span><span class=p>(</span><span class=m>0</span><span class=p>).</span><span class=n>assertHeader</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>)</span>
+                <span class=k>get</span><span class=p>(</span><span class=m>1</span><span class=p>).</span><span class=n>assertEta</span><span class=p>(</span>
+                    <span class=n>direction</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>,</span>
+                    <span class=n>destination</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>LHP</span><span class=p>,</span>
+                    <span class=n>platform</span> <span class=p>=</span> <span class=s2>&#34;2&#34;</span><span class=p>,</span>
+                    <span class=n>minuteCountdown</span> <span class=p>=</span> <span class=m>29</span><span class=p>,</span>
+                <span class=p>)</span>
+            <span class=p>}</span>
+            <span class=n>expectNoEvents</span><span class=p>()</span>
+            <span class=n>viewModel</span><span class=p>.</span><span class=n>stopAutoRefresh</span><span class=p>()</span>
+            <span class=n>advanceTimeBy</span><span class=p>(</span><span class=n>KotlinDuration</span><span class=p>.</span><span class=n>minutes</span><span class=p>(</span><span class=m>20</span><span class=p>))</span>
+            <span class=n>viewModel</span><span class=p>.</span><span class=n>startAutoRefresh</span><span class=p>()</span>
+            <span class=c1>// 第三次 getEtaUseCase 執行中，仍然是用第二次 getEtaUseCase
+</span><span class=c1></span>            <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>hasSize</span><span class=p>(</span><span class=m>2</span><span class=p>).</span><span class=n>and</span> <span class=p>{</span>
+                <span class=k>get</span><span class=p>(</span><span class=m>0</span><span class=p>).</span><span class=n>assertHeader</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>)</span>
+                <span class=k>get</span><span class=p>(</span><span class=m>1</span><span class=p>).</span><span class=n>assertEta</span><span class=p>(</span>
+                    <span class=n>direction</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>,</span>
+                    <span class=n>destination</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>LHP</span><span class=p>,</span>
+                    <span class=n>platform</span> <span class=p>=</span> <span class=s2>&#34;2&#34;</span><span class=p>,</span>
+                    <span class=n>minuteCountdown</span> <span class=p>=</span> <span class=m>9</span><span class=p>,</span>
+                <span class=p>)</span>
+            <span class=p>}</span>
+						<span class=c1>// 第三次 getEtaUseCase
+</span><span class=c1></span>            <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>hasSize</span><span class=p>(</span><span class=m>2</span><span class=p>).</span><span class=n>and</span> <span class=p>{</span>
+                <span class=k>get</span><span class=p>(</span><span class=m>0</span><span class=p>).</span><span class=n>assertHeader</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>)</span>
+                <span class=k>get</span><span class=p>(</span><span class=m>1</span><span class=p>).</span><span class=n>assertEta</span><span class=p>(</span>
+                    <span class=n>direction</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>,</span>
+                    <span class=n>destination</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>LHP</span><span class=p>,</span>
+                    <span class=n>platform</span> <span class=p>=</span> <span class=s2>&#34;3&#34;</span><span class=p>,</span>
+                    <span class=n>minuteCountdown</span> <span class=p>=</span> <span class=m>9</span><span class=p>,</span>
+                <span class=p>)</span>
+            <span class=p>}</span>
+            <span class=n>expectNoEvents</span><span class=p>()</span>
+        <span class=p>}</span>
+        <span class=n>coVerify</span><span class=p>(</span><span class=n>exactly</span> <span class=p>=</span> <span class=m>3</span><span class=p>)</span> <span class=p>{</span>
+            <span class=n>getEtaUseCase</span><span class=p>(</span>
+                <span class=n>Language</span><span class=p>.</span><span class=n>ENGLISH</span><span class=p>,</span>
+                <span class=n>Line</span><span class=p>.</span><span class=n>TKL</span><span class=p>,</span>
+                <span class=n>Station</span><span class=p>.</span><span class=n>QUB</span><span class=p>,</span>
+                <span class=n>GetEtaUseCase</span><span class=p>.</span><span class=n>SortBy</span><span class=p>.</span><span class=n>DIRECTION</span><span class=p>,</span>
+            <span class=p>)</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+</code></pre></div><h2 id=小結>小結<a hidden class=anchor aria-hidden=true href=#小結>#</a></h2>
+<p>這次的 code 比較長，這是因為那些 use case 的 return value 本身都很長，加上每個值都要做 assertion，但 test case 的寫法來來去去都是差不多。本篇主要介紹了 Kotlin Coroutine 測試時如何快進時間，另外亦實際示範了為甚麼我們要用 <code>Clock</code> 來獲取當前時間。其餘的 test case 因為性質相近所以我就不再寫了，因為現在都可以示範到那些手法。而我們的班次示範 app 來到現在都大致上完結，下篇會再抽一些題目再討論一下。這次的 code 可以在 <a href=https://github.com/ericksli/eta-demo/blob/main/app/src/test/java/net/swiftzer/etademo/presentation/eta/EtaViewModelTest.kt>GitHub repo</a> 找到。</p>
+</div>
+<footer class=post-footer>
+<ul class=post-tags>
+<li><a href=https://eric.swiftzer.net/tags/2021-ithome-%E9%90%B5%E4%BA%BA%E8%B3%BD/>2021 iThome 鐵人賽</a></li>
+<li><a href=https://eric.swiftzer.net/tags/android/>Android</a></li>
+</ul>
+<nav class=paginav>
+<a class=prev href=https://eric.swiftzer.net/2021/10/2021-ithome-ironman-29-leftover-topics/>
+<span class=title>« Prev Page</span>
+<br>
+<span>2021 iThome 鐵人賽 Day 29：Leftover topics</span>
+</a>
+<a class=next href=https://eric.swiftzer.net/2021/10/2021-ithome-ironman-27-eta-screen-testing-1/>
+<span class=title>Next Page »</span>
+<br>
+<span>2021 iThome 鐵人賽 Day 27：ETA screen testing (1)</span>
+</a>
+</nav>
+</footer><div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//efilm.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</article>
+</main><footer class=footer>
+<span>&copy; 2021 <a href=https://eric.swiftzer.net/>EricLog</a></span>
+<span>&#183;</span>
+<span>Powered by <a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a></span>
+<span>&#183;</span>
+<span>Theme <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span>
+</footer>
+<a href=#top aria-label="go to top" title="Go to Top (Alt + G)">
+<button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</button>
+</a>
+<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
+<script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script>
+<script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
+</body>
+</html>

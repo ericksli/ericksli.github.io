@@ -73,137 +73,132 @@
 <article class=post-entry>
 <header class=entry-header>
 <h2>
-自己造一個 CocoaPods Framework Pod
+文字末端 icon 排版
 </h2>
 </header>
 <section class=entry-content>
-<p>最近工作需要將一個 tvOS app 的某些 class 抽出來變成能被 CocoaPods 安裝的私家 close source framework 讓其他人用。我都是第一次做 framework，在網上的教學主要都是教純 Xcode 的做法和使用 CocoaPods 下載 project dependency，詳細提及如何造一個 CocoaPods Pod 就比較少人寫。所以就寫出來跟大家分享。
-...</p>
+<p>以前試過做一些 UI 是 TextView 旁邊有一個 icon，然後同一行最右邊會有另一個 Button。如果文字過長就加上省略號，但文字不夠長的話 icon 要緊貼那個文字而...</p>
 </section>
-<footer class=entry-footer>September 28, 2016
+<footer class=entry-footer>April 10, 2021
 </footer>
-<a class=entry-link aria-label="post link to 自己造一個 CocoaPods Framework Pod" href=https://eric.swiftzer.net/2016/09/cocoapods-framework-pod/></a>
+<a class=entry-link aria-label="post link to 文字末端 icon 排版" href=https://eric.swiftzer.net/2021/04/text-with-icon/></a>
 </article>
 <article class=post-entry>
 <header class=entry-header>
 <h2>
-xUnique
+Android SMS Verification APIs
 </h2>
 </header>
 <section class=entry-content>
-<p>Xcode project 有個特色就是 VCS unfriendly。例子有 project.pbxproj 會有自動產生的 hash 和開啟 xib、storyboard 時不論有沒有修改過內容都好 Xcode 還是自動會將 macOS...</p>
+<p>SMS 驗證應該是一個在 Android app 頗為常見的需求。一般做法都是先讓用戶填寫電話號碼，然後 app 會把電話號碼交到 backend 再透過 SMS gateway 發送含有驗證碼短訊， 當用戶收到 SMS 後...</p>
 </section>
-<footer class=entry-footer>September 24, 2016
+<footer class=entry-footer>March 14, 2021
 </footer>
-<a class=entry-link aria-label="post link to xUnique" href=https://eric.swiftzer.net/2016/09/xunique/></a>
+<a class=entry-link aria-label="post link to Android SMS Verification APIs" href=https://eric.swiftzer.net/2021/03/android-sms-verification-apis/></a>
 </article>
 <article class=post-entry>
 <header class=entry-header>
 <h2>
-在 Android app 內顯示 Git commit hash
+Notification Channel 自訂音效
 </h2>
 </header>
 <section class=entry-content>
-<p>有些 Android app 除了顯示版本號碼之外，還會有該版本的 Git commit hash。如果有好幾部測試機做測試的話，可能會在開發時先後在不同的機安裝過不同版本的 app。但就沒有每次都更新版本號碼。加了 commit hash 就容易分辨 app 的實際版本。其實要顯示 commit hash 的做法不太難，不需要每次人手更改的。只需要改一下 app 的 build.gradle 就可以了。
-...</p>
+<p>自從由 Android 8 開始，如果要顯示 notification 的話就一定要指定一個 notification channel，否則系統不會顯示。Notification channel 的目的是讓用戶能自行調節 app 的各...</p>
 </section>
-<footer class=entry-footer>August 29, 2016
+<footer class=entry-footer>March 13, 2021
 </footer>
-<a class=entry-link aria-label="post link to 在 Android app 內顯示 Git commit hash" href=https://eric.swiftzer.net/2016/08/android-app-git-commit-hash/></a>
+<a class=entry-link aria-label="post link to Notification Channel 自訂音效" href=https://eric.swiftzer.net/2021/03/notification-channel-custom-sound/></a>
 </article>
 <article class=post-entry>
 <header class=entry-header>
 <h2>
-Photosphere
+Jetpack DataStore 搭配 kotlinx.serialization Protobuf
 </h2>
 </header>
 <section class=entry-content>
-<p>早前 Facebook 的 360 Photos 令 Photosphre 流行起來。沒有 360 camera 的話，可以用手機應用程式駁相。不過用手機影相畫質會比較差。所以這次試試用相機拍攝 Photosphere。 以...</p>
+<p>上月 kotlinx.serialization 出了 1.0 版。除了支援 JSON 之外，還有支援 Protocol Buffers (Protobuf)，而且還是跨平台支援。而在前一個月 Android 出了 Jetpack DataStore，它是一個用來取...</p>
 </section>
-<footer class=entry-footer>July 31, 2016
+<footer class=entry-footer>November 14, 2020
 </footer>
-<a class=entry-link aria-label="post link to Photosphere" href=https://eric.swiftzer.net/2016/07/photosphere/></a>
+<a class=entry-link aria-label="post link to Jetpack DataStore 搭配 kotlinx.serialization Protobuf" href=https://eric.swiftzer.net/2020/11/androidx-datastore-with-kotlinx-serialization-protobuf/></a>
 </article>
 <article class=post-entry>
 <header class=entry-header>
 <h2>
-Olympus E-M10
+Conventional Commits 和 commitlint
 </h2>
 </header>
 <section class=entry-content>
-<p>不經不覺我的 Olympus E-M10 相機買了都有一年了。這一年來都影了大概有四千多張相片。最初買相機的原因主要是用來拍畢業相，而且之前用的 Canon PowerShot A640 不知是不是因為發霉的關係，拍出來的相片都好像有一層霧般灰曚曚般。所以想買一部新的來取代它。亦因為這個原因，近年來都是用手機影相為主。
-...</p>
+<p>Conventional Commits 是一個簡單的 Git commit message 約定，用來規定 commit message 的寫法。Git 本身就沒有規定 commit message 的內容格式，所以不同人會有不同的做法。如果 repository 只是有一個或幾個人用的話...</p>
 </section>
-<footer class=entry-footer>July 8, 2016
+<footer class=entry-footer>August 24, 2020
 </footer>
-<a class=entry-link aria-label="post link to Olympus E-M10" href=https://eric.swiftzer.net/2016/07/olympus-em10/></a>
+<a class=entry-link aria-label="post link to Conventional Commits 和 commitlint" href=https://eric.swiftzer.net/2020/08/conventional-commits-commitlint/></a>
 </article>
 <article class=post-entry>
 <header class=entry-header>
 <h2>
-轉用 Hexo
+Java 量度單位 (JSR 363 Units of Measurement API)
 </h2>
 </header>
 <section class=entry-content>
-<p>之前一直都想用 static site generator 來取代沿用的 WordPress。現在終於由 WordPress 轉到 Hexo，並且將網站改用 GitHub Pages 架站。 Hexo 是一個用 Node 寫的 static site generator...</p>
+<p>在日常生活中，我們都會用到不同的量度單位。例如重量有時會用公斤 (kg)，有時會用磅 (lb)，有時又會用斤之類。如果在 Java 上表示這些數值，用 in...</p>
 </section>
-<footer class=entry-footer>March 21, 2016
+<footer class=entry-footer>August 13, 2020
 </footer>
-<a class=entry-link aria-label="post link to 轉用 Hexo" href=https://eric.swiftzer.net/2016/03/migrated-to-hexo/></a>
+<a class=entry-link aria-label="post link to Java 量度單位 (JSR 363 Units of Measurement API)" href=https://eric.swiftzer.net/2020/08/javax-measure/></a>
 </article>
 <article class=post-entry>
 <header class=entry-header>
 <h2>
-在 Windows 刪除路徑名太長的檔案
+Kotlin Annotation Processor
 </h2>
 </header>
 <section class=entry-content>
-<p>通常寫 JavaScript project 都會用到 NPM，NPM 和其他 package manager 不同之處就是每個 package 的 dependency 都會放在其 package 內的 node_modules 資料夾，而不會將所有 dependency 放去同一個資料夾內。這個做法的好處是...</p>
+<p>如果有做過 Android 開發的話應該都有用過 annotation processor（又稱 codegen），即是在 build.gradle 入面要用 annotationProcessor 或者 kapt 的那些 dependency。用法大概是在...</p>
 </section>
-<footer class=entry-footer>September 21, 2015
+<footer class=entry-footer>April 27, 2020
 </footer>
-<a class=entry-link aria-label="post link to 在 Windows 刪除路徑名太長的檔案" href=https://eric.swiftzer.net/2015/09/delete-long-path-in-windows/></a>
+<a class=entry-link aria-label="post link to Kotlin Annotation Processor" href=https://eric.swiftzer.net/2020/04/kotlin-annotation-processor/></a>
 </article>
 <article class=post-entry>
 <header class=entry-header>
 <h2>
-Parse + Android 收 Push Notification
+Moshi Kotlin Codegen + R8 出現 parameter type is null
 </h2>
 </header>
 <section class=entry-content>
-<p>Parse 的免費 plan 包含了一百萬個接收者的 push 配額，應該足夠一般 app 使用，而且比起自設 server 發送 push notification 更加方便（不用去 Google Developers Console 開 project）。但 Parse 網站所提供的 Android 的教學有點不清楚，而且都過時。在此分享一下 Android 版的基本 setup。
-...</p>
+<p>Moshi 是一個 JSON serialization/deserialization 的 library。和 Gson 不同的是它提供了 Kotlin Codegen，它可以生成 serialization/deserialization 的 adapter class，所以可以避免使用 reflection，而且 adapter...</p>
 </section>
-<footer class=entry-footer>August 30, 2015
+<footer class=entry-footer>March 15, 2020
 </footer>
-<a class=entry-link aria-label="post link to Parse + Android 收 Push Notification" href=https://eric.swiftzer.net/2015/08/parse-android-push-notification/></a>
+<a class=entry-link aria-label="post link to Moshi Kotlin Codegen + R8 出現 parameter type is null" href=https://eric.swiftzer.net/2020/03/moshi-r8-parameter-type-is-null/></a>
 </article>
 <article class=post-entry>
 <header class=entry-header>
 <h2>
-整理 MP3 ID3 tag
+Firebase Crashlytics 的 CrashlyticsOrgIdException 解決方法
 </h2>
 </header>
 <section class=entry-content>
-<p>之前有整埋 MP3 的 ID3 tag，以下是我的小分享。 如果要整理 MP3 檔的 ID3 tag 的話，可以用 Mp3tag。在設定頁，揀選 Tags | Mpeg，在 Write 部分只剔選 ID3v2...</p>
+<p>最近為自己的 app 加入 Firebase Crashlytics SDK beta（即是使用 Google 的 Firebase Crashlytics Gradle plugin 而不是用 Fabric 那個），但在 build release APK 時出現下面的錯誤： java.io.IOException: com.google.firebase.crashlytics.buildtools.exception.CrashlyticsOrgIdException: Could not fetch Crashlytics Org Id > com.google.firebase.crashlytics.buildtools.exception.CrashlyticsOrgIdException: Could not fetch Crashlytics Org Id > Could not fetch...</p>
 </section>
-<footer class=entry-footer>May 17, 2015
+<footer class=entry-footer>March 14, 2020
 </footer>
-<a class=entry-link aria-label="post link to 整理 MP3 ID3 tag" href=https://eric.swiftzer.net/2015/05/managing-mp3-id3-tag/></a>
+<a class=entry-link aria-label="post link to Firebase Crashlytics 的 CrashlyticsOrgIdException 解決方法" href=https://eric.swiftzer.net/2020/03/firebase-crashlyticsorgidexception/></a>
 </article>
 <article class=post-entry>
 <header class=entry-header>
 <h2>
-Inline CSS
+Firebase Cloud Messaging
 </h2>
 </header>
 <section class=entry-content>
-<p>最近需要寫一個發送 email 的 program。如果要用 HTML 的話，最好都是找到現成的 HTML email framework。（例如 Zurb 的 Ink，其他的可以參考 Responsive Email Resources 網站）因為 HTML email 和平時做網頁分別很大，例如：
-CSS 要 inline，&lt;style> 並不是全部 email client 都能支援 排版要用 &lt;table> 圖片視乎需要當成附件，Base64 未必能被 email client 支援 但設計 email 時如果要寫 inline style 是非常難寫，所以都是用工具轉。我試過用 Gulp 配 gulp-inline-css 和 gulp-inline，效果不錯。 ...</p>
+<p>最近工作需要做 Firebase Cloud Messaging (FCM) 整合，發現了向 Firebase API 直接送出 push 的 HTTP request 都可以生成不同種類的 message。 如果要整合到 Android 的話，需要建立一個新的 Service class 並繼承自...</p>
 </section>
-<footer class=entry-footer>March 11, 2015
+<footer class=entry-footer>February 29, 2020
 </footer>
-<a class=entry-link aria-label="post link to Inline CSS" href=https://eric.swiftzer.net/2015/03/inline-css/></a>
+<a class=entry-link aria-label="post link to Firebase Cloud Messaging" href=https://eric.swiftzer.net/2020/02/firebase-cloud-messaging/></a>
 </article>
 <footer class=page-footer>
 <nav class=pagination>

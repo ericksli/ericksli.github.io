@@ -1,0 +1,290 @@
+<!doctype html><html lang=zh-hant-hk dir=auto>
+<head><meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=robots content="index, follow">
+<title>2021 iThome 鐵人賽 Day 22：Whistle proxy | EricLog</title>
+<meta name=keywords content="2021 iThome 鐵人賽,Android">
+<meta name=description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 22 篇，你可到 iThome 查看原文。 文章目錄 由於我們在上一篇已經完成了成功載入班次的部分，">
+<meta name=author content>
+<link rel=canonical href=https://ithelp.ithome.com.tw/articles/10278714>
+<link href=/assets/css/stylesheet.min.d1fc837a267f77f6ede89d1a89c4880a90c381d9e6673ad4a76a3ad1900b65f9.css integrity="sha256-0fyDeiZ/d/bt6J0aicSICpDDgdnmZzrUp2o60ZALZfk=" rel="preload stylesheet" as=style>
+<link rel=icon href=https://eric.swiftzer.net/favicon.ico>
+<link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png>
+<link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png>
+<link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png>
+<link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg>
+<meta name=theme-color content="#2e2e33">
+<meta name=msapplication-TileColor content="#2e2e33">
+<meta name=generator content="Hugo 0.88.1">
+<link rel=preconnect href=https://fonts.gstatic.com>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-1268728-8','auto'),ga('send','pageview'))</script>
+<script async src=https://www.google-analytics.com/analytics.js></script>
+<meta property="og:title" content="2021 iThome 鐵人賽 Day 22：Whistle proxy">
+<meta property="og:description" content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 22 篇，你可到 iThome 查看原文。 文章目錄 由於我們在上一篇已經完成了成功載入班次的部分，">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://eric.swiftzer.net/2021/10/2021-ithome-ironman-22-whistle-proxy/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2021-10-07T00:00:00+08:00">
+<meta property="article:modified_time" content="2021-10-07T00:00:00+08:00">
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="2021 iThome 鐵人賽 Day 22：Whistle proxy">
+<meta name=twitter:description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 22 篇，你可到 iThome 查看原文。 文章目錄 由於我們在上一篇已經完成了成功載入班次的部分，">
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"2021 iThome 鐵人賽 Day 22：Whistle proxy","item":"https://eric.swiftzer.net/2021/10/2021-ithome-ironman-22-whistle-proxy/"}]}</script>
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"2021 iThome 鐵人賽 Day 22：Whistle proxy","name":"2021 iThome 鐵人賽 Day 22：Whistle proxy","description":"本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 22 篇，你可到 iThome 查看原文。 文章目錄 由於我們在上一篇已經完成了成功載入班次的部分，","keywords":["2021 iThome 鐵人賽","Android"],"articleBody":" 本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 22 篇，你可到 iThome 查看原文。\n文章目錄\n 由於我們在上一篇已經完成了成功載入班次的部分，接下來要做的當然是不正常的情況。雖然港鐵間中會有事故，但都可遇不可求。要檢查我們做的東西是不是正確除了寫自動化測試之外，既然我們都做到 UI 的部分那就當然要直接看實物更好吧。所以我們先換一換題目討論 proxy server。\nProxy server 是我們常用的工具，我們能用 proxy server 檢查 app 的 HTTP request（這個之前介紹的 Flipper 都做到），亦能改變 response 令它變成我們想要的東西。這就可以令我們的 app 顯示到事故、延誤等畫面。這次我們會以 Whistle 作示範，特色是它是免費而且是跨平台都能使用。其實市面上有很多選擇，例如 Charles、Proxyman、Fiddler 等等，用法都是大同小異。例如如何安裝根證書、系統或瀏覽器設定 proxy server 都是跟平台（例如 Android、iOS、Windows、macOS 等等）而不是跟 proxy server。而 proxy server 部分只需要知道其中一個 proxy server 檢視穿過 proxy server 的 HTTP traffic 以及何如改變 HTTP request 和 response 就應該很容易掌握到其他 proxy server 的用法。\n安裝 Whistle proxy server Whistle 是用 Node 寫的，所以要先在系統安裝 Node 和 NPM。如果你用 Node 比較多的話，建議經 NVM 安裝（POSIX 版、Windows 版）。安裝 Whistle 的方法就是用 NPM 安裝：\nnpm install -g whistle 啟動及終止 Whistle proxy server 安裝後，可以在 terminal 用 w2 指令啟動 Whistle：\nPS C:\\Users\\Eric w2 start [i] whistle@2.7.23 started [i] 1. use your device to visit the following URL list, gets the IP of the URL you can access: http://127.0.0.1:8899/ http://192.168.1.207:8899/ http://192.168.98.1:8899/ http://192.168.198.1:8899/ Note: If all the above URLs are unable to access, check the firewall settings For help see https://github.com/avwo/whistle [i] 2. configure your device to use whistle as its HTTP and HTTPS proxy on IP:8899 [i] 3. use Chrome to visit http://local.whistlejs.com/ to get started PS C:\\Users\\Eric 它會顯示好幾個網址，這個就是 Whistle 網頁界面的網址。Proxy server 的 IP 和 port 就是這些網址的 IP 和 port。你可以視乎網絡界面選用對應的 IP。\n要停止 Whistle proxy server，只需使用 w2 stop：\nPS C:\\Users\\Eric w2 stop [i] whistle killed. PS C:\\Users\\Eric 如果是用 Windows 10 的話，可能會因為 execution policy 限制而無法啟動 Whistle，遇到這個情況可以參閱 PowerShell 的 about_Execution_Policies 文檔更改設定。\n在 Android 安裝根證書 由於 HTTPS 是加密的，要讓 proxy server 看到傳輸的內容就要先為裝置安裝根證書。首先用裝置的瀏覽器開啟剛才 w2 start 看到的網址。\n然後按頂部選單的「HTTPS」，就會開到下面的頁面。只要按下「Download RootCA」就能下載根證書。\n留意 Capture TUNNEL CONNECTs 有沒有剔選，要剔選 Whistle 才能看到 HTTPS 的 traffic。\n  Whistle 下載根證書的地方   然後到系統設定  Security  Advanced  Encryption \u0026 credentials  Install a certificate。之後選取 CA certificate。\n  安裝根證書   之後會看到一個警告畫面，點選 Install anyway，再選取之前下載的 crt 檔就能安裝。\n  警告畫面   設定 proxy server 安裝根證書之後就可以到 Wi-Fi 設定，Proxy 選取 Manual 就會彈出幾個文字框讓你填寫 Proxy hostname 和 Proxy port。只要填上 w2 start 看到的 IP 和 port 就可以了。留意 127.0.0.1 那個是 localhost，在 Android 裝置填這個幾乎肯定是不能用的，填完後按 Save。\n  Wi-Fi 設定   之後可以試試用瀏覽器載入一些 HTTPS 網站，試試能不能正常載入，並且留意 Whistle 網頁界面有沒有東西彈出來，如果有就代表設定完成。\n當用完後緊記還原這個設定，否則 Whistle 結束後 Wi-Fi 就不能用。\n查閱 HTTP request 只需要在左邊的導航欄選取 Network 就能查閱穿過 proxy server 的 HTTP traffic。點擊想看的 request，右邊上下兩格就會顯示該筆紀錄的 request 和 response。\n  Network 部分   最底深灰色的輸入欄是用來篩選 HTTP traffic，可以輸入一些字眼來令上面只顯示想查看的 HTTP traffic。\n改變 HTTP request/response 剛才的查閱是最基本的功能，現在看看進階一點的功能：把 HTTP request/response 變成自己想要的效果。這個功能主要用到的情景有：\n backend 未做完，但 client side（例如 Android app）想試試自己那邊接駁 backend 的效果 client side 想試一些難出現的效果或者情景，而這些效果或者情景是跟據 backend 的 response 決定  首先，我們要切換到 Rules 界面（在左邊導航欄），你會看到一個藍色的畫面。這個是用來輸入改變 request/response 規則的地方。在左邊導航欄和藍色輸入規則的地方之間有一欄，這個是規則分組欄。你可以把它理解為規則是放在多個檔案（分組）內，你可以分別啟用和停用某些檔案所寫的規則。預設已經為你準備了一個空白的 Default 檔案，你可以把規則分門別類地放，這樣就容易整理。Default 旁邊有個綠色剔號，意思是它目前生效中，點兩下就可以把它停用。\n  Rules 部分   現在先看看最簡單的一個寫法：把整個網站轉去另一個網站。以下是把 google.com 轉址去 apple.com：\ngoogle.com apple.com 填好後要按 Ctrl + S 或者上方的 Save 才會生效。\n如果你在瀏覽器輸入 google.com/hi，你就會看到它會轉址到 apple.com/hi。如果切換到 Network 看的話，proxy server 是做了 HTTP 301 轉址。\n如果是 local 都有 server，想把 app 由 production server 轉駁去自己的 server，可以這樣寫：\nexample.com 127.0.0.1 如果已經預先準備好 response 檔案的話，可以直接指向本地檔案：\n# macOS, Linux example.com file:///User/foo/bar.json # Windows example.com file://D:\\foo\\bar.json 另一個做法是把內容放到 Whistle 的 values，然後引用它。首先在左邊導航欄點選 Values，這次的界面跟 Rules 有點像。先按 Create 並填上檔案名稱 delay.json。然後在藍色背景的編輯器填上內容：\n{ \"status\": 0, \"message\": \"Special train service arrangements are now in place on this line. Please click here for more information.\", \"url\": \"https://www.mtr.com.hk/alert/alert_title_wap.html\", \"curr_time\": \"2019-06-13 17:34:58\" }   Values 部分   填好後按 Ctrl + S 或者上方的 Save 儲存。\n然後切換到 Rules 並寫上我們要的 rule：\nhttps://rt.data.gov.hk/v1/transport/mtr/getSchedule.php resBody://{incldent.json} 這樣每次 call endpoint 都會回傳事故，這樣就可以人工測試到 app 能否順利因應 response 內容顯示對應的畫面。\n要留意一樣東西是用了 resBody:// 操作符雖然改了 response body，但其實還是會把 request 送上 server，如果那個 request 是用來建立或者刪除內容的話就可能會影響到 backend 背後的 database 內容。如果要防止把 request 送上原本的 server 的話，其中一個方法是轉用 file:// 操作符，另一個方法是額外加上 status:// 操作符：\nhttps://rt.data.gov.hk/v1/transport/mtr/getSchedule.php status://200 resBody://{incldent.json} 同一個網址可以套上多個操作符，其實開首的網址都不一定是網址，實際上是匹配規則 (pattern)。當它匹配後 Whistle 就會為那個 request 套上後面的操作符。匹配除了用普通的網址外，還可以用 regular expression，詳細可以參考 Whistle 文檔有關匹配模式的部分。\n除了改 status code 和 response body 之外，Whistle 還可以改 response header 和延長 response 回傳時間：\nhttps://rt.data.gov.hk/v1/transport/mtr/getSchedule.php statusCode://200 resDelay://4000 resHeaders://{resHeaders.txt} resBody://{incident.json} resDelay://4000 意思是把 response 傳回去的時間延長多四秒，而 resHeaders://{resHeaders.txt} 的意思是 response header 換成放在 values 的 resHeaders.txt 的內容。下面是 resHeaders.txt 的內容：\nContent-Type: application/json 快速開關 Android proxy 設定 先前介紹從 Wi-Fi 設定改變 proxy 設定，但步驟繁複。如果想簡單一點可以用 Proxy Toggle 這個 app。它提供了 widget 讓你放到主畫面一鍵開關 proxy 設定。但安裝和移除 app 要用到 adb（因為要改變系統設定，但不用 root）。特別留意在移除 app 前必須執行它提供的 adb 指令確保系統 proxy 設定被還原（因為不能從系統 UI 變更）。\n  Proxy Toggle widget   Android app 允許用戶加入的證書 自 Android 7 (API 24) 開始，app 可以在 manifest 的  加上 android:networkSecurityConfig 設定是否允許非 HTTPS traffic 和信任的證書以加強保安。由於我們用了自行簽發的證書，所以要先更改預設設定才能用 proxy server 檢閱 app 的 HTTPS traffic。首先在 manifest 的  加上 android:networkSecurityConfig：\n  xmlns:android=\"http://schemas.android.com/apk/res/android\" package=\"net.swiftzer.etademo\"  android:name=\"android.permission.INTERNET\" /  android:name=\".EtaDemoApp\" android:allowBackup=\"true\" android:icon=\"@mipmap/ic_launcher\" android:label=\"@string/app_name\" android:roundIcon=\"@mipmap/ic_launcher_round\" android:supportsRtl=\"true\" android:networkSecurityConfig=\"@xml/network_security_config\" android:theme=\"@style/Theme.ETADemo\"    然後分別在 debug 和 main 的 source set 加上 network_security_config.xml。\n首先是 debug 版，下面的 XML 路徑是 app/src/debug/res/xml/network_security_config.xml。\n  xmlns:tools=\"http://schemas.android.com/tools\"  cleartextTrafficPermitted=\"false\"   src=\"system\" /  src=\"user\" tools:ignore=\"AcceptsUserCertificates\" /    首先是 main (release) 版，下面的 XML 路徑是 app/src/main/res/xml/network_security_config.xml。\n   cleartextTrafficPermitted=\"false\"   src=\"system\" /    這樣就可以在 debug 版的 app 用 proxy server 了。\n小結 本篇示範了用 Whistle proxy server 做一些簡單的 request/response 處理和在 Android app 允許非系統預載的證書。這樣在下一篇繼續做班次頁的各式錯誤頁時就能用 proxy server 改變 response 來測試 app 的效果。此外，proxy server 是 frontend（包括 web 和 mobile）常用工具。了解 proxy server 基本用法能方便日常的開發（例如在陌生的 project 可以透過觀察 HTTP traffic 然後搜尋到對應的 code 位置）。Whistle 有太多功能，這次只是介紹了它的皮毛，詳細的用法還是需要參閱完整的文檔。\n","wordCount":"3111","inLanguage":"en","datePublished":"2021-10-07T00:00:00+08:00","dateModified":"2021-10-07T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2021/10/2021-ithome-ironman-22-whistle-proxy/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
+</head>
+<body id=top>
+<script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
+<noscript>
+<style type=text/css>#theme-toggle,.top-link{display:none}</style>
+<style>@media(prefers-color-scheme:dark){:root{--theme:#1d1e20;--entry:#2e2e33;--primary:rgba(255, 255, 255, 0.84);--secondary:rgba(255, 255, 255, 0.56);--tertiary:rgba(255, 255, 255, 0.16);--content:rgba(255, 255, 255, 0.74);--hljs-bg:#2e2e33;--code-bg:#37383e;--border:#333}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
+</noscript>
+<header class=header>
+<nav class=nav>
+<div class=logo>
+<a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
+<span class=logo-switches>
+<button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+</button>
+</span>
+</div>
+<ul id=menu onscroll=menu_on_scroll()>
+<li>
+<a href=https://eric.swiftzer.net/fonts/ title=Fonts>
+<span>Fonts</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/archives/ title=Archives>
+<span>Archives</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/tags/ title=Tags>
+<span>Tags</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/about/ title=About>
+<span>About</span>
+</a>
+</li></ul>
+</nav>
+</header>
+<main class=main>
+<article class=post-single>
+<header class=post-header>
+<div class=breadcrumbs>
+<a href=https://eric.swiftzer.net/>Home</a>&nbsp;»&nbsp;<a href=https://eric.swiftzer.net/posts/>Posts</a>
+</div>
+<h1 class=post-title>
+2021 iThome 鐵人賽 Day 22：Whistle proxy
+</h1>
+<div class=post-meta>October 7, 2021
+</div>
+</header>
+<div class=post-content>
+<blockquote>
+<p>本篇文章是 <a href=https://ithelp.ithome.com.tw/2021ironman>2021 iThome 鐵人賽</a>參賽題目「<a href=https://ithelp.ithome.com.tw/users/20139666/ironman/4661>寫一個列車抵站時間 Android App</a>」的第 22 篇，你可到 iThome <a href=https://ithelp.ithome.com.tw/articles/10278714>查看原文</a>。</p>
+<p><a href=https://eric.swiftzer.net/2021-ithome-ironman/>文章目錄</a></p>
+</blockquote>
+<p>由於我們在上一篇已經完成了成功載入班次的部分，接下來要做的當然是不正常的情況。雖然港鐵間中會有事故，但都可遇不可求。要檢查我們做的東西是不是正確除了寫自動化測試之外，既然我們都做到 UI 的部分那就當然要直接看實物更好吧。所以我們先換一換題目討論 proxy server。</p>
+<p>Proxy server 是我們常用的工具，我們能用 proxy server 檢查 app 的 HTTP request（這個之前介紹的 Flipper 都做到），亦能改變 response 令它變成我們想要的東西。這就可以令我們的 app 顯示到事故、延誤等畫面。這次我們會以 <a href=https://wproxy.org/whistle/>Whistle</a> 作示範，特色是它是免費而且是跨平台都能使用。其實市面上有很多選擇，例如 <a href=https://www.charlesproxy.com/>Charles</a>、<a href=https://proxyman.io/>Proxyman</a>、<a href=https://www.telerik.com/fiddler>Fiddler</a> 等等，用法都是大同小異。例如如何安裝根證書、系統或瀏覽器設定 proxy server 都是跟平台（例如 Android、iOS、Windows、macOS 等等）而不是跟 proxy server。而 proxy server 部分只需要知道其中一個 proxy server 檢視穿過 proxy server 的 HTTP traffic 以及何如改變 HTTP request 和 response 就應該很容易掌握到其他 proxy server 的用法。</p>
+<h2 id=安裝-whistle-proxy-server>安裝 Whistle proxy server<a hidden class=anchor aria-hidden=true href=#安裝-whistle-proxy-server>#</a></h2>
+<p>Whistle 是用 Node 寫的，所以要先在系統安裝 <a href=https://nodejs.org/en/>Node</a> 和 <a href=https://www.npmjs.com/>NPM</a>。如果你用 Node 比較多的話，建議經 NVM 安裝（<a href=https://github.com/nvm-sh/nvm>POSIX 版</a>、<a href=https://github.com/coreybutler/nvm-windows>Windows 版</a>）。安裝 Whistle 的方法就是用 NPM 安裝：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>npm install -g whistle
+</code></pre></div><h2 id=啟動及終止-whistle-proxy-server>啟動及終止 Whistle proxy server<a hidden class=anchor aria-hidden=true href=#啟動及終止-whistle-proxy-server>#</a></h2>
+<p>安裝後，可以在 terminal 用 <code>w2</code> 指令啟動 Whistle：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>PS C:\Users\Eric&gt; w2 start
+[i] whistle@2.7.23 started
+[i] 1. use your device to visit the following URL list, gets the IP of the URL you can access:
+       http://127.0.0.1:8899/
+       http://192.168.1.207:8899/
+       http://192.168.98.1:8899/
+       http://192.168.198.1:8899/
+       Note: If all the above URLs are unable to access, check the firewall settings
+             For help see https://github.com/avwo/whistle
+[i] 2. configure your device to use whistle as its HTTP and HTTPS proxy on IP:8899
+[i] 3. use Chrome to visit http://local.whistlejs.com/ to get started
+PS C:\Users\Eric&gt;
+</code></pre></div><p>它會顯示好幾個網址，這個就是 Whistle 網頁界面的網址。Proxy server 的 IP 和 port 就是這些網址的 IP 和 port。你可以視乎網絡界面選用對應的 IP。</p>
+<p>要停止 Whistle proxy server，只需使用 <code>w2 stop</code>：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>PS C:\Users\Eric&gt; w2 stop
+[i] whistle killed.
+PS C:\Users\Eric&gt;
+</code></pre></div><p>如果是用 Windows 10 的話，可能會因為 execution policy 限制而無法啟動 Whistle，遇到這個情況可以參閱 PowerShell 的 <a href=https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies>about_Execution_Policies 文檔</a>更改設定。</p>
+<h2 id=在-android-安裝根證書>在 Android 安裝根證書<a hidden class=anchor aria-hidden=true href=#在-android-安裝根證書>#</a></h2>
+<p>由於 HTTPS 是加密的，要讓 proxy server 看到傳輸的內容就要先為裝置安裝根證書。首先用裝置的瀏覽器開啟剛才 <code>w2 start</code> 看到的網址。</p>
+<p>然後按頂部選單的「HTTPS」，就會開到下面的頁面。只要按下「Download RootCA」就能下載根證書。</p>
+<p>留意 Capture TUNNEL CONNECTs 有沒有剔選，要剔選 Whistle 才能看到 HTTPS 的 traffic。</p>
+<figure>
+<img loading=lazy src=root-cert-qr.png> <figcaption>
+Whistle 下載根證書的地方
+</figcaption>
+</figure>
+<p>然後到系統設定 > Security > Advanced > Encryption & credentials > Install a certificate。之後選取 CA certificate。</p>
+<figure>
+<img loading=lazy src=install-a-cert.png> <figcaption>
+安裝根證書
+</figcaption>
+</figure>
+<p>之後會看到一個警告畫面，點選 Install anyway，再選取之前下載的 crt 檔就能安裝。</p>
+<figure>
+<img loading=lazy src=warning.png> <figcaption>
+警告畫面
+</figcaption>
+</figure>
+<h2 id=設定-proxy-server>設定 proxy server<a hidden class=anchor aria-hidden=true href=#設定-proxy-server>#</a></h2>
+<p>安裝根證書之後就可以到 Wi-Fi 設定，Proxy 選取 Manual 就會彈出幾個文字框讓你填寫 Proxy hostname 和 Proxy port。只要填上 <code>w2 start</code> 看到的 IP 和 port 就可以了。留意 127.0.0.1 那個是 localhost，在 Android 裝置填這個幾乎肯定是不能用的，填完後按 Save。</p>
+<figure>
+<img loading=lazy src=wifi-proxy.png> <figcaption>
+Wi-Fi 設定
+</figcaption>
+</figure>
+<p>之後可以試試用瀏覽器載入一些 HTTPS 網站，試試能不能正常載入，並且留意 Whistle 網頁界面有沒有東西彈出來，如果有就代表設定完成。</p>
+<p>當用完後緊記還原這個設定，否則 Whistle 結束後 Wi-Fi 就不能用。</p>
+<h2 id=查閱-http-request>查閱 HTTP request<a hidden class=anchor aria-hidden=true href=#查閱-http-request>#</a></h2>
+<p>只需要在左邊的導航欄選取 Network 就能查閱穿過 proxy server 的 HTTP traffic。點擊想看的 request，右邊上下兩格就會顯示該筆紀錄的 request 和 response。</p>
+<figure>
+<img loading=lazy src=network.png> <figcaption>
+Network 部分
+</figcaption>
+</figure>
+<p>最底深灰色的輸入欄是用來篩選 HTTP traffic，可以輸入一些字眼來令上面只顯示想查看的 HTTP traffic。</p>
+<h2 id=改變-http-requestresponse>改變 HTTP request/response<a hidden class=anchor aria-hidden=true href=#改變-http-requestresponse>#</a></h2>
+<p>剛才的查閱是最基本的功能，現在看看進階一點的功能：把 HTTP request/response 變成自己想要的效果。這個功能主要用到的情景有：</p>
+<ol>
+<li>backend 未做完，但 client side（例如 Android app）想試試自己那邊接駁 backend 的效果</li>
+<li>client side 想試一些難出現的效果或者情景，而這些效果或者情景是跟據 backend 的 response 決定</li>
+</ol>
+<p>首先，我們要切換到 Rules 界面（在左邊導航欄），你會看到一個藍色的畫面。這個是用來輸入改變 request/response 規則的地方。在左邊導航欄和藍色輸入規則的地方之間有一欄，這個是規則分組欄。你可以把它理解為規則是放在多個檔案（分組）內，你可以分別啟用和停用某些檔案所寫的規則。預設已經為你準備了一個空白的 Default 檔案，你可以把規則分門別類地放，這樣就容易整理。Default 旁邊有個綠色剔號，意思是它目前生效中，點兩下就可以把它停用。</p>
+<figure>
+<img loading=lazy src=rules.png> <figcaption>
+Rules 部分
+</figcaption>
+</figure>
+<p>現在先看看最簡單的一個寫法：把整個網站轉去另一個網站。以下是把 <a href=http://google.com>google.com</a> 轉址去 apple.com：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>google.com apple.com
+</code></pre></div><p>填好後要按 Ctrl + S 或者上方的 Save 才會生效。</p>
+<p>如果你在瀏覽器輸入 <code>google.com/hi</code>，你就會看到它會轉址到 <code>apple.com/hi</code>。如果切換到 Network 看的話，proxy server 是做了 HTTP 301 轉址。</p>
+<p>如果是 local 都有 server，想把 app 由 production server 轉駁去自己的 server，可以這樣寫：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>example.com 127.0.0.1
+</code></pre></div><p>如果已經預先準備好 response 檔案的話，可以直接指向本地檔案：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text># macOS, Linux
+example.com file:///User/foo/bar.json
+# Windows
+example.com file://D:\foo\bar.json
+</code></pre></div><p>另一個做法是把內容放到 Whistle 的 values，然後引用它。首先在左邊導航欄點選 Values，這次的界面跟 Rules 有點像。先按 Create 並填上檔案名稱 delay.json。然後在藍色背景的編輯器填上內容：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=p>{</span>
+  <span class=nt>&#34;status&#34;</span><span class=p>:</span> <span class=mi>0</span><span class=p>,</span>
+  <span class=nt>&#34;message&#34;</span><span class=p>:</span> <span class=s2>&#34;Special train service arrangements are now in place on this line. Please click here for more information.&#34;</span><span class=p>,</span>
+  <span class=nt>&#34;url&#34;</span><span class=p>:</span> <span class=s2>&#34;https://www.mtr.com.hk/alert/alert_title_wap.html&#34;</span><span class=p>,</span>
+  <span class=nt>&#34;curr_time&#34;</span><span class=p>:</span> <span class=s2>&#34;2019-06-13 17:34:58&#34;</span>
+<span class=p>}</span>
+</code></pre></div><figure>
+<img loading=lazy src=values.png> <figcaption>
+Values 部分
+</figcaption>
+</figure>
+<p>填好後按 Ctrl + S 或者上方的 Save 儲存。</p>
+<p>然後切換到 Rules 並寫上我們要的 rule：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>https://rt.data.gov.hk/v1/transport/mtr/getSchedule.php resBody://{incldent.json}
+</code></pre></div><p>這樣每次 call endpoint 都會回傳事故，這樣就可以人工測試到 app 能否順利因應 response 內容顯示對應的畫面。</p>
+<p>要留意一樣東西是用了 <code>resBody://</code> 操作符雖然改了 response body，但其實還是會把 request 送上 server，如果那個 request 是用來建立或者刪除內容的話就可能會影響到 backend 背後的 database 內容。如果要防止把 request 送上原本的 server 的話，其中一個方法是轉用 <code>file://</code> 操作符，另一個方法是額外加上 <code>status://</code> 操作符：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>https://rt.data.gov.hk/v1/transport/mtr/getSchedule.php status://200 resBody://{incldent.json}
+</code></pre></div><p>同一個網址可以套上多個操作符，其實開首的網址都不一定是網址，實際上是匹配規則 (pattern)。當它匹配後 Whistle 就會為那個 request 套上後面的操作符。匹配除了用普通的網址外，還可以用 regular expression，詳細可以參考 <a href=https://wproxy.org/whistle/pattern.html>Whistle 文檔有關匹配模式的部分</a>。</p>
+<p>除了改 status code 和 response body 之外，Whistle 還可以改 response header 和延長 response 回傳時間：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>https://rt.data.gov.hk/v1/transport/mtr/getSchedule.php statusCode://200 resDelay://4000 resHeaders://{resHeaders.txt} resBody://{incident.json}
+</code></pre></div><p><code>resDelay://4000</code> 意思是把 response 傳回去的時間延長多四秒，而 <code>resHeaders://{resHeaders.txt}</code> 的意思是 response header 換成放在 values 的 resHeaders.txt 的內容。下面是 resHeaders.txt 的內容：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>Content-Type: application/json
+</code></pre></div><h2 id=快速開關-android-proxy-設定>快速開關 Android proxy 設定<a hidden class=anchor aria-hidden=true href=#快速開關-android-proxy-設定>#</a></h2>
+<p>先前介紹從 Wi-Fi 設定改變 proxy 設定，但步驟繁複。如果想簡單一點可以用 <a href=https://github.com/theappbusiness/android-proxy-toggle>Proxy Toggle</a> 這個 app。它提供了 widget 讓你放到主畫面一鍵開關 proxy 設定。但安裝和移除 app 要用到 adb（因為要改變系統設定，但不用 root）。特別留意在移除 app 前必須執行它提供的 adb 指令確保系統 proxy 設定被還原（因為不能從系統 UI 變更）。</p>
+<figure>
+<img loading=lazy src=proxy-toggle.jpg> <figcaption>
+Proxy Toggle widget
+</figcaption>
+</figure>
+<h2 id=android-app-允許用戶加入的證書>Android app 允許用戶加入的證書<a hidden class=anchor aria-hidden=true href=#android-app-允許用戶加入的證書>#</a></h2>
+<p>自 Android 7 (API 24) 開始，app 可以在 manifest 的 <code>&lt;application></code> 加上 <code>android:networkSecurityConfig</code> 設定是否允許非 HTTPS traffic 和信任的證書以加強保安。由於我們用了自行簽發的證書，所以要先更改預設設定才能用 proxy server 檢閱 app 的 HTTPS traffic。首先在 manifest 的 <code>&lt;application></code> 加上 <code>android:networkSecurityConfig</code>：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=cp>&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+<span class=nt>&lt;manifest</span> <span class=na>xmlns:android=</span><span class=s>&#34;http://schemas.android.com/apk/res/android&#34;</span>
+    <span class=na>package=</span><span class=s>&#34;net.swiftzer.etademo&#34;</span><span class=nt>&gt;</span>
+
+    <span class=nt>&lt;uses-permission</span> <span class=na>android:name=</span><span class=s>&#34;android.permission.INTERNET&#34;</span> <span class=nt>/&gt;</span>
+
+    <span class=nt>&lt;application</span>
+        <span class=na>android:name=</span><span class=s>&#34;.EtaDemoApp&#34;</span>
+        <span class=na>android:allowBackup=</span><span class=s>&#34;true&#34;</span>
+        <span class=na>android:icon=</span><span class=s>&#34;@mipmap/ic_launcher&#34;</span>
+        <span class=na>android:label=</span><span class=s>&#34;@string/app_name&#34;</span>
+        <span class=na>android:roundIcon=</span><span class=s>&#34;@mipmap/ic_launcher_round&#34;</span>
+        <span class=na>android:supportsRtl=</span><span class=s>&#34;true&#34;</span>
+        <span class=na>android:networkSecurityConfig=</span><span class=s>&#34;@xml/network_security_config&#34;</span>
+        <span class=na>android:theme=</span><span class=s>&#34;@style/Theme.ETADemo&#34;</span><span class=nt>&gt;</span>
+        <span class=c>&lt;!-- 略 --&gt;</span>
+    <span class=nt>&lt;/application&gt;</span>
+<span class=nt>&lt;/manifest&gt;</span>
+</code></pre></div><p>然後分別在 debug 和 main 的 source set 加上 <em>network_security_config.xml</em>。</p>
+<p>首先是 debug 版，下面的 XML 路徑是 <em>app/src/debug/res/xml/network_security_config.xml</em>。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=cp>&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+<span class=nt>&lt;network-security-config</span> <span class=na>xmlns:tools=</span><span class=s>&#34;http://schemas.android.com/tools&#34;</span><span class=nt>&gt;</span>
+    <span class=nt>&lt;base-config</span> <span class=na>cleartextTrafficPermitted=</span><span class=s>&#34;false&#34;</span><span class=nt>&gt;</span>
+        <span class=nt>&lt;trust-anchors&gt;</span>
+            <span class=nt>&lt;certificates</span> <span class=na>src=</span><span class=s>&#34;system&#34;</span> <span class=nt>/&gt;</span>
+            <span class=nt>&lt;certificates</span>
+                <span class=na>src=</span><span class=s>&#34;user&#34;</span>
+                <span class=na>tools:ignore=</span><span class=s>&#34;AcceptsUserCertificates&#34;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;/trust-anchors&gt;</span>
+    <span class=nt>&lt;/base-config&gt;</span>
+<span class=nt>&lt;/network-security-config&gt;</span>
+</code></pre></div><p>首先是 main (release) 版，下面的 XML 路徑是 <em>app/src/main/res/xml/network_security_config.xml</em>。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=cp>&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+<span class=nt>&lt;network-security-config&gt;</span>
+    <span class=nt>&lt;base-config</span> <span class=na>cleartextTrafficPermitted=</span><span class=s>&#34;false&#34;</span><span class=nt>&gt;</span>
+        <span class=nt>&lt;trust-anchors&gt;</span>
+            <span class=nt>&lt;certificates</span> <span class=na>src=</span><span class=s>&#34;system&#34;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;/trust-anchors&gt;</span>
+    <span class=nt>&lt;/base-config&gt;</span>
+<span class=nt>&lt;/network-security-config&gt;</span>
+</code></pre></div><p>這樣就可以在 debug 版的 app 用 proxy server 了。</p>
+<h2 id=小結>小結<a hidden class=anchor aria-hidden=true href=#小結>#</a></h2>
+<p>本篇示範了用 Whistle proxy server 做一些簡單的 request/response 處理和在 Android app 允許非系統預載的證書。這樣在下一篇繼續做班次頁的各式錯誤頁時就能用 proxy server 改變 response 來測試 app 的效果。此外，proxy server 是 frontend（包括 web 和 mobile）常用工具。了解 proxy server 基本用法能方便日常的開發（例如在陌生的 project 可以透過觀察 HTTP traffic 然後搜尋到對應的 code 位置）。Whistle 有太多功能，這次只是介紹了它的皮毛，詳細的用法還是需要參閱<a href=https://wproxy.org/whistle/>完整的文檔</a>。</p>
+</div>
+<footer class=post-footer>
+<ul class=post-tags>
+<li><a href=https://eric.swiftzer.net/tags/2021-ithome-%E9%90%B5%E4%BA%BA%E8%B3%BD/>2021 iThome 鐵人賽</a></li>
+<li><a href=https://eric.swiftzer.net/tags/android/>Android</a></li>
+</ul>
+<nav class=paginav>
+<a class=prev href=https://eric.swiftzer.net/2021/10/2021-ithome-ironman-23-eta-screen-2/>
+<span class=title>« Prev Page</span>
+<br>
+<span>2021 iThome 鐵人賽 Day 23：ETA screen (2)</span>
+</a>
+<a class=next href=https://eric.swiftzer.net/2021/10/2021-ithome-ironman-21-eta-screen-1/>
+<span class=title>Next Page »</span>
+<br>
+<span>2021 iThome 鐵人賽 Day 21：ETA screen (1)</span>
+</a>
+</nav>
+</footer><div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//efilm.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</article>
+</main><footer class=footer>
+<span>&copy; 2021 <a href=https://eric.swiftzer.net/>EricLog</a></span>
+<span>&#183;</span>
+<span>Powered by <a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a></span>
+<span>&#183;</span>
+<span>Theme <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span>
+</footer>
+<a href=#top aria-label="go to top" title="Go to Top (Alt + G)">
+<button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</button>
+</a>
+<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
+<script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script>
+<script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
+</body>
+</html>

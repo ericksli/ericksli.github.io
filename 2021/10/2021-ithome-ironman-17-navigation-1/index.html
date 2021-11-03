@@ -1,0 +1,291 @@
+<!doctype html><html lang=zh-hant-hk dir=auto>
+<head><meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=robots content="index, follow">
+<title>2021 iThome 鐵人賽 Day 17：Navigation (1) | EricLog</title>
+<meta name=keywords content="2021 iThome 鐵人賽,Android">
+<meta name=description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 17 篇，你可到 iThome 查看原文。 文章目錄 經過了兩個多星期後，我們終於開始進入 presentation layer 的部分">
+<meta name=author content>
+<link rel=canonical href=https://ithelp.ithome.com.tw/articles/10276248>
+<link href=/assets/css/stylesheet.min.d1fc837a267f77f6ede89d1a89c4880a90c381d9e6673ad4a76a3ad1900b65f9.css integrity="sha256-0fyDeiZ/d/bt6J0aicSICpDDgdnmZzrUp2o60ZALZfk=" rel="preload stylesheet" as=style>
+<link rel=icon href=https://eric.swiftzer.net/favicon.ico>
+<link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png>
+<link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png>
+<link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png>
+<link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg>
+<meta name=theme-color content="#2e2e33">
+<meta name=msapplication-TileColor content="#2e2e33">
+<meta name=generator content="Hugo 0.88.1">
+<link rel=preconnect href=https://fonts.gstatic.com>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-1268728-8','auto'),ga('send','pageview'))</script>
+<script async src=https://www.google-analytics.com/analytics.js></script>
+<meta property="og:title" content="2021 iThome 鐵人賽 Day 17：Navigation (1)">
+<meta property="og:description" content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 17 篇，你可到 iThome 查看原文。 文章目錄 經過了兩個多星期後，我們終於開始進入 presentation layer 的部分">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://eric.swiftzer.net/2021/10/2021-ithome-ironman-17-navigation-1/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2021-10-02T00:00:00+08:00">
+<meta property="article:modified_time" content="2021-10-02T00:00:00+08:00">
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="2021 iThome 鐵人賽 Day 17：Navigation (1)">
+<meta name=twitter:description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 17 篇，你可到 iThome 查看原文。 文章目錄 經過了兩個多星期後，我們終於開始進入 presentation layer 的部分">
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"2021 iThome 鐵人賽 Day 17：Navigation (1)","item":"https://eric.swiftzer.net/2021/10/2021-ithome-ironman-17-navigation-1/"}]}</script>
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"2021 iThome 鐵人賽 Day 17：Navigation (1)","name":"2021 iThome 鐵人賽 Day 17：Navigation (1)","description":"本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 17 篇，你可到 iThome 查看原文。 文章目錄 經過了兩個多星期後，我們終於開始進入 presentation layer 的部分","keywords":["2021 iThome 鐵人賽","Android"],"articleBody":" 本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 17 篇，你可到 iThome 查看原文。\n文章目錄\n 經過了兩個多星期後，我們終於開始進入 presentation layer 的部分。Presentation layer 就是做 UI 相關的東西，例如 Activity、Fragment、ViewModel 這些 class。而這次要做的部分是要準備基本的 navigation。\n我們這個示範 app 會採用 single activity app 的做法，即是整個 app 只會有一個 Activity，所有顯示的頁面都是用 Fragment 來裝住。如果要由一頁轉去另一頁的話原理就是用 FragmentManager 切換顯示另一個 Fragment。不過我們不會直接接觸 FragmentManager，而是用 AndroidX 的 Navigation component 來幫我們處理。為甚麼原本能用多個 Activity 就做到的東西要轉用 single activity app 來做呢？主要原因是處理 deep link 的話 app 只有單一 Activity 是遠較多個 Activity 的 app 容易控制，單是 Manifest 入面  的 android:launchMode 就搞到頭疼，後來更變成 Android 面試的經典題目。如果完全轉用 single activity 的做法的話基本上除了要做「一 app 多開」的效果外，基本上都不用特別處理 android:launchMode。「一 app 多開」的正式名稱是 task。意思是一個 app 可以在系統的「recent apps」顯示好幾個視窗，例如以前的 Chrome 開新 tab 都是用這個功能來做到。這個功能在 Word 這類應用非常合適，配合 split screen 來用就可以同時上下顯示兩個 Word 文件並同時編輯。\n說回 navigation 的部分，AndroidX 的 Navigation component 除了處理換頁時的 Fragment 切換和 deep link 之外，還有是管理每頁傳入的參數、換頁動畫，配搭 Dagger Hilt 的話更可以設定某些 object 的 scope 是跟 navigation graph 共生死。\n安裝 Navigation component 首先在 project 的 build.gradle 加入 safe args Gradle plugin：\ndependencies { // ...  classpath \"androidx.navigation:navigation-safe-args-gradle-plugin:$navigationVersion\" } 然後在 app module 的 build.gradle 加入 Navigation component safe args plugin 和相關的 dependency：\nplugins { // ...  id 'androidx.navigation.safeargs.kotlin' } dependencies { implementation \"androidx.navigation:navigation-fragment-ktx:$navigationVersion\" implementation \"androidx.navigation:navigation-ui-ktx:$navigationVersion\" } 然後就可以加入我們的 navigation graph，但請同時加入以下的內容，因為本篇會用到：\nandroid { // ...  buildFeatures { dataBinding true viewBinding true } } 有人說 Navigation component 是 Android 的 Storyboard，確實界面上跟 iOS Storyboard 真的很似。但跟 Storyboard 不同是 Android 的 navigation graph XML 只會儲存各頁對應的 Fragment class 名、layout XML 名、各頁的參數、deep link 和轉頁的連結等跟 navigation 相關的資訊，各頁的界面放了甚麼 View 仍然跟以往一樣是放在各個 layout XML 入面。而 iOS Storyboard 檔案除了存放 navigation 的資訊外，還包括各頁顯示的內容，所以頁數一多就會變得很慢。這亦都是部分 iOS developer 不用 Storyboard 而用 Interface Builder（XIB 檔）或者索性用 code 控制排版的原因。\n但繼續討論 Navigation component 之前，我們要先準備 app 那兩頁的 Fragment class 和 layout XML 檔，否則我們開了那個 navigation graph XML 檔都不能做任何事情。\nStationListFragment 由於我們的 app 有兩頁，那我們就要準備兩個 Fragment class：StationListFragment 和 EtaFragment，分別對應車站列表和抵站時間頁。首先是 StationListFragment：\n@AndroidEntryPoint class StationListFragment : Fragment() { private var _binding: StationListFragmentBinding? = null private val binding: StationListFragmentBinding get() = _binding!! override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle? ): View { _binding = StationListFragmentBinding.inflate(inflater, container, false) binding.lifecycleOwner = viewLifecycleOwner return binding.root } override fun onDestroyView() { super.onDestroyView() _binding = null } } 首先頂頭會有個 @AndroidEntryPoint，這個是 Dagger Hilt 的 annotation。加了它 Dagger Hilt 就會自動替你做 dependency injection（包括 field injection）。現在不明白不要緊，我們會在之後再詳細講解。\n我們大部分 layout XML 都會採用 data binding，所以 StationListFragment 會有 StationListFragmentBinding。在 onCreateView 我們會 inflate XML，但因為用了 data binding 所以寫法會有小許不同。那句 binding.lifecycleOwner = viewLifecycleOwner 的意思是那個 data binding 用到的 LiveData 和 StateFlow 會按照 StationListFragment 的 lifecycle 控制何時開始和終結 observation。詳細用法要先賣個關子，因為我們這篇的主要目的是弄好兩頁的殼來準備 navigation graph。\n你會看到我們準備了兩個 StationListFragmentBinding 的 property，一個是 nullable 一個就不是 nullable。而在 onDestroyView 我們把 _binding 設回 null 是為了防止 memory leak 和 view 已經從 Activity 中移除，不應再 reference 住它。但因為把 view binding 或 data binding 的 property 弄成 nullable 在使用上不夠方便，所以就出現了另一個不是 nullable 的 property 來把 _binding 強行 access。\n而 layout XML 我們叫它做 station_list_fragment.xml，這是 StationListFragmentBinding 命稱的來源（它會自動把命稱轉為 camel case 並加上後綴 Binding）。\n  xmlns:android=\"http://schemas.android.com/apk/res/android\" xmlns:app=\"http://schemas.android.com/apk/res-auto\" xmlns:tools=\"http://schemas.android.com/tools\"    android:layout_width=\"match_parent\" android:layout_height=\"match_parent\"  android:layout_width=\"match_parent\" android:layout_height=\"wrap_content\"  android:id=\"@+id/topAppBar\" style=\"@style/Widget.MaterialComponents.Toolbar.Primary\" android:layout_width=\"match_parent\" android:layout_height=\"?attr/actionBarSize\" app:title=\"@string/app_name\" /   android:id=\"@+id/recyclerView\" android:layout_width=\"match_parent\" android:layout_height=\"match_parent\" app:layout_behavior=\"@string/appbar_scrolling_view_behavior\" /   EtaFragment 另一頁要準備的是 EtaFragment，內容都是跟之前差不多，只是換了個名字。\n@AndroidEntryPoint class EtaFragment : Fragment() { private var _binding: EtaFragmentBinding? = null private val binding: EtaFragmentBinding get() = _binding!! override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle? ): View { _binding = EtaFragmentBinding.inflate(inflater, container, false) binding.lifecycleOwner = viewLifecycleOwner return binding.root } override fun onDestroyView() { super.onDestroyView() _binding = null } } 對應的 layout XML 是 eta_fragment：\n  xmlns:android=\"http://schemas.android.com/apk/res/android\" xmlns:app=\"http://schemas.android.com/apk/res-auto\"    android:layout_width=\"match_parent\" android:layout_height=\"match_parent\"  android:layout_width=\"match_parent\" android:layout_height=\"wrap_content\"  android:id=\"@+id/topAppBar\" style=\"@style/Widget.MaterialComponents.Toolbar.Primary\" android:layout_width=\"match_parent\" android:layout_height=\"?attr/actionBarSize\" app:title=\"@string/app_name\" /   android:id=\"@+id/recyclerView\" android:layout_width=\"match_parent\" android:layout_height=\"match_parent\" app:layout_behavior=\"@string/appbar_scrolling_view_behavior\" /   改 theme 從那兩個 layout XML 看到我們每頁都會有自己的 top bar (AppBarLayout)，所以 theme 就不應該用帶有 top bar（以前叫 action bar）的 theme。\nProject 本身是用 Android Studio 的 template 建立，所以會有 themes.xml：\n xmlns:tools=\"http://schemas.android.com/tools\"   name=\"Theme.ETADemo\" parent=\"Theme.MaterialComponents.DayNight.DarkActionBar\"    我們要把 Theme.MaterialComponents.DayNight.DarkActionBar 換成無 action bar 的 theme：\n xmlns:tools=\"http://schemas.android.com/tools\"   name=\"Theme.ETADemo\" parent=\"Theme.MaterialComponents.DayNight.NoActionBar\"    這篇的 code 有點長，我們下一篇會寫 navigation graph 的部分和把 MainActivity 改成顯示那個 navigation graph 的頁面。\n參考  Android 面试黑洞——当我按下 Home 键再切回来，会发生什么？  ","wordCount":"1962","inLanguage":"en","datePublished":"2021-10-02T00:00:00+08:00","dateModified":"2021-10-02T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2021/10/2021-ithome-ironman-17-navigation-1/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
+</head>
+<body id=top>
+<script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
+<noscript>
+<style type=text/css>#theme-toggle,.top-link{display:none}</style>
+<style>@media(prefers-color-scheme:dark){:root{--theme:#1d1e20;--entry:#2e2e33;--primary:rgba(255, 255, 255, 0.84);--secondary:rgba(255, 255, 255, 0.56);--tertiary:rgba(255, 255, 255, 0.16);--content:rgba(255, 255, 255, 0.74);--hljs-bg:#2e2e33;--code-bg:#37383e;--border:#333}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
+</noscript>
+<header class=header>
+<nav class=nav>
+<div class=logo>
+<a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
+<span class=logo-switches>
+<button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+</button>
+</span>
+</div>
+<ul id=menu onscroll=menu_on_scroll()>
+<li>
+<a href=https://eric.swiftzer.net/fonts/ title=Fonts>
+<span>Fonts</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/archives/ title=Archives>
+<span>Archives</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/tags/ title=Tags>
+<span>Tags</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/about/ title=About>
+<span>About</span>
+</a>
+</li></ul>
+</nav>
+</header>
+<main class=main>
+<article class=post-single>
+<header class=post-header>
+<div class=breadcrumbs>
+<a href=https://eric.swiftzer.net/>Home</a>&nbsp;»&nbsp;<a href=https://eric.swiftzer.net/posts/>Posts</a>
+</div>
+<h1 class=post-title>
+2021 iThome 鐵人賽 Day 17：Navigation (1)
+</h1>
+<div class=post-meta>October 2, 2021
+</div>
+</header>
+<div class=post-content>
+<blockquote>
+<p>本篇文章是 <a href=https://ithelp.ithome.com.tw/2021ironman>2021 iThome 鐵人賽</a>參賽題目「<a href=https://ithelp.ithome.com.tw/users/20139666/ironman/4661>寫一個列車抵站時間 Android App</a>」的第 17 篇，你可到 iThome <a href=https://ithelp.ithome.com.tw/articles/10276248>查看原文</a>。</p>
+<p><a href=https://eric.swiftzer.net/2021-ithome-ironman/>文章目錄</a></p>
+</blockquote>
+<p>經過了兩個多星期後，我們終於開始進入 presentation layer 的部分。Presentation layer 就是做 UI 相關的東西，例如 <code>Activity</code>、<code>Fragment</code>、<code>ViewModel</code> 這些 class。而這次要做的部分是要準備基本的 navigation。</p>
+<p>我們這個示範 app 會採用 single activity app 的做法，即是整個 app 只會有一個 <code>Activity</code>，所有顯示的頁面都是用 <code>Fragment</code> 來裝住。如果要由一頁轉去另一頁的話原理就是用 <code>FragmentManager</code> 切換顯示另一個 <code>Fragment</code>。不過我們不會直接接觸 <code>FragmentManager</code>，而是用 AndroidX 的 <a href=https://developer.android.com/guide/navigation>Navigation component</a> 來幫我們處理。為甚麼原本能用多個 <code>Activity</code> 就做到的東西要轉用 single activity app 來做呢？主要原因是處理 deep link 的話 app 只有單一 <code>Activity</code> 是遠較多個 <code>Activity</code> 的 app 容易控制，單是 Manifest 入面 <code>&lt;activity></code> 的 <a href=https://developer.android.com/guide/topics/manifest/activity-element#lmode><code>android:launchMode</code></a> 就搞到頭疼，後來更變成 Android 面試的經典題目。如果完全轉用 single activity 的做法的話基本上除了要做「一 app 多開」的效果外，基本上都不用特別處理 <code>android:launchMode</code>。「一 app 多開」的正式名稱是 task。意思是一個 app 可以在系統的「recent apps」顯示好幾個視窗，例如<a href="https://www.youtube.com/watch?v=0L-uiWWPf0g">以前的 Chrome 開新 tab 都是用這個功能來做到</a>。這個功能在 Word 這類應用非常合適，配合 split screen 來用就可以同時上下顯示兩個 Word 文件並同時編輯。</p>
+<p>說回 navigation 的部分，AndroidX 的 <a href=https://developer.android.com/guide/navigation>Navigation component</a> 除了處理換頁時的 <code>Fragment</code> 切換和 deep link 之外，還有是管理每頁傳入的參數、換頁動畫，配搭 Dagger Hilt 的話更可以設定某些 object 的 scope 是跟 navigation graph 共生死。</p>
+<h2 id=安裝-navigation-component>安裝 Navigation component<a hidden class=anchor aria-hidden=true href=#安裝-navigation-component>#</a></h2>
+<p>首先在 project 的 <em>build.gradle</em> 加入 safe args Gradle plugin：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-groovy data-lang=groovy><span class=n>dependencies</span> <span class=o>{</span>
+    <span class=c1>// ...
+</span><span class=c1></span>    <span class=n>classpath</span> <span class=s2>&#34;androidx.navigation:navigation-safe-args-gradle-plugin:$navigationVersion&#34;</span>
+<span class=o>}</span>
+</code></pre></div><p>然後在 <code>app</code> module 的 <em>build.gradle</em> 加入 Navigation component safe args plugin 和相關的 dependency：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-groovy data-lang=groovy><span class=n>plugins</span> <span class=o>{</span>
+    <span class=c1>// ...
+</span><span class=c1></span>    <span class=n>id</span> <span class=s1>&#39;androidx.navigation.safeargs.kotlin&#39;</span>
+<span class=o>}</span>
+
+<span class=n>dependencies</span> <span class=o>{</span>
+    <span class=n>implementation</span> <span class=s2>&#34;androidx.navigation:navigation-fragment-ktx:$navigationVersion&#34;</span>
+    <span class=n>implementation</span> <span class=s2>&#34;androidx.navigation:navigation-ui-ktx:$navigationVersion&#34;</span>
+<span class=o>}</span>
+</code></pre></div><p>然後就可以加入我們的 navigation graph，但請同時加入以下的內容，因為本篇會用到：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-groovy data-lang=groovy><span class=n>android</span> <span class=o>{</span>
+    <span class=c1>// ...
+</span><span class=c1></span>    <span class=n>buildFeatures</span> <span class=o>{</span>
+        <span class=n>dataBinding</span> <span class=kc>true</span>
+        <span class=n>viewBinding</span> <span class=kc>true</span>
+    <span class=o>}</span>
+<span class=o>}</span>
+</code></pre></div><p>有人說 Navigation component 是 Android 的 <a href=https://developer.apple.com/library/archive/documentation/ToolsLanguages/Conceptual/Xcode_Overview/DesigningwithStoryboards.html>Storyboard</a>，確實界面上跟 iOS Storyboard 真的很似。但跟 Storyboard 不同是 Android 的 navigation graph XML 只會儲存各頁對應的 <code>Fragment</code> class 名、layout XML 名、各頁的參數、deep link 和轉頁的連結等跟 navigation 相關的資訊，各頁的界面放了甚麼 <code>View</code> 仍然跟以往一樣是放在各個 layout XML 入面。而 iOS Storyboard 檔案除了存放 navigation 的資訊外，還包括各頁顯示的內容，所以頁數一多就會變得很慢。這亦都是部分 iOS developer 不用 Storyboard 而用 Interface Builder（XIB 檔）或者索性用 code 控制排版的原因。</p>
+<p>但繼續討論 Navigation component 之前，我們要先準備 app 那兩頁的 <code>Fragment</code> class 和 layout XML 檔，否則我們開了那個 navigation graph XML 檔都不能做任何事情。</p>
+<h2 id=stationlistfragment><code>StationListFragment</code><a hidden class=anchor aria-hidden=true href=#stationlistfragment>#</a></h2>
+<p>由於我們的 app 有兩頁，那我們就要準備兩個 <code>Fragment</code> class：<code>StationListFragment</code> 和 <code>EtaFragment</code>，分別對應車站列表和抵站時間頁。首先是 <code>StationListFragment</code>：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=nd>@AndroidEntryPoint</span>
+<span class=k>class</span> <span class=nc>StationListFragment</span> <span class=p>:</span> <span class=n>Fragment</span><span class=p>()</span> <span class=p>{</span>
+    <span class=k>private</span> <span class=k>var</span> <span class=py>_binding</span><span class=p>:</span> <span class=n>StationListFragmentBinding</span><span class=p>?</span> <span class=p>=</span> <span class=k>null</span>
+    <span class=k>private</span> <span class=k>val</span> <span class=py>binding</span><span class=p>:</span> <span class=n>StationListFragmentBinding</span> <span class=k>get</span><span class=p>()</span> <span class=p>=</span> <span class=n>_binding</span><span class=o>!!</span>
+
+    <span class=k>override</span> <span class=k>fun</span> <span class=nf>onCreateView</span><span class=p>(</span>
+        <span class=n>inflater</span><span class=p>:</span> <span class=n>LayoutInflater</span><span class=p>,</span>
+        <span class=n>container</span><span class=p>:</span> <span class=n>ViewGroup</span><span class=p>?,</span>
+        <span class=n>savedInstanceState</span><span class=p>:</span> <span class=n>Bundle</span><span class=p>?</span>
+    <span class=p>):</span> <span class=n>View</span> <span class=p>{</span>
+        <span class=n>_binding</span> <span class=p>=</span> <span class=n>StationListFragmentBinding</span><span class=p>.</span><span class=n>inflate</span><span class=p>(</span><span class=n>inflater</span><span class=p>,</span> <span class=n>container</span><span class=p>,</span> <span class=k>false</span><span class=p>)</span>
+        <span class=n>binding</span><span class=p>.</span><span class=n>lifecycleOwner</span> <span class=p>=</span> <span class=n>viewLifecycleOwner</span>
+        <span class=k>return</span> <span class=n>binding</span><span class=p>.</span><span class=n>root</span>
+    <span class=p>}</span>
+
+    <span class=k>override</span> <span class=k>fun</span> <span class=nf>onDestroyView</span><span class=p>()</span> <span class=p>{</span>
+        <span class=k>super</span><span class=p>.</span><span class=n>onDestroyView</span><span class=p>()</span>
+        <span class=n>_binding</span> <span class=p>=</span> <span class=k>null</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>首先頂頭會有個 <code>@AndroidEntryPoint</code>，這個是 Dagger Hilt 的 annotation。加了它 Dagger Hilt 就會自動替你做 dependency injection（包括 field injection）。現在不明白不要緊，我們會在之後再詳細講解。</p>
+<p>我們大部分 layout XML 都會採用 data binding，所以 <code>StationListFragment</code> 會有 <code>StationListFragmentBinding</code>。在 <code>onCreateView</code> 我們會 inflate XML，但因為用了 data binding 所以寫法會有小許不同。那句 <code>binding.lifecycleOwner = viewLifecycleOwner</code> 的意思是那個 data binding 用到的 <code>LiveData</code> 和 <code>StateFlow</code> 會按照 <code>StationListFragment</code> 的 lifecycle 控制何時開始和終結 observation。詳細用法要先賣個關子，因為我們這篇的主要目的是弄好兩頁的殼來準備 navigation graph。</p>
+<p>你會看到我們準備了兩個 <code>StationListFragmentBinding</code> 的 property，一個是 nullable 一個就不是 nullable。而在 <code>onDestroyView</code> 我們把 <code>_binding</code> 設回 null 是<a href=https://developer.android.com/topic/libraries/view-binding#fragments>為了防止 memory leak</a> 和 view 已經從 <code>Activity</code> 中移除，不應再 reference 住它。但因為把 view binding 或 data binding 的 property 弄成 nullable 在使用上不夠方便，所以就出現了另一個不是 nullable 的 property 來把 <code>_binding</code> 強行 access。</p>
+<p>而 layout XML 我們叫它做 <em>station_list_fragment.xml</em>，這是 <code>StationListFragmentBinding</code> 命稱的來源（它會自動把命稱轉為 camel case 並加上後綴 <code>Binding</code>）。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=cp>&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+<span class=nt>&lt;layout</span> <span class=na>xmlns:android=</span><span class=s>&#34;http://schemas.android.com/apk/res/android&#34;</span>
+    <span class=na>xmlns:app=</span><span class=s>&#34;http://schemas.android.com/apk/res-auto&#34;</span>
+    <span class=na>xmlns:tools=</span><span class=s>&#34;http://schemas.android.com/tools&#34;</span><span class=nt>&gt;</span>
+
+    <span class=nt>&lt;data&gt;</span>
+
+    <span class=nt>&lt;/data&gt;</span>
+
+    <span class=nt>&lt;androidx.coordinatorlayout.widget.CoordinatorLayout</span>
+        <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
+        <span class=na>android:layout_height=</span><span class=s>&#34;match_parent&#34;</span><span class=nt>&gt;</span>
+
+        <span class=nt>&lt;com.google.android.material.appbar.AppBarLayout</span>
+            <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
+            <span class=na>android:layout_height=</span><span class=s>&#34;wrap_content&#34;</span><span class=nt>&gt;</span>
+
+            <span class=nt>&lt;com.google.android.material.appbar.MaterialToolbar</span>
+                <span class=na>android:id=</span><span class=s>&#34;@+id/topAppBar&#34;</span>
+                <span class=na>style=</span><span class=s>&#34;@style/Widget.MaterialComponents.Toolbar.Primary&#34;</span>
+                <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
+                <span class=na>android:layout_height=</span><span class=s>&#34;?attr/actionBarSize&#34;</span>
+                <span class=na>app:title=</span><span class=s>&#34;@string/app_name&#34;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;/com.google.android.material.appbar.AppBarLayout&gt;</span>
+
+        <span class=nt>&lt;androidx.recyclerview.widget.RecyclerView</span>
+            <span class=na>android:id=</span><span class=s>&#34;@+id/recyclerView&#34;</span>
+            <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
+            <span class=na>android:layout_height=</span><span class=s>&#34;match_parent&#34;</span>
+            <span class=na>app:layout_behavior=</span><span class=s>&#34;@string/appbar_scrolling_view_behavior&#34;</span> <span class=nt>/&gt;</span>
+    <span class=nt>&lt;/androidx.coordinatorlayout.widget.CoordinatorLayout&gt;</span>
+<span class=nt>&lt;/layout&gt;</span>
+</code></pre></div><h2 id=etafragment><code>EtaFragment</code><a hidden class=anchor aria-hidden=true href=#etafragment>#</a></h2>
+<p>另一頁要準備的是 <code>EtaFragment</code>，內容都是跟之前差不多，只是換了個名字。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=nd>@AndroidEntryPoint</span>
+<span class=k>class</span> <span class=nc>EtaFragment</span> <span class=p>:</span> <span class=n>Fragment</span><span class=p>()</span> <span class=p>{</span>
+    <span class=k>private</span> <span class=k>var</span> <span class=py>_binding</span><span class=p>:</span> <span class=n>EtaFragmentBinding</span><span class=p>?</span> <span class=p>=</span> <span class=k>null</span>
+    <span class=k>private</span> <span class=k>val</span> <span class=py>binding</span><span class=p>:</span> <span class=n>EtaFragmentBinding</span> <span class=k>get</span><span class=p>()</span> <span class=p>=</span> <span class=n>_binding</span><span class=o>!!</span>
+
+    <span class=k>override</span> <span class=k>fun</span> <span class=nf>onCreateView</span><span class=p>(</span>
+        <span class=n>inflater</span><span class=p>:</span> <span class=n>LayoutInflater</span><span class=p>,</span>
+        <span class=n>container</span><span class=p>:</span> <span class=n>ViewGroup</span><span class=p>?,</span>
+        <span class=n>savedInstanceState</span><span class=p>:</span> <span class=n>Bundle</span><span class=p>?</span>
+    <span class=p>):</span> <span class=n>View</span> <span class=p>{</span>
+        <span class=n>_binding</span> <span class=p>=</span> <span class=n>EtaFragmentBinding</span><span class=p>.</span><span class=n>inflate</span><span class=p>(</span><span class=n>inflater</span><span class=p>,</span> <span class=n>container</span><span class=p>,</span> <span class=k>false</span><span class=p>)</span>
+        <span class=n>binding</span><span class=p>.</span><span class=n>lifecycleOwner</span> <span class=p>=</span> <span class=n>viewLifecycleOwner</span>
+        <span class=k>return</span> <span class=n>binding</span><span class=p>.</span><span class=n>root</span>
+    <span class=p>}</span>
+
+    <span class=k>override</span> <span class=k>fun</span> <span class=nf>onDestroyView</span><span class=p>()</span> <span class=p>{</span>
+        <span class=k>super</span><span class=p>.</span><span class=n>onDestroyView</span><span class=p>()</span>
+        <span class=n>_binding</span> <span class=p>=</span> <span class=k>null</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>對應的 layout XML 是 <em>eta_fragment</em>：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=cp>&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+<span class=nt>&lt;layout</span> <span class=na>xmlns:android=</span><span class=s>&#34;http://schemas.android.com/apk/res/android&#34;</span>
+    <span class=na>xmlns:app=</span><span class=s>&#34;http://schemas.android.com/apk/res-auto&#34;</span><span class=nt>&gt;</span>
+
+    <span class=nt>&lt;data&gt;</span>
+
+    <span class=nt>&lt;/data&gt;</span>
+
+    <span class=nt>&lt;androidx.coordinatorlayout.widget.CoordinatorLayout</span>
+        <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
+        <span class=na>android:layout_height=</span><span class=s>&#34;match_parent&#34;</span><span class=nt>&gt;</span>
+
+        <span class=nt>&lt;com.google.android.material.appbar.AppBarLayout</span>
+            <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
+            <span class=na>android:layout_height=</span><span class=s>&#34;wrap_content&#34;</span><span class=nt>&gt;</span>
+
+            <span class=nt>&lt;com.google.android.material.appbar.MaterialToolbar</span>
+                <span class=na>android:id=</span><span class=s>&#34;@+id/topAppBar&#34;</span>
+                <span class=na>style=</span><span class=s>&#34;@style/Widget.MaterialComponents.Toolbar.Primary&#34;</span>
+                <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
+                <span class=na>android:layout_height=</span><span class=s>&#34;?attr/actionBarSize&#34;</span>
+                <span class=na>app:title=</span><span class=s>&#34;@string/app_name&#34;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;/com.google.android.material.appbar.AppBarLayout&gt;</span>
+
+        <span class=nt>&lt;androidx.recyclerview.widget.RecyclerView</span>
+            <span class=na>android:id=</span><span class=s>&#34;@+id/recyclerView&#34;</span>
+            <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
+            <span class=na>android:layout_height=</span><span class=s>&#34;match_parent&#34;</span>
+            <span class=na>app:layout_behavior=</span><span class=s>&#34;@string/appbar_scrolling_view_behavior&#34;</span> <span class=nt>/&gt;</span>
+    <span class=nt>&lt;/androidx.coordinatorlayout.widget.CoordinatorLayout&gt;</span>
+<span class=nt>&lt;/layout&gt;</span>
+</code></pre></div><h2 id=改-theme>改 theme<a hidden class=anchor aria-hidden=true href=#改-theme>#</a></h2>
+<p>從那兩個 layout XML 看到我們每頁都會有自己的 top bar (<code>AppBarLayout</code>)，所以 theme 就不應該用帶有 top bar（以前叫 action bar）的 theme。</p>
+<p>Project 本身是用 Android Studio 的 template 建立，所以會有 <em>themes.xml</em>：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;resources</span> <span class=na>xmlns:tools=</span><span class=s>&#34;http://schemas.android.com/tools&#34;</span><span class=nt>&gt;</span>
+    <span class=c>&lt;!-- Base application theme. --&gt;</span>
+    <span class=nt>&lt;style</span> <span class=na>name=</span><span class=s>&#34;Theme.ETADemo&#34;</span> <span class=na>parent=</span><span class=s>&#34;Theme.MaterialComponents.DayNight.DarkActionBar&#34;</span><span class=nt>&gt;</span>
+        <span class=c>&lt;!-- 略 --&gt;</span>
+    <span class=nt>&lt;/style&gt;</span>
+<span class=nt>&lt;/resources&gt;</span>
+</code></pre></div><p>我們要把 <code>Theme.MaterialComponents.DayNight.DarkActionBar</code> 換成無 action bar 的 theme：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;resources</span> <span class=na>xmlns:tools=</span><span class=s>&#34;http://schemas.android.com/tools&#34;</span><span class=nt>&gt;</span>
+    <span class=c>&lt;!-- Base application theme. --&gt;</span>
+    <span class=nt>&lt;style</span> <span class=na>name=</span><span class=s>&#34;Theme.ETADemo&#34;</span> <span class=na>parent=</span><span class=s>&#34;Theme.MaterialComponents.DayNight.NoActionBar&#34;</span><span class=nt>&gt;</span>
+        <span class=c>&lt;!-- 略 --&gt;</span>
+    <span class=nt>&lt;/style&gt;</span>
+<span class=nt>&lt;/resources&gt;</span>
+</code></pre></div><p>這篇的 code 有點長，我們下一篇會寫 navigation graph 的部分和把 <code>MainActivity</code> 改成顯示那個 navigation graph 的頁面。</p>
+<h2 id=參考>參考<a hidden class=anchor aria-hidden=true href=#參考>#</a></h2>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=r4T9zkhpmII">Android 面试黑洞——当我按下 Home 键再切回来，会发生什么？</a></li>
+</ul>
+</div>
+<footer class=post-footer>
+<ul class=post-tags>
+<li><a href=https://eric.swiftzer.net/tags/2021-ithome-%E9%90%B5%E4%BA%BA%E8%B3%BD/>2021 iThome 鐵人賽</a></li>
+<li><a href=https://eric.swiftzer.net/tags/android/>Android</a></li>
+</ul>
+<nav class=paginav>
+<a class=prev href=https://eric.swiftzer.net/2021/10/2021-ithome-ironman-18-navigation-2/>
+<span class=title>« Prev Page</span>
+<br>
+<span>2021 iThome 鐵人賽 Day 18：Navigation (2)</span>
+</a>
+<a class=next href=https://eric.swiftzer.net/2021/10/2021-ithome-ironman-16-domain-layer-testing/>
+<span class=title>Next Page »</span>
+<br>
+<span>2021 iThome 鐵人賽 Day 16：Domain layer testing</span>
+</a>
+</nav>
+</footer><div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//efilm.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</article>
+</main><footer class=footer>
+<span>&copy; 2021 <a href=https://eric.swiftzer.net/>EricLog</a></span>
+<span>&#183;</span>
+<span>Powered by <a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a></span>
+<span>&#183;</span>
+<span>Theme <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span>
+</footer>
+<a href=#top aria-label="go to top" title="Go to Top (Alt + G)">
+<button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</button>
+</a>
+<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
+<script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script>
+<script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
+</body>
+</html>

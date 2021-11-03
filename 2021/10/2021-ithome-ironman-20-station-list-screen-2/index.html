@@ -1,0 +1,325 @@
+<!doctype html><html lang=zh-hant-hk dir=auto>
+<head><meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=robots content="index, follow">
+<title>2021 iThome 鐵人賽 Day 20：Station list screen (2) | EricLog</title>
+<meta name=keywords content="2021 iThome 鐵人賽,Android">
+<meta name=description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 20 篇，你可到 iThome 查看原文。 文章目錄 上一篇我們完成了 StationListAdap">
+<meta name=author content>
+<link rel=canonical href=https://ithelp.ithome.com.tw/articles/10277771>
+<link href=/assets/css/stylesheet.min.d1fc837a267f77f6ede89d1a89c4880a90c381d9e6673ad4a76a3ad1900b65f9.css integrity="sha256-0fyDeiZ/d/bt6J0aicSICpDDgdnmZzrUp2o60ZALZfk=" rel="preload stylesheet" as=style>
+<link rel=icon href=https://eric.swiftzer.net/favicon.ico>
+<link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png>
+<link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png>
+<link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png>
+<link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg>
+<meta name=theme-color content="#2e2e33">
+<meta name=msapplication-TileColor content="#2e2e33">
+<meta name=generator content="Hugo 0.88.1">
+<link rel=preconnect href=https://fonts.gstatic.com>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-1268728-8','auto'),ga('send','pageview'))</script>
+<script async src=https://www.google-analytics.com/analytics.js></script>
+<meta property="og:title" content="2021 iThome 鐵人賽 Day 20：Station list screen (2)">
+<meta property="og:description" content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 20 篇，你可到 iThome 查看原文。 文章目錄 上一篇我們完成了 StationListAdap">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://eric.swiftzer.net/2021/10/2021-ithome-ironman-20-station-list-screen-2/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2021-10-05T00:00:00+08:00">
+<meta property="article:modified_time" content="2021-10-05T00:00:00+08:00">
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="2021 iThome 鐵人賽 Day 20：Station list screen (2)">
+<meta name=twitter:description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 20 篇，你可到 iThome 查看原文。 文章目錄 上一篇我們完成了 StationListAdap">
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"2021 iThome 鐵人賽 Day 20：Station list screen (2)","item":"https://eric.swiftzer.net/2021/10/2021-ithome-ironman-20-station-list-screen-2/"}]}</script>
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"2021 iThome 鐵人賽 Day 20：Station list screen (2)","name":"2021 iThome 鐵人賽 Day 20：Station list screen (2)","description":"本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 20 篇，你可到 iThome 查看原文。 文章目錄 上一篇我們完成了 StationListAdap","keywords":["2021 iThome 鐵人賽","Android"],"articleBody":" 本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 20 篇，你可到 iThome 查看原文。\n文章目錄\n 上一篇我們完成了 StationListAdapter，我們現在會繼續車站列表的 UI 部分。\nStationListViewModel 首先我們要寫的 class 是 StationListViewModel。首先來看看它的基本骨架：\n@HiltViewModel class StationListViewModel @Inject constructor( getLinesAndStations: GetLinesAndStationsUseCase, ) : ViewModel(), StationListAdapter.Callback { val list: StateFlowListStationListItem = TODO() val launchEtaScreen: FlowPairLine, Station = TODO() override fun toggleExpanded(line: Line) { TODO() } override fun onClickLineAndStation(line: Line, station: Station) { TODO() } } 一開首就看到 Dagger Hilt 的 @HiltViewModel annotation，它是用來標記 ViewModel。如果你想用Dagger Hilt 為你的 ViewModel 做 constructor injection 的話，就要為 ViewModel 標註 @HiltViewModel。加了它就不用再自己寫 ViewModelProvider.Factory，Dagger Hilt 會自動為我們打點好。如果你需要在 ViewModel 用到 Context 的話，可以在 constructor 加上 @ApplicationContext private val context: Context，Dagger Hilt 就能為你提供 Application Context。換句話講，用了 Dagger Hilt 就不需要再用 AndroidViewModel。\nConstructor 會看到我們之前寫好的 GetLinesAndStationsUseCase，因為我們會由那個 use case 取得車站列表然後交予 RecyclerView 顯示。至於要 implement 上一篇的 StationListAdapter.Callback 是因為 ViewModel 的角色是負責接收用戶的輸入動作，經過處理後再以 observer pattern 通知 Fragment 改變 UI。而通知改變 UI 的形式我們會用 Kotlin Flow 而不是 LiveData。這是因為現在 data binding 已經支援 StateFlow 而且 Flow 提供了不少現成的 operator 讓我們可以直接使用，不用我們每次都要 override [MediatorLiveData](https://developer.android.com/reference/androidx/lifecycle/MediatorLiveData)。所以上面的 code 會看到我們外露了 list 和 launchEtaScreen 兩個 Flow 好讓 Fragment 接收。list 就是用來提交畫面需要顯示的車站列表；launchEtaScreen 就是通知 Fragment 開啟抵站時間頁。\n而 implement StationListAdapter.Callback 要實作的 toggleExpanded 和 onClickLineAndStation 就是放一些 code 令 list 和 launchEtaScreen 兩個 Flow 能因應用戶的輸入向 Fragment 發送最新的狀態。\n車站列表 flow private val lineAndStations = flowOf(getLinesAndStations()) private val expandedGroups = MutableStateFlowSetLine(emptySet()) val list: StateFlowListStationListItem = combine(lineAndStations, expandedGroups) { lineAndStations, expandedGroups - lineAndStations.flatMap { (line, stations) - sequence { val isExpanded = expandedGroups.contains(line) yield( StationListItem.Group( line = line, isExpanded = isExpanded, ) ) if (isExpanded) { yieldAll(stations.map { StationListItem.Child(line = line, station = it) }) } }.toList() } }.stateIn( scope = viewModelScope, started = SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MILLIS), initialValue = emptyList(), ) 我們首先要從 GetLinesAndStationsUseCase 取得車站列表（以 Map 形式，key 是路綫而 value 是該路綫的車站）。由於 use case 的 invoke 只是 return Map 而不是 Flow，所以我們要先把它轉成 Flow (lineAndStations)。我們直接用 flowOf 就可以了，反正那個 Map 是寫死的，不會突然改變。另外，因為 use case 是用 operator fun invoke() 寫的，所以我們可以把 use case 的 variable 名後面加上括號就能執行那個 invoke function，令整段 code 更為簡潔。\n由於我們的列表是有展合功能，所以要記錄各路綫是否展開了車站列表。我們會用一個 Set 去記錄那些路綫現在是展開狀態 (expandedGroups)。但由於我們最終是要以 StateFlow 的形式通知 Fragment 最新的 list item，所以這個 Set 需要放在 MutableStateFlow 內，這樣只要 expandedGroups 有變更的話就能觸發更新 list。在 MutableStateFlow constructor 我們交了這個 flow 的初始值 emptySet()，意思是一開始時所有路綫都不會顯示車站名。留意我們用 MutableStateFlow，意思是要改變那個 Set 的內容就要透過 MutableStateFlow 的機制去更新，不能直接拿到 Set 的 reference 直接改（因為它是 immutable）。我以前看過有人寫了這些東西：\n StateFlow MutableStateFlow  第 1 個就是拿到 MutableSet 的 reference 來改內容，但改完是不能向下游通知這個 MutableSet 改了；第 2 個是「進可攻退可守」，又可以私下拿 MutableSet 的 reference 來改內容，又可以經 MutableStateFlow 的機制向下游通知內容已被更改。千萬不要為了節省每次改動內容都要 instantiate 新 object 而寫成這樣，這個寫法會令人混淆，改了 Set 但下游又看不見，結果日後要花時間 debug，廢時失事。另外我亦見過有人會把 type 定義成 nullable (MutableStateFlow?)，這個寫法變相要處理 null 和 empty 兩個情況。如果可以的話不如由 empty 表達沒有東西的意思，不用再增加多個東西處理。而我們用 StateFlow/MutableStateFlow 而不是單純的 Flow 是因為我們想保存當前最新的值，普通的 Flow 就是發射了值之後就不會保存最新的值。\n接着我們來看看 list。它那一大段 code 就是按照當前那些路綫是展開了車站列表而生成對應的 list item 供 RecyclerView 顯示，所以我們需要把 lineAndStations 和 expandedGroups 結合在一起（即是那句 combine 的意思）。只要兩者其中一方有變動，那 combine 的 lambda 都會被執行。在 lambda 入面我們會收到兩個參數：lineAndStations 和 expandedGroups。兩個參數雖然跟上面的 Flow 和 MutableStateFlow 撞名，但 lambda 參數是兩個 flow 當前最新的值，所以 data type 分是 Map 和 Set，不要弄錯。lambda 裏面就是走遍 Map 每一個 Map.Entry，看看 Set 是否有這條路綫，有的話就把該路綫的車站都塞進去，做成展開的效果。flatMap 的作用就是讓你逐一走進每個 Map.Entry，然後每次都 return 一個 List，flatMap 會將全部的 List 合併成一條 List 交予下游。而我們用了 sequence { ... }.toList() 是因為 buildList 現在仍是 experimental。在 sequence {} 中如果要提交 item 給 Sequence 的話會用到 yield 或 yieldAll，yield 就是提交一個 item 而 yieldAll 就是提交多個 item。\ncombine 的下游駁住了 stateIn 就是要把 combine 生成的 Flow 轉換成 StateFlow。轉成 StateFlow 的原因是如果 Fragment 經歷 configuration change 的話就會重新 collect list。如果用了普通的 Flow 那 combine 的一大段 code 就會再次執行，但用了 StateFlow 就不會，除非 lineAndStations 和 expandedGroups 有改動。另外，如果 combine 計算出來的東西跟上一次的結果是一樣的話，StateFlow 就不會再通知,下游有改動，這是 StateFlow 另一大特色。這和 LiveData 效果差不多，可以說是為了取代 LiveData 而設，所以 data binding 現在支援 Flow 都是支援 StateFlow。stateIn 要有三樣東西：\n scope 那個 StateFlow 值分享的範圍，由於這個 StateFlow 是放在 ViewModel 內，那它的生死都是跟 ViewModel 一致，所以填了 viewModelScope started 我們填了 SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MILLIS)，意思是如果一直有人 subscribe (collect) 住這個 StateFlow 的話，那 StateFlow 的值就能一直被共用，但當最後一個 subscriber 退訂的話，我們會多等 STATE_FLOW_STOP_TIMEOUT_MILLIS 的時間後就把 StateFlow 的值清除掉（那個 STATE_FLOW_STOP_TIMEOUT_MILLIS 的值其實是 Duration.seconds(5) 五秒鐘） initialValue 初始值，由於這是一個 List 那我們就用 emptyList() 比較合適  那個 SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MILLIS) 五秒鐘是 Android Developers 在 Medium 文章內建議的數值。它的意思是五秒鐘應該有足夠時間在 configuration change 後重新 subscribe 那個 StateFlow ，這樣就不用在每次 configuration change 後都要重新執行上游的 code 計算它的值。\n按下路綫名稱 按下後，我們要把路綫從 expandedGroups 拿走或者是加進去，從而觸發重新計算 list。留意我們用了 update 而不是用 value 來更新 MutableStateFlow 的值。這是因為我們需要建基於當前的值才能得知最新的值，用 update 就能保障 concurrency。在 update lambda 最後 return 的值將會是 MutableStateFlow 最新的值。\noverride fun toggleExpanded(line: Line) { viewModelScope.launch { expandedGroups.update { val newSet = it.toHashSet() if (newSet.contains(line)) { newSet.remove(line) } else { newSet.add(line) } newSet } } } 按下車站名稱 按下後，我們要通知 Fragment 開啟抵站時間頁。這次我們用 Channel 來做背後發射 data 的原理，然後把 Channel 轉換成 Flow 供 Fragment subscribe。Channel 是用來在兩個 coroutine 之間傳送資料，跟 BlockingQueue 差不多，我們借用它來表示轉頁動作。這次用 Flow 而不是 StateFlow 是因為開啟另一頁和顯示 toast 一樣不需要有初始值，亦不需要在 configuration change 後獲取之前的值（如果這樣做就會在 configuration change 後開啟另一頁或顯示 toast 多一次，這不是我們要的效果）。要發射資料到 Channel 要用到 send 這個 method，留意要在 coroutine scope 內執行。\nprivate val _launchEtaScreen = ChannelPairLine, Station(Channel.BUFFERED) val launchEtaScreen: FlowPairLine, Station = _launchEtaScreen.receiveAsFlow() override fun onClickLineAndStation(line: Line, station: Station) { viewModelScope.launch { _launchEtaScreen.send(line to station) } } 現在 StationListAdapter 已經完成了。接下來就轉到 StationListFragment。\nFragment layout XML 跟之前的差別就是多了 RecyclerView 和由 data binding 改回用 view binding，因為這次用不着。但抵站時間頁會用到 data binding，不用擔心。\n  xmlns:android=\"http://schemas.android.com/apk/res/android\" xmlns:app=\"http://schemas.android.com/apk/res-auto\" xmlns:tools=\"http://schemas.android.com/tools\" android:layout_width=\"match_parent\" android:layout_height=\"match_parent\"  android:layout_width=\"match_parent\" android:layout_height=\"wrap_content\"  android:id=\"@+id/topAppBar\" style=\"@style/Widget.MaterialComponents.Toolbar.Primary\" android:layout_width=\"match_parent\" android:layout_height=\"?attr/actionBarSize\" app:title=\"@string/app_name\" /   android:id=\"@+id/recyclerView\" android:layout_width=\"match_parent\" android:layout_height=\"match_parent\" app:layout_behavior=\"@string/appbar_scrolling_view_behavior\" tools:listitem=\"@layout/station_list_station_item\" /  StationListFragment 由於 logic 都是放在 ViewModel，所以 Fragment 要寫的東西不多，主要都是設定 view binding 和 subscribe ViewModel 外露的 Flow。\n@AndroidEntryPoint class StationListFragment : Fragment() { private val viewModel by viewModelsStationListViewModel() private var _binding: StationListFragmentBinding? = null private val binding: StationListFragmentBinding get() = _binding!! private var _adapter: StationListAdapter? = null private val adapter: StationListAdapter get() = _adapter!! @Inject lateinit var presenter: LineStationPresenter override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle? ): View { _binding = StationListFragmentBinding.inflate(inflater, container, false) return binding.root } override fun onViewCreated(view: View, savedInstanceState: Bundle?) { super.onViewCreated(view, savedInstanceState) _adapter = StationListAdapter( lifecycleOwner = viewLifecycleOwner, callback = viewModel, presenter = this.presenter, ) with(binding.recyclerView) { layoutManager = LinearLayoutManager(requireContext()) adapter = this@StationListFragment.adapter } observeViewModel() } private fun observeViewModel() { viewLifecycleOwner.lifecycleScope.launch { viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) { viewModel.list.collect { adapter.submitList(it) } } } viewLifecycleOwner.lifecycleScope.launch { viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) { viewModel.launchEtaScreen.collect { (line, station) - findNavController().safeNavigate( StationListFragmentDirections.actionStationListFragmentToEtaFragment( line, station ) ) } } } } override fun onDestroyView() { super.onDestroyView() binding.recyclerView.adapter = null _adapter = null _binding = null } } 在 observeViewModel，我們 observe 了 list 和 launchEtaScreen。留意我們用了 viewLifecycleOwner.lifecycleScope.launch 又用了 viewLifecycleOwner.repeatOnLifecycle 包住那句 viewModel.someFlow.collect：\nviewLifecycleOwner.lifecycleScope.launch { viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) { viewModel.someFlow.collect { ... } } } 這個寫法是按照 Android 的建議來寫。因為包住 viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) 的 coroutine 會在 onStop 和 onStart 之間暫停接收，從而避免在不適當的時機接觸到 view。\nlist 的部分我們只需要 call ListAdapter.submitList 就可以了，它會計算那些 list item 需要更新。而 launchEtaScreen 就是 call findNavController().navigate() 跳去抵站時間頁。由於我們用了 Save Args，所以用了 StationListFragmentDirections.actionStationListFragmentToEtaFragment 來保證 type safe 和沒有遺漏 Fragment argument。但我們 code 用了 safeNavigate 而非 navigate，原因是避免用戶在按下轉頁按鈕後畫面尚未顯示到下一頁時用戶再次按動轉頁按鈕從而 app crash。因為 Navigation component 覺得 findNavController().navigate() 後就已經轉到新一頁，即使畫面尚未完成轉頁。所以用戶重按轉頁按鈕時 Navigation component 就會發現當前頁面並沒有這個導航方式，因而報錯。要避免這個情況我們可以參考 Nnabueze Uhiara 提供的 safeNavigate：\nfun NavController.safeNavigate(direction: NavDirections) { currentDestination?.getAction(direction.actionId)?.run { navigate(direction) } } 小結 來到這裏車站列表頁已經完成了。本篇介紹了 ViewModel 的定位：提供 Flow 供 Fragment subscribe 來更新 UI 和提供 method 供 Fragment 通知 ViewModel 用戶做了甚麼動作，從而讓 ViewModel 執行適當的動作回應，例如用戶按下按鈕後會 call use case 並將新的狀態以 Flow 通知 Fragment。另外，我們用 Channel 做出 SingleLiveEvent 的效果。最後還介紹了 Navigation component 在轉頁時的陷阱。如果想對 ViewModel 的定位有更深入的了解可以看看「Don’t let ViewModel know about framework level dependencies」一文。\n完整的 code 可以到 GitHub repo 查閱。下一篇我們會開始做抵站時間頁，屆時會有更多 ViewModel 和 Flow 的示範。\n","wordCount":"3825","inLanguage":"en","datePublished":"2021-10-05T00:00:00+08:00","dateModified":"2021-10-05T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2021/10/2021-ithome-ironman-20-station-list-screen-2/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
+</head>
+<body id=top>
+<script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
+<noscript>
+<style type=text/css>#theme-toggle,.top-link{display:none}</style>
+<style>@media(prefers-color-scheme:dark){:root{--theme:#1d1e20;--entry:#2e2e33;--primary:rgba(255, 255, 255, 0.84);--secondary:rgba(255, 255, 255, 0.56);--tertiary:rgba(255, 255, 255, 0.16);--content:rgba(255, 255, 255, 0.74);--hljs-bg:#2e2e33;--code-bg:#37383e;--border:#333}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
+</noscript>
+<header class=header>
+<nav class=nav>
+<div class=logo>
+<a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
+<span class=logo-switches>
+<button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+</button>
+</span>
+</div>
+<ul id=menu onscroll=menu_on_scroll()>
+<li>
+<a href=https://eric.swiftzer.net/fonts/ title=Fonts>
+<span>Fonts</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/archives/ title=Archives>
+<span>Archives</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/tags/ title=Tags>
+<span>Tags</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/about/ title=About>
+<span>About</span>
+</a>
+</li></ul>
+</nav>
+</header>
+<main class=main>
+<article class=post-single>
+<header class=post-header>
+<div class=breadcrumbs>
+<a href=https://eric.swiftzer.net/>Home</a>&nbsp;»&nbsp;<a href=https://eric.swiftzer.net/posts/>Posts</a>
+</div>
+<h1 class=post-title>
+2021 iThome 鐵人賽 Day 20：Station list screen (2)
+</h1>
+<div class=post-meta>October 5, 2021
+</div>
+</header>
+<div class=post-content>
+<blockquote>
+<p>本篇文章是 <a href=https://ithelp.ithome.com.tw/2021ironman>2021 iThome 鐵人賽</a>參賽題目「<a href=https://ithelp.ithome.com.tw/users/20139666/ironman/4661>寫一個列車抵站時間 Android App</a>」的第 20 篇，你可到 iThome <a href=https://ithelp.ithome.com.tw/articles/10277771>查看原文</a>。</p>
+<p><a href=https://eric.swiftzer.net/2021-ithome-ironman/>文章目錄</a></p>
+</blockquote>
+<p>上一篇我們完成了 <code>StationListAdapter</code>，我們現在會繼續車站列表的 UI 部分。</p>
+<h2 id=stationlistviewmodel><code>StationListViewModel</code><a hidden class=anchor aria-hidden=true href=#stationlistviewmodel>#</a></h2>
+<p>首先我們要寫的 class 是 <code>StationListViewModel</code>。首先來看看它的基本骨架：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=nd>@HiltViewModel</span>
+<span class=k>class</span> <span class=nc>StationListViewModel</span> <span class=nd>@Inject</span> <span class=k>constructor</span><span class=p>(</span>
+    <span class=n>getLinesAndStations</span><span class=p>:</span> <span class=n>GetLinesAndStationsUseCase</span><span class=p>,</span>
+<span class=p>)</span> <span class=p>:</span> <span class=n>ViewModel</span><span class=p>(),</span> <span class=n>StationListAdapter</span><span class=p>.</span><span class=n>Callback</span> <span class=p>{</span>
+
+    <span class=k>val</span> <span class=py>list</span><span class=p>:</span> <span class=n>StateFlow</span><span class=p>&lt;</span><span class=n>List</span><span class=p>&lt;</span><span class=n>StationListItem</span><span class=p>&gt;&gt;</span> <span class=p>=</span> <span class=n>TODO</span><span class=p>()</span>
+    <span class=k>val</span> <span class=py>launchEtaScreen</span><span class=p>:</span> <span class=n>Flow</span><span class=p>&lt;</span><span class=n>Pair</span><span class=p>&lt;</span><span class=n>Line</span><span class=p>,</span> <span class=n>Station</span><span class=p>&gt;&gt;</span> <span class=p>=</span> <span class=n>TODO</span><span class=p>()</span>
+
+    <span class=k>override</span> <span class=k>fun</span> <span class=nf>toggleExpanded</span><span class=p>(</span><span class=n>line</span><span class=p>:</span> <span class=n>Line</span><span class=p>)</span> <span class=p>{</span>
+        <span class=n>TODO</span><span class=p>()</span>
+    <span class=p>}</span>
+
+    <span class=k>override</span> <span class=k>fun</span> <span class=nf>onClickLineAndStation</span><span class=p>(</span><span class=n>line</span><span class=p>:</span> <span class=n>Line</span><span class=p>,</span> <span class=n>station</span><span class=p>:</span> <span class=n>Station</span><span class=p>)</span> <span class=p>{</span>
+        <span class=n>TODO</span><span class=p>()</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>一開首就看到 Dagger Hilt 的 <code>@HiltViewModel</code> annotation，它是用來標記 <code>ViewModel</code>。如果你想用Dagger Hilt 為你的 <code>ViewModel</code> 做 constructor injection 的話，就要為 <code>ViewModel</code> 標註 <code>@HiltViewModel</code>。加了它就不用再自己寫 <code>ViewModelProvider.Factory</code>，Dagger Hilt 會自動為我們打點好。如果你需要在 <code>ViewModel</code> 用到 <code>Context</code> 的話，可以在 constructor 加上 <code>@ApplicationContext private val context: Context</code>，Dagger Hilt 就能為你提供 <code>Application</code> <code>Context</code>。換句話講，用了 Dagger Hilt 就不需要再用 <a href=https://developer.android.com/reference/androidx/lifecycle/AndroidViewModel><code>AndroidViewModel</code></a>。</p>
+<p>Constructor 會看到我們之前寫好的 <code>GetLinesAndStationsUseCase</code>，因為我們會由那個 use case 取得車站列表然後交予 <code>RecyclerView</code> 顯示。至於要 implement 上一篇的 <code>StationListAdapter.Callback</code> 是因為 <code>ViewModel</code> 的角色是負責接收用戶的輸入動作，經過處理後再以 observer pattern 通知 <code>Fragment</code> 改變 UI。而通知改變 UI 的形式我們會用 Kotlin Flow 而不是 <code>LiveData</code>。這是因為現在 data binding 已經支援 <code>StateFlow</code> 而且 Flow 提供了不少現成的 operator 讓我們可以直接使用，不用我們每次都要 override <code>[MediatorLiveData](https://developer.android.com/reference/androidx/lifecycle/MediatorLiveData)</code>。所以上面的 code 會看到我們外露了 <code>list</code> 和 <code>launchEtaScreen</code> 兩個 Flow 好讓 <code>Fragment</code> 接收。<code>list</code> 就是用來提交畫面需要顯示的車站列表；<code>launchEtaScreen</code> 就是通知 <code>Fragment</code> 開啟抵站時間頁。</p>
+<p>而 implement <code>StationListAdapter.Callback</code> 要實作的 <code>toggleExpanded</code> 和 <code>onClickLineAndStation</code> 就是放一些 code 令 <code>list</code> 和 <code>launchEtaScreen</code> 兩個 Flow 能因應用戶的輸入向 <code>Fragment</code> 發送最新的狀態。</p>
+<h2 id=車站列表-flow>車站列表 flow<a hidden class=anchor aria-hidden=true href=#車站列表-flow>#</a></h2>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>private</span> <span class=k>val</span> <span class=py>lineAndStations</span> <span class=p>=</span> <span class=n>flowOf</span><span class=p>(</span><span class=n>getLinesAndStations</span><span class=p>())</span>
+<span class=k>private</span> <span class=k>val</span> <span class=py>expandedGroups</span> <span class=p>=</span> <span class=n>MutableStateFlow</span><span class=p>&lt;</span><span class=n>Set</span><span class=p>&lt;</span><span class=n>Line</span><span class=p>&gt;&gt;(</span><span class=n>emptySet</span><span class=p>())</span>
+<span class=k>val</span> <span class=py>list</span><span class=p>:</span> <span class=n>StateFlow</span><span class=p>&lt;</span><span class=n>List</span><span class=p>&lt;</span><span class=n>StationListItem</span><span class=p>&gt;&gt;</span> <span class=p>=</span>
+    <span class=n>combine</span><span class=p>(</span><span class=n>lineAndStations</span><span class=p>,</span> <span class=n>expandedGroups</span><span class=p>)</span> <span class=p>{</span> <span class=n>lineAndStations</span><span class=p>,</span> <span class=n>expandedGroups</span> <span class=o>-&gt;</span>
+        <span class=n>lineAndStations</span><span class=p>.</span><span class=n>flatMap</span> <span class=p>{</span> <span class=p>(</span><span class=n>line</span><span class=p>,</span> <span class=n>stations</span><span class=p>)</span> <span class=o>-&gt;</span>
+            <span class=n>sequence</span> <span class=p>{</span>
+                <span class=k>val</span> <span class=py>isExpanded</span> <span class=p>=</span> <span class=n>expandedGroups</span><span class=p>.</span><span class=n>contains</span><span class=p>(</span><span class=n>line</span><span class=p>)</span>
+                <span class=n>yield</span><span class=p>(</span>
+                    <span class=n>StationListItem</span><span class=p>.</span><span class=n>Group</span><span class=p>(</span>
+                        <span class=n>line</span> <span class=p>=</span> <span class=n>line</span><span class=p>,</span>
+                        <span class=n>isExpanded</span> <span class=p>=</span> <span class=n>isExpanded</span><span class=p>,</span>
+                    <span class=p>)</span>
+                <span class=p>)</span>
+                <span class=k>if</span> <span class=p>(</span><span class=n>isExpanded</span><span class=p>)</span> <span class=p>{</span>
+                    <span class=n>yieldAll</span><span class=p>(</span><span class=n>stations</span><span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=n>StationListItem</span><span class=p>.</span><span class=n>Child</span><span class=p>(</span><span class=n>line</span> <span class=p>=</span> <span class=n>line</span><span class=p>,</span> <span class=n>station</span> <span class=p>=</span> <span class=k>it</span><span class=p>)</span> <span class=p>})</span>
+                <span class=p>}</span>
+            <span class=p>}.</span><span class=n>toList</span><span class=p>()</span>
+        <span class=p>}</span>
+    <span class=p>}.</span><span class=n>stateIn</span><span class=p>(</span>
+        <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
+        <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
+        <span class=n>initialValue</span> <span class=p>=</span> <span class=n>emptyList</span><span class=p>(),</span>
+    <span class=p>)</span>
+</code></pre></div><p>我們首先要從 <code>GetLinesAndStationsUseCase</code> 取得車站列表（以 <code>Map&lt;Line, Set&lt;Station></code> 形式，key 是路綫而 value 是該路綫的車站）。由於 use case 的 <code>invoke</code> 只是 return <code>Map</code> 而不是 <code>Flow</code>，所以我們要先把它轉成 <code>Flow</code> (<code>lineAndStations</code>)。我們直接用 <code>flowOf</code> 就可以了，反正那個 <code>Map</code> 是寫死的，不會突然改變。另外，因為 use case 是用 <code>operator fun invoke()</code> 寫的，所以我們可以把 use case 的 variable 名後面加上括號就能執行那個 <code>invoke</code> function，令整段 code 更為簡潔。</p>
+<p>由於我們的列表是有展合功能，所以要記錄各路綫是否展開了車站列表。我們會用一個 <code>Set</code> 去記錄那些路綫現在是展開狀態 (<code>expandedGroups</code>)。但由於我們最終是要以 <code>StateFlow</code> 的形式通知 <code>Fragment</code> 最新的 list item，所以這個 <code>Set</code> 需要放在 <code>MutableStateFlow</code> 內，這樣只要 <code>expandedGroups</code> 有變更的話就能觸發更新 <code>list</code>。在 <code>MutableStateFlow</code> constructor 我們交了這個 flow 的初始值 <code>emptySet()</code>，意思是一開始時所有路綫都不會顯示車站名。留意我們用 <code>MutableStateFlow&lt;Set&lt;Line>></code>，意思是要改變那個 <code>Set</code> 的內容就要透過 <code>MutableStateFlow</code> 的機制去更新，不能直接拿到 <code>Set</code> 的 reference 直接改（因為它是 immutable）。我以前看過有人寫了這些東西：</p>
+<ol>
+<li><code>StateFlow&lt;MutableSet&lt;Line>></code></li>
+<li><code>MutableStateFlow&lt;MutableSet&lt;Line>></code></li>
+</ol>
+<p>第 1 個就是拿到 <code>MutableSet</code> 的 reference 來改內容，但改完是不能向下游通知這個 <code>MutableSet</code> 改了；第 2 個是「進可攻退可守」，又可以私下拿 <code>MutableSet</code> 的 reference 來改內容，又可以經 <code>MutableStateFlow</code> 的機制向下游通知內容已被更改。千萬不要為了節省每次改動內容都要 instantiate 新 object 而寫成這樣，這個寫法會令人混淆，改了 <code>Set</code> 但下游又看不見，結果日後要花時間 debug，廢時失事。另外我亦見過有人會把 type 定義成 nullable (<code>MutableStateFlow&lt;Set&lt;Line>?></code>)，這個寫法變相要處理 null 和 empty 兩個情況。如果可以的話不如由 empty 表達沒有東西的意思，不用再增加多個東西處理。而我們用 <code>StateFlow</code>/<code>MutableStateFlow</code> 而不是單純的 <code>Flow</code> 是因為我們想保存當前最新的值，普通的 <code>Flow</code> 就是發射了值之後就不會保存最新的值。</p>
+<p>接着我們來看看 <code>list</code>。它那一大段 code 就是按照當前那些路綫是展開了車站列表而生成對應的 list item 供 <code>RecyclerView</code> 顯示，所以我們需要把 <code>lineAndStations</code> 和 <code>expandedGroups</code> 結合在一起（即是那句 <code>combine</code> 的意思）。只要兩者其中一方有變動，那 <code>combine</code> 的 lambda 都會被執行。在 lambda 入面我們會收到兩個參數：<code>lineAndStations</code> 和 <code>expandedGroups</code>。兩個參數雖然跟上面的 <code>Flow</code> 和 <code>MutableStateFlow</code> 撞名，但 lambda 參數是兩個 flow 當前最新的值，所以 data type 分是 <code>Map&lt;Line, Set&lt;Station></code> 和 <code>Set&lt;Line></code>，不要弄錯。lambda 裏面就是走遍 <code>Map&lt;Line, Set&lt;Station></code> 每一個 <code>Map.Entry</code>，看看 <code>Set&lt;Line></code> 是否有這條路綫，有的話就把該路綫的車站都塞進去，做成展開的效果。<code>flatMap</code> 的作用就是讓你逐一走進每個 <code>Map.Entry</code>，然後每次都 return 一個 <code>List</code>，<code>flatMap</code> 會將全部的 <code>List</code> 合併成一條 <code>List</code> 交予下游。而我們用了 <code>sequence { ... }.toList()</code> 是因為 <a href=https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/build-list.html><code>buildList</code></a> 現在仍是 experimental。在 <code>sequence {}</code> 中如果要提交 item 給 <code>Sequence</code> 的話會用到 <code>yield</code> 或 <code>yieldAll</code>，<code>yield</code> 就是提交一個 item 而 <code>yieldAll</code> 就是提交多個 item。</p>
+<p><code>combine</code> 的下游駁住了 <code>stateIn</code> 就是要把 <code>combine</code> 生成的 <code>Flow</code> 轉換成 <code>StateFlow</code>。轉成 <code>StateFlow</code> 的原因是如果 <code>Fragment</code> 經歷 configuration change 的話就會重新 collect <code>list</code>。如果用了普通的 <code>Flow</code> 那 <code>combine</code> 的一大段 code 就會再次執行，但用了 <code>StateFlow</code> 就不會，除非 <code>lineAndStations</code> 和 <code>expandedGroups</code> 有改動。另外，如果 <code>combine</code> 計算出來的東西跟上一次的結果是一樣的話，<code>StateFlow</code> 就不會再通知,下游有改動，這是 <code>StateFlow</code> 另一大特色。這和 <code>LiveData</code> 效果差不多，可以說是為了取代 <code>LiveData</code> 而設，所以 data binding 現在支援 Flow 都是支援 <code>StateFlow</code>。<code>stateIn</code> 要有三樣東西：</p>
+<ol>
+<li><code>scope</code> 那個 <code>StateFlow</code> 值分享的範圍，由於這個 <code>StateFlow</code> 是放在 <code>ViewModel</code> 內，那它的生死都是跟 <code>ViewModel</code> 一致，所以填了 <code>viewModelScope</code></li>
+<li><code>started</code> 我們填了 <code>SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MILLIS)</code>，意思是如果一直有人 subscribe (collect) 住這個 <code>StateFlow</code> 的話，那 <code>StateFlow</code> 的值就能一直被共用，但當最後一個 subscriber 退訂的話，我們會多等 <code>STATE_FLOW_STOP_TIMEOUT_MILLIS</code> 的時間後就把 <code>StateFlow</code> 的值清除掉（那個 <code>STATE_FLOW_STOP_TIMEOUT_MILLIS</code> 的值其實是 <code>Duration.seconds(5)</code> 五秒鐘）</li>
+<li><code>initialValue</code> 初始值，由於這是一個 <code>List</code> 那我們就用 <code>emptyList()</code> 比較合適</li>
+</ol>
+<p>那個 <code>SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MILLIS)</code> <a href=https://medium.com/androiddevelopers/things-to-know-about-flows-sharein-and-statein-operators-20e6ccb2bc74>五秒鐘是 Android Developers 在 Medium 文章內建議的數值</a>。它的意思是五秒鐘應該有足夠時間在 configuration change 後重新 subscribe 那個 <code>StateFlow</code> ，這樣就不用在每次 configuration change 後都要重新執行上游的 code 計算它的值。</p>
+<h2 id=按下路綫名稱>按下路綫名稱<a hidden class=anchor aria-hidden=true href=#按下路綫名稱>#</a></h2>
+<p>按下後，我們要把路綫從 <code>expandedGroups</code> 拿走或者是加進去，從而觸發重新計算 <code>list</code>。留意我們用了 <code>update</code> 而不是用 <code>value</code> 來更新 <code>MutableStateFlow</code> 的值。這是因為我們需要建基於當前的值才能得知最新的值，用 <code>update</code> 就能保障 concurrency。在 <code>update</code> lambda 最後 return 的值將會是 <code>MutableStateFlow</code> 最新的值。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>override</span> <span class=k>fun</span> <span class=nf>toggleExpanded</span><span class=p>(</span><span class=n>line</span><span class=p>:</span> <span class=n>Line</span><span class=p>)</span> <span class=p>{</span>
+    <span class=n>viewModelScope</span><span class=p>.</span><span class=n>launch</span> <span class=p>{</span>
+        <span class=n>expandedGroups</span><span class=p>.</span><span class=n>update</span> <span class=p>{</span>
+            <span class=k>val</span> <span class=py>newSet</span> <span class=p>=</span> <span class=k>it</span><span class=p>.</span><span class=n>toHashSet</span><span class=p>()</span>
+            <span class=k>if</span> <span class=p>(</span><span class=n>newSet</span><span class=p>.</span><span class=n>contains</span><span class=p>(</span><span class=n>line</span><span class=p>))</span> <span class=p>{</span>
+                <span class=n>newSet</span><span class=p>.</span><span class=n>remove</span><span class=p>(</span><span class=n>line</span><span class=p>)</span>
+            <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+                <span class=n>newSet</span><span class=p>.</span><span class=n>add</span><span class=p>(</span><span class=n>line</span><span class=p>)</span>
+            <span class=p>}</span>
+            <span class=n>newSet</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><h2 id=按下車站名稱>按下車站名稱<a hidden class=anchor aria-hidden=true href=#按下車站名稱>#</a></h2>
+<p>按下後，我們要通知 <code>Fragment</code> 開啟抵站時間頁。這次我們用 <code>Channel</code> 來做背後發射 data 的原理，然後把 <code>Channel</code> 轉換成 <code>Flow</code> 供 <code>Fragment</code> subscribe。<code>Channel</code> 是用來在兩個 coroutine 之間傳送資料，跟 <code>BlockingQueue</code> 差不多，我們借用它來表示轉頁動作。這次用 <code>Flow</code> 而不是 <code>StateFlow</code> 是因為開啟另一頁和顯示 toast 一樣不需要有初始值，亦不需要在 configuration change 後獲取之前的值（如果這樣做就會在 configuration change 後開啟另一頁或顯示 toast 多一次，這不是我們要的效果）。要發射資料到 <code>Channel</code> 要用到 <code>send</code> 這個 method，留意要在 coroutine scope 內執行。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>private</span> <span class=k>val</span> <span class=py>_launchEtaScreen</span> <span class=p>=</span> <span class=n>Channel</span><span class=p>&lt;</span><span class=n>Pair</span><span class=p>&lt;</span><span class=n>Line</span><span class=p>,</span> <span class=n>Station</span><span class=p>&gt;&gt;(</span><span class=n>Channel</span><span class=p>.</span><span class=n>BUFFERED</span><span class=p>)</span>
+<span class=k>val</span> <span class=py>launchEtaScreen</span><span class=p>:</span> <span class=n>Flow</span><span class=p>&lt;</span><span class=n>Pair</span><span class=p>&lt;</span><span class=n>Line</span><span class=p>,</span> <span class=n>Station</span><span class=p>&gt;&gt;</span> <span class=p>=</span> <span class=n>_launchEtaScreen</span><span class=p>.</span><span class=n>receiveAsFlow</span><span class=p>()</span>
+
+<span class=k>override</span> <span class=k>fun</span> <span class=nf>onClickLineAndStation</span><span class=p>(</span><span class=n>line</span><span class=p>:</span> <span class=n>Line</span><span class=p>,</span> <span class=n>station</span><span class=p>:</span> <span class=n>Station</span><span class=p>)</span> <span class=p>{</span>
+    <span class=n>viewModelScope</span><span class=p>.</span><span class=n>launch</span> <span class=p>{</span>
+        <span class=n>_launchEtaScreen</span><span class=p>.</span><span class=n>send</span><span class=p>(</span><span class=n>line</span> <span class=n>to</span> <span class=n>station</span><span class=p>)</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>現在 <code>StationListAdapter</code> 已經完成了。接下來就轉到 <code>StationListFragment</code>。</p>
+<h2 id=fragment-layout-xml>Fragment layout XML<a hidden class=anchor aria-hidden=true href=#fragment-layout-xml>#</a></h2>
+<p>跟之前的差別就是多了 <code>RecyclerView</code> 和由 data binding 改回用 view binding，因為這次用不着。但抵站時間頁會用到 data binding，不用擔心。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=cp>&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+<span class=nt>&lt;androidx.coordinatorlayout.widget.CoordinatorLayout</span> <span class=na>xmlns:android=</span><span class=s>&#34;http://schemas.android.com/apk/res/android&#34;</span>
+    <span class=na>xmlns:app=</span><span class=s>&#34;http://schemas.android.com/apk/res-auto&#34;</span>
+    <span class=na>xmlns:tools=</span><span class=s>&#34;http://schemas.android.com/tools&#34;</span>
+    <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
+    <span class=na>android:layout_height=</span><span class=s>&#34;match_parent&#34;</span><span class=nt>&gt;</span>
+
+    <span class=nt>&lt;com.google.android.material.appbar.AppBarLayout</span>
+        <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
+        <span class=na>android:layout_height=</span><span class=s>&#34;wrap_content&#34;</span><span class=nt>&gt;</span>
+
+        <span class=nt>&lt;com.google.android.material.appbar.MaterialToolbar</span>
+            <span class=na>android:id=</span><span class=s>&#34;@+id/topAppBar&#34;</span>
+            <span class=na>style=</span><span class=s>&#34;@style/Widget.MaterialComponents.Toolbar.Primary&#34;</span>
+            <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
+            <span class=na>android:layout_height=</span><span class=s>&#34;?attr/actionBarSize&#34;</span>
+            <span class=na>app:title=</span><span class=s>&#34;@string/app_name&#34;</span> <span class=nt>/&gt;</span>
+    <span class=nt>&lt;/com.google.android.material.appbar.AppBarLayout&gt;</span>
+
+    <span class=nt>&lt;androidx.recyclerview.widget.RecyclerView</span>
+        <span class=na>android:id=</span><span class=s>&#34;@+id/recyclerView&#34;</span>
+        <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
+        <span class=na>android:layout_height=</span><span class=s>&#34;match_parent&#34;</span>
+        <span class=na>app:layout_behavior=</span><span class=s>&#34;@string/appbar_scrolling_view_behavior&#34;</span>
+        <span class=na>tools:listitem=</span><span class=s>&#34;@layout/station_list_station_item&#34;</span> <span class=nt>/&gt;</span>
+<span class=nt>&lt;/androidx.coordinatorlayout.widget.CoordinatorLayout&gt;</span>
+</code></pre></div><h2 id=stationlistfragment><code>StationListFragment</code><a hidden class=anchor aria-hidden=true href=#stationlistfragment>#</a></h2>
+<p>由於 logic 都是放在 <code>ViewModel</code>，所以 <code>Fragment</code> 要寫的東西不多，主要都是設定 view binding 和 subscribe <code>ViewModel</code> 外露的 <code>Flow</code>。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=nd>@AndroidEntryPoint</span>
+<span class=k>class</span> <span class=nc>StationListFragment</span> <span class=p>:</span> <span class=n>Fragment</span><span class=p>()</span> <span class=p>{</span>
+    <span class=k>private</span> <span class=k>val</span> <span class=py>viewModel</span> <span class=k>by</span> <span class=n>viewModels</span><span class=p>&lt;</span><span class=n>StationListViewModel</span><span class=p>&gt;()</span>
+    <span class=k>private</span> <span class=k>var</span> <span class=py>_binding</span><span class=p>:</span> <span class=n>StationListFragmentBinding</span><span class=p>?</span> <span class=p>=</span> <span class=k>null</span>
+    <span class=k>private</span> <span class=k>val</span> <span class=py>binding</span><span class=p>:</span> <span class=n>StationListFragmentBinding</span> <span class=k>get</span><span class=p>()</span> <span class=p>=</span> <span class=n>_binding</span><span class=o>!!</span>
+    <span class=k>private</span> <span class=k>var</span> <span class=py>_adapter</span><span class=p>:</span> <span class=n>StationListAdapter</span><span class=p>?</span> <span class=p>=</span> <span class=k>null</span>
+    <span class=k>private</span> <span class=k>val</span> <span class=py>adapter</span><span class=p>:</span> <span class=n>StationListAdapter</span> <span class=k>get</span><span class=p>()</span> <span class=p>=</span> <span class=n>_adapter</span><span class=o>!!</span>
+
+    <span class=nd>@Inject</span>
+    <span class=k>lateinit</span> <span class=k>var</span> <span class=py>presenter</span><span class=p>:</span> <span class=n>LineStationPresenter</span>
+
+    <span class=k>override</span> <span class=k>fun</span> <span class=nf>onCreateView</span><span class=p>(</span>
+        <span class=n>inflater</span><span class=p>:</span> <span class=n>LayoutInflater</span><span class=p>,</span>
+        <span class=n>container</span><span class=p>:</span> <span class=n>ViewGroup</span><span class=p>?,</span>
+        <span class=n>savedInstanceState</span><span class=p>:</span> <span class=n>Bundle</span><span class=p>?</span>
+    <span class=p>):</span> <span class=n>View</span> <span class=p>{</span>
+        <span class=n>_binding</span> <span class=p>=</span> <span class=n>StationListFragmentBinding</span><span class=p>.</span><span class=n>inflate</span><span class=p>(</span><span class=n>inflater</span><span class=p>,</span> <span class=n>container</span><span class=p>,</span> <span class=k>false</span><span class=p>)</span>
+        <span class=k>return</span> <span class=n>binding</span><span class=p>.</span><span class=n>root</span>
+    <span class=p>}</span>
+
+    <span class=k>override</span> <span class=k>fun</span> <span class=nf>onViewCreated</span><span class=p>(</span><span class=n>view</span><span class=p>:</span> <span class=n>View</span><span class=p>,</span> <span class=n>savedInstanceState</span><span class=p>:</span> <span class=n>Bundle</span><span class=p>?)</span> <span class=p>{</span>
+        <span class=k>super</span><span class=p>.</span><span class=n>onViewCreated</span><span class=p>(</span><span class=n>view</span><span class=p>,</span> <span class=n>savedInstanceState</span><span class=p>)</span>
+        <span class=n>_adapter</span> <span class=p>=</span> <span class=n>StationListAdapter</span><span class=p>(</span>
+            <span class=n>lifecycleOwner</span> <span class=p>=</span> <span class=n>viewLifecycleOwner</span><span class=p>,</span>
+            <span class=n>callback</span> <span class=p>=</span> <span class=n>viewModel</span><span class=p>,</span>
+            <span class=n>presenter</span> <span class=p>=</span> <span class=k>this</span><span class=p>.</span><span class=n>presenter</span><span class=p>,</span>
+        <span class=p>)</span>
+        <span class=n>with</span><span class=p>(</span><span class=n>binding</span><span class=p>.</span><span class=n>recyclerView</span><span class=p>)</span> <span class=p>{</span>
+            <span class=n>layoutManager</span> <span class=p>=</span> <span class=n>LinearLayoutManager</span><span class=p>(</span><span class=n>requireContext</span><span class=p>())</span>
+            <span class=n>adapter</span> <span class=p>=</span> <span class=k>this</span><span class=nd>@StationListFragment</span><span class=p>.</span><span class=n>adapter</span>
+        <span class=p>}</span>
+        <span class=n>observeViewModel</span><span class=p>()</span>
+    <span class=p>}</span>
+
+    <span class=k>private</span> <span class=k>fun</span> <span class=nf>observeViewModel</span><span class=p>()</span> <span class=p>{</span>
+        <span class=n>viewLifecycleOwner</span><span class=p>.</span><span class=n>lifecycleScope</span><span class=p>.</span><span class=n>launch</span> <span class=p>{</span>
+            <span class=n>viewLifecycleOwner</span><span class=p>.</span><span class=n>repeatOnLifecycle</span><span class=p>(</span><span class=n>Lifecycle</span><span class=p>.</span><span class=n>State</span><span class=p>.</span><span class=n>STARTED</span><span class=p>)</span> <span class=p>{</span>
+                <span class=n>viewModel</span><span class=p>.</span><span class=n>list</span><span class=p>.</span><span class=n>collect</span> <span class=p>{</span>
+                    <span class=n>adapter</span><span class=p>.</span><span class=n>submitList</span><span class=p>(</span><span class=k>it</span><span class=p>)</span>
+                <span class=p>}</span>
+            <span class=p>}</span>
+        <span class=p>}</span>
+        <span class=n>viewLifecycleOwner</span><span class=p>.</span><span class=n>lifecycleScope</span><span class=p>.</span><span class=n>launch</span> <span class=p>{</span>
+            <span class=n>viewLifecycleOwner</span><span class=p>.</span><span class=n>repeatOnLifecycle</span><span class=p>(</span><span class=n>Lifecycle</span><span class=p>.</span><span class=n>State</span><span class=p>.</span><span class=n>STARTED</span><span class=p>)</span> <span class=p>{</span>
+                <span class=n>viewModel</span><span class=p>.</span><span class=n>launchEtaScreen</span><span class=p>.</span><span class=n>collect</span> <span class=p>{</span> <span class=p>(</span><span class=n>line</span><span class=p>,</span> <span class=n>station</span><span class=p>)</span> <span class=o>-&gt;</span>
+                    <span class=n>findNavController</span><span class=p>().</span><span class=n>safeNavigate</span><span class=p>(</span>
+                        <span class=n>StationListFragmentDirections</span><span class=p>.</span><span class=n>actionStationListFragmentToEtaFragment</span><span class=p>(</span>
+                            <span class=n>line</span><span class=p>,</span>
+                            <span class=n>station</span>
+                        <span class=p>)</span>
+                    <span class=p>)</span>
+                <span class=p>}</span>
+            <span class=p>}</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=k>override</span> <span class=k>fun</span> <span class=nf>onDestroyView</span><span class=p>()</span> <span class=p>{</span>
+        <span class=k>super</span><span class=p>.</span><span class=n>onDestroyView</span><span class=p>()</span>
+        <span class=n>binding</span><span class=p>.</span><span class=n>recyclerView</span><span class=p>.</span><span class=n>adapter</span> <span class=p>=</span> <span class=k>null</span>
+        <span class=n>_adapter</span> <span class=p>=</span> <span class=k>null</span>
+        <span class=n>_binding</span> <span class=p>=</span> <span class=k>null</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>在 <code>observeViewModel</code>，我們 observe 了 <code>list</code> 和 <code>launchEtaScreen</code>。留意我們用了 <code>viewLifecycleOwner.lifecycleScope.launch</code> 又用了 <code>viewLifecycleOwner.repeatOnLifecycle</code> 包住那句 <code>viewModel.someFlow.collect</code>：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=n>viewLifecycleOwner</span><span class=p>.</span><span class=n>lifecycleScope</span><span class=p>.</span><span class=n>launch</span> <span class=p>{</span>
+    <span class=n>viewLifecycleOwner</span><span class=p>.</span><span class=n>repeatOnLifecycle</span><span class=p>(</span><span class=n>Lifecycle</span><span class=p>.</span><span class=n>State</span><span class=p>.</span><span class=n>STARTED</span><span class=p>)</span> <span class=p>{</span>
+        <span class=n>viewModel</span><span class=p>.</span><span class=n>someFlow</span><span class=p>.</span><span class=n>collect</span> <span class=p>{</span> <span class=o>..</span><span class=p>.</span> <span class=p>}</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>這個寫法是按照 <a href=https://medium.com/androiddevelopers/a-safer-way-to-collect-flows-from-android-uis-23080b1f8bda>Android 的建議</a>來寫。因為包住 <code>viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED)</code> 的 coroutine 會在 <code>onStop</code> 和 <code>onStart</code> 之間暫停接收，從而避免在不適當的時機接觸到 view。</p>
+<p><code>list</code> 的部分我們只需要 call <code>ListAdapter.submitList</code> 就可以了，它會計算那些 list item 需要更新。而 <code>launchEtaScreen</code> 就是 call <code>findNavController().navigate()</code> 跳去抵站時間頁。由於我們用了 Save Args，所以用了 <code>StationListFragmentDirections.actionStationListFragmentToEtaFragment</code> 來保證 type safe 和沒有遺漏 Fragment argument。但我們 code 用了 <code>safeNavigate</code> 而非 <code>navigate</code>，原因是避免用戶在按下轉頁按鈕後畫面尚未顯示到下一頁時用戶再次按動轉頁按鈕從而 app crash。因為 Navigation component 覺得 <code>findNavController().navigate()</code> 後就已經轉到新一頁，即使畫面尚未完成轉頁。所以用戶重按轉頁按鈕時 Navigation component 就會發現當前頁面並沒有這個導航方式，因而報錯。要避免這個情況我們可以參考 <a href=https://nezspencer.medium.com/navigation-components-a-fix-for-navigation-action-cannot-be-found-in-the-current-destination-95b63e16152e>Nnabueze Uhiara</a> 提供的 <code>safeNavigate</code>：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>fun</span> <span class=nf>NavController</span><span class=p>.</span><span class=n>safeNavigate</span><span class=p>(</span><span class=n>direction</span><span class=p>:</span> <span class=n>NavDirections</span><span class=p>)</span> <span class=p>{</span>
+    <span class=n>currentDestination</span><span class=o>?.</span><span class=n>getAction</span><span class=p>(</span><span class=n>direction</span><span class=p>.</span><span class=n>actionId</span><span class=p>)</span><span class=o>?.</span><span class=n>run</span> <span class=p>{</span>
+        <span class=n>navigate</span><span class=p>(</span><span class=n>direction</span><span class=p>)</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><h2 id=小結>小結<a hidden class=anchor aria-hidden=true href=#小結>#</a></h2>
+<p>來到這裏車站列表頁已經完成了。本篇介紹了 <code>ViewModel</code> 的定位：提供 <code>Flow</code> 供 <code>Fragment</code> subscribe 來更新 UI 和提供 method 供 <code>Fragment</code> 通知 <code>ViewModel</code> 用戶做了甚麼動作，從而讓 <code>ViewModel</code> 執行適當的動作回應，例如用戶按下按鈕後會 call use case 並將新的狀態以 <code>Flow</code> 通知 <code>Fragment</code>。另外，我們用 <code>Channel</code> 做出 <a href=https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150><code>SingleLiveEvent</code> 的效果</a>。最後還介紹了 Navigation component 在轉頁時的陷阱。如果想對 <code>ViewModel</code> 的定位有更深入的了解可以看看「<a href=https://blog.shreyaspatil.dev/dont-let-viewmodel-knew-about-framework-level-dependencies>Don&rsquo;t let ViewModel know about framework level dependencies</a>」一文。</p>
+<p>完整的 code 可以到 <a href=https://github.com/ericksli/eta-demo/tree/main/app/src/main/java/net/swiftzer/etademo/presentation/stationlist>GitHub repo 查閱</a>。下一篇我們會開始做抵站時間頁，屆時會有更多 <code>ViewModel</code> 和 <code>Flow</code> 的示範。</p>
+</div>
+<footer class=post-footer>
+<ul class=post-tags>
+<li><a href=https://eric.swiftzer.net/tags/2021-ithome-%E9%90%B5%E4%BA%BA%E8%B3%BD/>2021 iThome 鐵人賽</a></li>
+<li><a href=https://eric.swiftzer.net/tags/android/>Android</a></li>
+</ul>
+<nav class=paginav>
+<a class=prev href=https://eric.swiftzer.net/2021/10/2021-ithome-ironman-21-eta-screen-1/>
+<span class=title>« Prev Page</span>
+<br>
+<span>2021 iThome 鐵人賽 Day 21：ETA screen (1)</span>
+</a>
+<a class=next href=https://eric.swiftzer.net/2021/10/2021-ithome-ironman-19-station-list-screen-1/>
+<span class=title>Next Page »</span>
+<br>
+<span>2021 iThome 鐵人賽 Day 19：Station list screen (1)</span>
+</a>
+</nav>
+</footer><div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//efilm.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</article>
+</main><footer class=footer>
+<span>&copy; 2021 <a href=https://eric.swiftzer.net/>EricLog</a></span>
+<span>&#183;</span>
+<span>Powered by <a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a></span>
+<span>&#183;</span>
+<span>Theme <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span>
+</footer>
+<a href=#top aria-label="go to top" title="Go to Top (Alt + G)">
+<button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</button>
+</a>
+<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
+<script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script>
+<script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
+</body>
+</html>

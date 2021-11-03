@@ -73,137 +73,137 @@
 <article class=post-entry>
 <header class=entry-header>
 <h2>
-Laravel 4
+TrainBoard for Android TV
 </h2>
 </header>
 <section class=entry-content>
-<p>我自己學習 PHP 其實都只是一年前開始，這是因為我選修了兩科關於 PHP 的科目。那時學的都是一些最基本的 PHP，製作 HTML 表單連驗證、修改、儲存到資料庫都是用同一個 PHP 檔案，內裏用幾個 if 來分隔開不同的部分，還會用 session 來重新填寫表單內容。現在回想起都覺得這種寫法非常嘔心，因為實在太長，而且夾雜着 PHP 和 HTML，自己寫完都不想再去看。
+<p>之前買了一個小米盒子國際版，一直都想用它來寫一些 Android TV app。到了最近才將我第一個 Android TV app TrainBoard 上架，這個 app 亦都是我第一個用 Kotlin 寫的 Android app。Trai...</p>
+</section>
+<footer class=entry-footer>June 26, 2017
+</footer>
+<a class=entry-link aria-label="post link to TrainBoard for Android TV" href=https://eric.swiftzer.net/2017/06/trainboard-for-android-tv/></a>
+</article>
+<article class=post-entry>
+<header class=entry-header>
+<h2>
+SemVer
+</h2>
+</header>
+<section class=entry-content>
+<p>剛剛為了方便做 force update app 功能的版本號碼比對就寫了一個 Semantic Versioning (SemVer) 的 Kotlin data class。這個 class 有 implement Comparable，是參照 SemVer 規範要比對 major、min...</p>
+</section>
+<footer class=entry-footer>June 16, 2017
+</footer>
+<a class=entry-link aria-label="post link to SemVer" href=https://eric.swiftzer.net/2017/06/semver/></a>
+</article>
+<article class=post-entry>
+<header class=entry-header>
+<h2>
+Kotlin for Android
+</h2>
+</header>
+<section class=entry-content>
+<p>在四月開始轉用 Kotlin 來寫自己的 Android app。其實上年八月左右已經留意到 Kotlin 這個 JVM 語言能在 Android app 開發時使用，不過那時因為沒有太多時間所以只是看了少許官方教...</p>
+</section>
+<footer class=entry-footer>June 12, 2017
+</footer>
+<a class=entry-link aria-label="post link to Kotlin for Android" href=https://eric.swiftzer.net/2017/06/kotlin-for-android/></a>
+</article>
+<article class=post-entry>
+<header class=entry-header>
+<h2>
+Timber live template for Java/Kotlin
+</h2>
+</header>
+<section class=entry-content>
+<p>最近轉了用 Kotlin 來寫自己的 Android app，但發現 Android Studio 在 Kotlin 檔案內無法使用 Logcat logd、logm 之類的 Live template。Anko 的 AnkoLogger 因為用了 Log.isLoggable 來包住 Log.d 之類...</p>
+</section>
+<footer class=entry-footer>May 22, 2017
+</footer>
+<a class=entry-link aria-label="post link to Timber live template for Java/Kotlin" href=https://eric.swiftzer.net/2017/05/timber-live-template/></a>
+</article>
+<article class=post-entry>
+<header class=entry-header>
+<h2>
+Android 隱藏 signing config
+</h2>
+</header>
+<section class=entry-content>
+<p>其實官方網站有介紹過做法，不過就令到 build 那時一定要有 keystore.properties，否則就不能 build。部分 CI 可能會針對 Android 會提供專門...</p>
+</section>
+<footer class=entry-footer>April 25, 2017
+</footer>
+<a class=entry-link aria-label="post link to Android 隱藏 signing config" href=https://eric.swiftzer.net/2017/04/android-signing-config/></a>
+</article>
+<article class=post-entry>
+<header class=entry-header>
+<h2>
+Spek
+</h2>
+</header>
+<section class=entry-content>
+<p>之前一直都有留意 Kotlin 這個程式語言在 Android app 開發的應用。最近試用 Spek 來做 Android project 的 local test。Spek 是一個用 Kotlin 寫的 testing framework，用法和 Ruby 的 RSpec 差不多。對比 Android project 預設用的 JUnit 4，Spek 的寫法會比較清楚。因為 JUnit 4 只靠 class 和method 來為 test 分類，不能 nested（JUnit 5 才支援）。Spek 就用 nested 的方式來把 test 分類，還有就是用 string 來定義 test 名，比起 JUnit 4 用 method 名較易閱讀。
+Spek 有提供 IntelliJ IDEA/Android Studio plugin，而且還有 JUnit platform engine。所以在 Android project 上面使用都沒有太大問題。
 ...</p>
 </section>
-<footer class=entry-footer>June 4, 2013
+<footer class=entry-footer>April 22, 2017
 </footer>
-<a class=entry-link aria-label="post link to Laravel 4" href=https://eric.swiftzer.net/2013/06/laravel-4/></a>
+<a class=entry-link aria-label="post link to Spek" href=https://eric.swiftzer.net/2017/04/spek/></a>
 </article>
 <article class=post-entry>
 <header class=entry-header>
 <h2>
-Bitbucket 免費 Academic License
+小米藍牙手柄
 </h2>
 </header>
 <section class=entry-content>
-<p>Bitbucket 和 GitHub 一樣都是有名的 Git repository (repo) hosting 供應商。兩者的免費版差別在於 Github 免費版只可以開到公開的 repo 而 Bitbucket 就可以開到公開和私人的 Git repo，如果不想公開源碼的話...</p>
+<p>之前提及過只需要在 Windows 安裝 mapper 就能將小米藍牙手柄模擬成 Xbox 360 手掣，試過之後確實可以用到。在 The Crew 可以用手掣操作，在刹掣時手掣還會震動，比起在 Android 用功能...</p>
 </section>
-<footer class=entry-footer>May 27, 2013
+<footer class=entry-footer>February 4, 2017
 </footer>
-<a class=entry-link aria-label="post link to Bitbucket 免費 Academic License" href=https://eric.swiftzer.net/2013/05/bitbucket-free-academic-license/></a>
+<a class=entry-link aria-label="post link to 小米藍牙手柄" href=https://eric.swiftzer.net/2017/02/xiaomi-bluetooth-gamepad/></a>
 </article>
 <article class=post-entry>
 <header class=entry-header>
 <h2>
-SimCity
+小米盒子國際版開箱
 </h2>
 </header>
 <section class=entry-content>
-<p>期待了十年的 SimCity (2013) 終於出了新版（不計算 SimCity Society 的話），但結果一推出就劣評如潮。首先就是將以往單機遊戲變成網上遊戲，雖然 EA 聲稱改為網上遊戲的原因並非因為 DRM，但原因很明顯示為了防盜版。而伺服器郤未能承受到全球大量的玩家，加上其他種種的 bug，令玩家憤怒。結果 EA 要送 Origin 遊戲給玩定消氣。
+<p>小米盒子相信大家都聽過，亦都可能用過。不過這次小米香港推出的是「國際版」，用的是包含 Google Services 的 Android TV 而不是客製化的 Android。這個就是國際版和中國版的最大分別，這亦都是應否購買小米盒子國際版的主要考慮因素。
+小米盒子國際版 ...</p>
+</section>
+<footer class=entry-footer>December 19, 2016
+</footer>
+<a class=entry-link aria-label="post link to 小米盒子國際版開箱" href=https://eric.swiftzer.net/2016/12/xiaomi-mi-box/></a>
+</article>
+<article class=post-entry>
+<header class=entry-header>
+<h2>
+nodetree 和 jazzy
+</h2>
+</header>
+<section class=entry-content>
+<p>這次想介紹兩個 documentation 相關的工具﹔nodetree 和 jazzy。 nodetree 是用來生成 ASCII 樹狀目錄結構圖。先前一篇有關 iOS 的文章就是用 nodetree 生成相關的樹狀目錄結構圖...</p>
+</section>
+<footer class=entry-footer>December 7, 2016
+</footer>
+<a class=entry-link aria-label="post link to nodetree 和 jazzy" href=https://eric.swiftzer.net/2016/12/nodetree-jazzy/></a>
+</article>
+<article class=post-entry>
+<header class=entry-header>
+<h2>
+Android Pay 登陸香港
+</h2>
+</header>
+<section class=entry-content>
+<p>之前有傳聞在今個月推出的 Android Pay 終於在昨日正式登陸香港。目前支援滙豐、恆生、渣打、東亞、星展及大新銀行的 Visa 及 MasterCard 信用卡，Tap & Go 都可以加入去 Android Pay。我有一張恒生 Visa 和一張中銀 MasterCard，但因為不支援中銀的關係只可以加入恒生信用卡。
+除了信用卡，Android Pay 可以加入會員卡。這個功能就是用來儲存會員卡的條碼，Android Pay 是不會檢查會員卡號碼的真確性。在付款前可以在電話展示條碼。這樣就可以不用帶太多會員卡，而且還會在你經過商鋪時提醒你可以用會員卡。不過有人在 759 阿信屋試過被職員拒絶，要他一定要出示實體會員卡。
 ...</p>
 </section>
-<footer class=entry-footer>March 24, 2013
+<footer class=entry-footer>October 21, 2016
 </footer>
-<a class=entry-link aria-label="post link to SimCity" href=https://eric.swiftzer.net/2013/03/simcity/></a>
-</article>
-<article class=post-entry>
-<header class=entry-header>
-<h2>
-使用 Exchange ActiveSync 同步 Outlook.com 郵箱
-</h2>
-</header>
-<section class=entry-content>
-<p>微軟的 Outlook.com 已經開放了一段時間，如果想在 Android 上收發 Outlook.com 的電郵除了用傳統的 SMTP+POP 或者使用官方的專用 app 之外，其實還可以用 Exchange ActiveSync。雖然 Outlook.com 沒有交待過 Exchange ActiveSync 的設定方法，但做法其實不難，只需要用手機內置的電郵 app（不是 Gmail app）再使用本文提供的設置就可以了（方法同樣適用於 Hotmail 郵箱）。
-...</p>
-</section>
-<footer class=entry-footer>January 12, 2013
-</footer>
-<a class=entry-link aria-label="post link to 使用 Exchange ActiveSync 同步 Outlook.com 郵箱" href=https://eric.swiftzer.net/2013/01/outlook-exchange-activesync/></a>
-</article>
-<article class=post-entry>
-<header class=entry-header>
-<h2>
-TrackPoint 使用滑鼠中鍵
-</h2>
-</header>
-<section class=entry-content>
-<p>TrackPoint Lenovo ThinkPad 的特色之一就是鍵盤中間有一個「中原一點紅 (TrackPoint)」，這個小紅點和鍵盤下面的左中右鍵合組成 UltraNav。UltraN...</p>
-</section>
-<footer class=entry-footer>January 11, 2013
-</footer>
-<a class=entry-link aria-label="post link to TrackPoint 使用滑鼠中鍵" href=https://eric.swiftzer.net/2013/01/trackpoint-middle-click/></a>
-</article>
-<article class=post-entry>
-<header class=entry-header>
-<h2>
-Facebook for Android 出了更新了！
-</h2>
-</header>
-<section class=entry-content>
-<p>早前 Facebook 創辦人暨現任 CEO Mark Zuckerberg 於訪談中說到以 HTML5 編寫 Facebook Android app 是公司決策上最大的錯誤，今日他們終於不再用 WebView + PHP 顯示貼文了！速度的確快了不少。不過郤引來一...</p>
-</section>
-<footer class=entry-footer>December 14, 2012
-</footer>
-<a class=entry-link aria-label="post link to Facebook for Android 出了更新了！" href=https://eric.swiftzer.net/2012/12/facebook-for-android-updated/></a>
-</article>
-<article class=post-entry>
-<header class=entry-header>
-<h2>
-Sony Xperia ion
-</h2>
-</header>
-<section class=entry-content>
-<p>七月中在電訊數碼買了 Sony Xperia ion 兼上台，換走了之前用開的 Motorola Milestone。之前的 Milestone 實在太慢，在接電話時會當機，如果電話響時不覺意地旋轉屏幕會更容易當機，其主因都是 RAM 不足。雖然 Milestone 有實體 QWERTY 鍵盤，但我比較少用。因為不習慣指法，所以都是使用虛擬鍵盤。因此，選購新手機首重屏幕大小，令到虛擬鍵盤的按鍵面積更大。
-...</p>
-</section>
-<footer class=entry-footer>September 8, 2012
-</footer>
-<a class=entry-link aria-label="post link to Sony Xperia ion" href=https://eric.swiftzer.net/2012/09/sony-xperia-ion/></a>
-</article>
-<article class=post-entry>
-<header class=entry-header>
-<h2>
-Lenovo ThinkPad X230
-</h2>
-</header>
-<section class=entry-content>
-<p>早前在學校買了 Lenovo ThinkPad X230。學校只有 Lenovo 和 HP 選擇，聽聞 HP 的手提電腦散熱不良、容易壞（之前在實習時就見過 PCCW 的維修人員為整個辦工室的 HP Workstation 換底板，原因是容易氧化而導致壞機。而這些機只是買了幾個月而已），所以最後鎖定了 Lenovo。
-...</p>
-</section>
-<footer class=entry-footer>September 3, 2012
-</footer>
-<a class=entry-link aria-label="post link to Lenovo ThinkPad X230" href=https://eric.swiftzer.net/2012/09/lenovo-thinkpad-x230/></a>
-</article>
-<article class=post-entry>
-<header class=entry-header>
-<h2>
-八達通查閱易
-</h2>
-</header>
-<section class=entry-content>
-<p>千呼萬喚始出來！去年有人用了 Android 的 NFC功能來讀取八達通卡的餘額後，八達通公司終於推出了官方的八達通 Android app。這個 Android app 最主要的功能在於它能夠顯...</p>
-</section>
-<footer class=entry-footer>August 4, 2012
-</footer>
-<a class=entry-link aria-label="post link to 八達通查閱易" href=https://eric.swiftzer.net/2012/08/official-octopus-app/></a>
-</article>
-<article class=post-entry>
-<header class=entry-header>
-<h2>
-散熱器新用法
-</h2>
-</header>
-<section class=entry-content>
-<p>舊電腦有個 Intel Pentium 4 原裝散熱器還未用過，非常新淨。拉絲鋁的材質看起來很前衛，拿來當信座都不錯。 信座正面 做法非常簡單： 將散熱器上的風扇拆走 在底部貼...</p>
-</section>
-<footer class=entry-footer>May 27, 2012
-</footer>
-<a class=entry-link aria-label="post link to 散熱器新用法" href=https://eric.swiftzer.net/2012/05/heatsink/></a>
+<a class=entry-link aria-label="post link to Android Pay 登陸香港" href=https://eric.swiftzer.net/2016/10/android-pay/></a>
 </article>
 <footer class=page-footer>
 <nav class=pagination>

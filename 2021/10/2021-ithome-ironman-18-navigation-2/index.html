@@ -1,0 +1,286 @@
+<!doctype html><html lang=zh-hant-hk dir=auto>
+<head><meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=robots content="index, follow">
+<title>2021 iThome 鐵人賽 Day 18：Navigation (2) | EricLog</title>
+<meta name=keywords content="2021 iThome 鐵人賽,Android">
+<meta name=description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 18 篇，你可到 iThome 查看原文。 文章目錄 在 Android，navigation graph 是 resource 的">
+<meta name=author content>
+<link rel=canonical href=https://ithelp.ithome.com.tw/articles/10276786>
+<link href=/assets/css/stylesheet.min.d1fc837a267f77f6ede89d1a89c4880a90c381d9e6673ad4a76a3ad1900b65f9.css integrity="sha256-0fyDeiZ/d/bt6J0aicSICpDDgdnmZzrUp2o60ZALZfk=" rel="preload stylesheet" as=style>
+<link rel=icon href=https://eric.swiftzer.net/favicon.ico>
+<link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png>
+<link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png>
+<link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png>
+<link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg>
+<meta name=theme-color content="#2e2e33">
+<meta name=msapplication-TileColor content="#2e2e33">
+<meta name=generator content="Hugo 0.88.1">
+<link rel=preconnect href=https://fonts.gstatic.com>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-1268728-8','auto'),ga('send','pageview'))</script>
+<script async src=https://www.google-analytics.com/analytics.js></script>
+<meta property="og:title" content="2021 iThome 鐵人賽 Day 18：Navigation (2)">
+<meta property="og:description" content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 18 篇，你可到 iThome 查看原文。 文章目錄 在 Android，navigation graph 是 resource 的">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://eric.swiftzer.net/2021/10/2021-ithome-ironman-18-navigation-2/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2021-10-03T00:00:00+08:00">
+<meta property="article:modified_time" content="2021-10-03T00:00:00+08:00">
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="2021 iThome 鐵人賽 Day 18：Navigation (2)">
+<meta name=twitter:description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 18 篇，你可到 iThome 查看原文。 文章目錄 在 Android，navigation graph 是 resource 的">
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"2021 iThome 鐵人賽 Day 18：Navigation (2)","item":"https://eric.swiftzer.net/2021/10/2021-ithome-ironman-18-navigation-2/"}]}</script>
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"2021 iThome 鐵人賽 Day 18：Navigation (2)","name":"2021 iThome 鐵人賽 Day 18：Navigation (2)","description":"本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 18 篇，你可到 iThome 查看原文。 文章目錄 在 Android，navigation graph 是 resource 的","keywords":["2021 iThome 鐵人賽","Android"],"articleBody":" 本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 18 篇，你可到 iThome 查看原文。\n文章目錄\n 在 Android，navigation graph 是 resource 的一種，我們先建立 eta.xml。\n  eta.xml 在 project 的位置   先附上完整的內容，然後再慢慢講解入面的意思。\n  xmlns:android=\"http://schemas.android.com/apk/res/android\" xmlns:app=\"http://schemas.android.com/apk/res-auto\" xmlns:tools=\"http://schemas.android.com/tools\" android:id=\"@+id/eta\" app:startDestination=\"@id/stationListFragment\"  android:id=\"@+id/stationListFragment\" android:name=\"net.swiftzer.etademo.presentation.stationlist.StationListFragment\" android:label=\"StationListFragment\" tools:layout=\"@layout/station_list_fragment\"  android:id=\"@+id/action_stationListFragment_to_etaFragment\" app:destination=\"@id/etaFragment\" /   android:id=\"@+id/etaFragment\" android:name=\"net.swiftzer.etademo.presentation.eta.EtaFragment\" android:label=\"EtaFragment\" tools:layout=\"@layout/eta_fragment\"  android:name=\"line\" app:argType=\"net.swiftzer.etademo.common.Line\" /  android:name=\"station\" app:argType=\"net.swiftzer.etademo.common.Station\" /   切換到 Design 後就能看到兩頁的 layout XML 預覽畫面和各頁之間的導航方向（就是兩頁之間的箭頭）。由於下圖是我在完成 EtaFragment 基本功能後才擷取所以內容比較豐富，如果按照上一篇來做的話應該只會看到兩頁只得 top bar 和下面一大片空白。\n  Navigation editor   stationListFragment 左上角有個小屋 icon，意思是那一個 navigation graph 的首頁。首頁的意思是一進入那個 navigation graph 會看到那頁，每個 navigation graph 都要指明一個 Fragment 做首頁。在 XML 的寫法是在  tag 的 app:startDestination 指明那頁的 ID (@id/stationListFragment)。\n而每頁的定義就是用  tag 定義，以 StationListFragment 為例：\n android:id=\"@+id/stationListFragment\" android:name=\"net.swiftzer.etademo.presentation.stationlist.StationListFragment\" android:label=\"StationListFragment\" tools:layout=\"@layout/station_list_fragment\"  android:id=\"@+id/action_stationListFragment_to_etaFragment\" app:destination=\"@id/etaFragment\" /   android:id 就是用來給那個 navigation 項目定義一個 ID，方便我們引用到（那個 app:startDestination 就是例子） android:name 是 Fragment 的全名 android:label 跟 manifest 那個  入面的 android:label 作用差不多，就是給那頁一個讓人看的名稱 tools:layout 就是為了在 IDE 預覽時能看到 layout XML 而設，看到 namesapce 是 tools 就知道了，不寫那個都不會影響運行效果  至於入面的  就是設定這頁可以跳到另一頁，有點像 iOS Storyboard 的 segue。在這個例子我們設定它能跳到 EtaFragment。其實那個  的 android:id=\"@+id/action_stationListFragment_to_etaFragment\" 是由 Design 介面拖曳 StationListFragment 右邊的圓形再在 EtaFragment 放手自動生成出來的，不用擔心要自己寫這麼長的名字。\n我們轉去看另一個 ，它有另一款 tag 叫 。這個 tag 是定義開啟 Fragment 的 argument。傳統啟動 Activity 和 Fragment 如果要附帶參數的話都會用到 intent extras 或 arguments 傳遞 Bundle。即使用了 Navigation component 這亦不變，變的地方是把參數定義在 XML 內。配合 safe args Gradle plugin 就可以令這個過程更 type safe。以往如果要做到 type safe 效果會寫一個 static 的 newInstance method 把這些建立 Bundle 的 code 塞進去，其他地方就不用知道那個 key 是甚麼，而且不會用錯 data type，但要每個 Activity 和 Fragment 都要做一次這個 static method。我們會在之後實際寫 StationListFragment 和 EtaFragment 時再仔細介紹。\n android:id=\"@+id/etaFragment\" android:name=\"net.swiftzer.etademo.presentation.eta.EtaFragment\" android:label=\"EtaFragment\" tools:layout=\"@layout/eta_fragment\"  android:name=\"line\" app:argType=\"net.swiftzer.etademo.common.Line\" /  android:name=\"station\" app:argType=\"net.swiftzer.etademo.common.Station\" /  MainActivity 定義好 navigation graph 之後，我們要改改原本在 Android Studio 範本的 MainActivity：\n@AndroidEntryPoint class MainActivity : AppCompatActivity() { private lateinit var binding: MainActivityBinding private lateinit var navController: NavController override fun onCreate(savedInstanceState: Bundle?) { super.onCreate(savedInstanceState) binding = MainActivityBinding.inflate(layoutInflater) setContentView(binding.root) val navHostFragment = supportFragmentManager.findFragmentById(binding.navHostFragment.id) as NavHostFragment navController = navHostFragment.navController } override fun onNewIntent(intent: Intent?) { super.onNewIntent(intent) navController.handleDeepLink(intent) } override fun onSupportNavigateUp(): Boolean = navController.navigateUp() } 同樣地，我們會加上 @AndroidEntryPoint。這是因為這個 Activity 將會加載帶有 @AndroidEntryPoint 的 Fragment，所以即使這個 Activity 看起來沒有用到 Dagger Hilt 我們還是需要加 @AndroidEntryPoint。如果不加的話之後遇到帶有 @AndroidEntryPoint 的 Fragment app 就會 crash。雖然 Dagger 標榜是透過 compile 時檢查 DI 的設定，但並不包括這部分。\n這次我們會用上 view binding，其實跟 data binding 有幾分相似，但不能 pass variable 去 layout XML 用，亦不能在 layout XML 加入 Java code。它的作用就是讓你不用再寫 findViewById 取得 layout XML 的 view。它比以前的 Kotlin synthetics 和 Butterknife 好在它能分析到那些 view ID 是不是只在個別 configuration 才會出現，如果是的話 binding 就會外露 nullable 的 view 讓你引用。\n如果在 Fragment 用 view binding 的話同樣都需要在 onDestroyView 終止所有 binding 引用，好讓那些 view 能被 garbage collection。而 Activity 因為它的 lifecycle 跟 view 一樣，所以不用像 Fragment 用 view/data binding 般要在 onDestroyView 清除引用。（因為 Fragment 比那些 view 長命）\n整個 MainActivity 只是需要做三件事：\n inflate layout XML，入面會有一個 FragmentContainerView 用來顯示 navigation graph 的 Fragment（就是顯示每頁內容的位置） 在 onNewIntent 時將 Intent 交予 NavController 處理轉頁（就是 app 開了後再啟動 deep link 時通知 Navigation component 轉去對應頁面，雖然這個示範 app 不會有 deep link 但還是示範給你們看） 在 onSupportNavigateUp 時通知 NavController 跳到 navigation graph 的上一頁或者上一層 graph（這個是按下 action bar 的 back 按鈕時會觸發的 callback，雖然我們不是用系統的 action bar 而是用自行加入的 AppBarLayout 但為防日後不經意地用了原裝 action bar 所以還是加了）  下面就是 MainActivity 的 layout xml (main_activity.xml)。由於我們的 app 的 toolbar 都是由各自 Fragment 自行處理，所以全個 MainActivity 只需要放一個 FragmentContainerView 就可以了。留意 android:name、 app:defaultNavHost 和 app:navGraph 這三個 attribute。\n  xmlns:android=\"http://schemas.android.com/apk/res/android\" xmlns:app=\"http://schemas.android.com/apk/res-auto\" xmlns:tools=\"http://schemas.android.com/tools\" android:id=\"@+id/navHostFragment\" android:name=\"androidx.navigation.fragment.NavHostFragment\" android:layout_width=\"match_parent\" android:layout_height=\"match_parent\" app:defaultNavHost=\"true\" app:navGraph=\"@navigation/eta\" tools:context=\".MainActivity\" / 如果打算加 deep link 的話可以在 manifest 對應 MainActivity 的  加入 ，這樣你就不用針對每個 deep link 加上 。\n android:name=\".MainActivity\" android:exported=\"true\"  android:value=\"@navigation/eta\" /   android:name=\"android.intent.action.MAIN\" /  android:name=\"android.intent.category.LAUNCHER\" /   完成後執行 app 應該會看到一個只有 toolbar 和空白內容的頁面。這個將會是下一篇會做的部分：車站列表。\nR8 注意事項 如果現在執行有 R8 處理過的 app 的話，一打開 app 就會 crash：\n2021-09-23 22:28:06.228 10900-10900/? E/AndroidRuntime: FATAL EXCEPTION: main Process: net.swiftzer.etademo, PID: 10900 java.lang.RuntimeException: Unable to start activity ComponentInfo{net.swiftzer.etademo/net.swiftzer.etademo.MainActivity}: android.view.InflateException: Binary XML file line #11 in net.swiftzer.etademo:layout/main_activity: Binary XML file line #11 in net.swiftzer.etademo:layout/main_activity: Error inflating class androidx.fragment.app.FragmentContainerView 略…… Caused by: android.view.InflateException: Binary XML file line #11 in net.swiftzer.etademo:layout/main_activity: Binary XML file line #11 in net.swiftzer.etademo:layout/main_activity: Error inflating class androidx.fragment.app.FragmentContainerView Caused by: android.view.InflateException: Binary XML file line #11 in net.swiftzer.etademo:layout/main_activity: Error inflating class androidx.fragment.app.FragmentContainerView Caused by: java.lang.RuntimeException: Exception inflating net.swiftzer.etademo:navigation/eta line 24 at androidx.navigation.p.c(Unknown Source:119) at androidx.navigation.NavController.i(:2) at androidx.navigation.fragment.NavHostFragment.M(:43) 略…… Caused by: java.lang.RuntimeException: java.lang.ClassNotFoundException: net.swiftzer.etademo.common.Line at androidx.navigation.p.d(:1) at androidx.navigation.p.b(:1) 原因是我們那個 navigation graph 有引用到 net.swiftzer.etademo.common.Line 和 net.swiftzer.etademo.common.Station 兩個 enum（就是那兩個 ）。R8 會把這些 class 混淆（重新命名），所以在啟動時 Navigation component 會找不到這兩個 class。解決方法是把這兩個 enum 補上 @Keep annotation，這樣 R8 就不會把那些 class 混淆。\n@Keep enum class Line(val zh: String, val en: String) { AEL(\"機場快綫\", \"Airport Express\"), TCL(\"東涌綫\", \"Tung Chung Line\"), TML(\"屯馬綫\", \"Tuen Ma Line\"), TKL(\"將軍澳綫\", \"Tseung Kwan O Line\"), } 基本上我們凡是見到 XML 檔有 class 的引用都應該要留是把那些 class 剔除在混淆範圍之內。\n小結 Navigation component 看似把以往處理一般轉頁和 deep link 的麻煩事變得更易管理，但它是不是真的那麼好用呢？當然不是！如果簡單看過它的文檔或許會覺得它很美好，但去到實際使用時就發覺有大大小小的問題，感覺它就是一個半製成品般。我強烈建議大家看看 Isaac Udy 演講的 Navigation in multi-module projects, and the problem with AndroidX Navigation，裏面有提及當 multi-module 時使用 Navigation component 所遇到的問題和解決方法，但那些解決方法都會令原本的 Navigation component 特色削弱（例如 type safe 的 parameter 變不 type safe），所以我才說 Navigation component 似是一個半製成品。\n","wordCount":"2338","inLanguage":"en","datePublished":"2021-10-03T00:00:00+08:00","dateModified":"2021-10-03T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2021/10/2021-ithome-ironman-18-navigation-2/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
+</head>
+<body id=top>
+<script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
+<noscript>
+<style type=text/css>#theme-toggle,.top-link{display:none}</style>
+<style>@media(prefers-color-scheme:dark){:root{--theme:#1d1e20;--entry:#2e2e33;--primary:rgba(255, 255, 255, 0.84);--secondary:rgba(255, 255, 255, 0.56);--tertiary:rgba(255, 255, 255, 0.16);--content:rgba(255, 255, 255, 0.74);--hljs-bg:#2e2e33;--code-bg:#37383e;--border:#333}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
+</noscript>
+<header class=header>
+<nav class=nav>
+<div class=logo>
+<a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
+<span class=logo-switches>
+<button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+</button>
+</span>
+</div>
+<ul id=menu onscroll=menu_on_scroll()>
+<li>
+<a href=https://eric.swiftzer.net/fonts/ title=Fonts>
+<span>Fonts</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/archives/ title=Archives>
+<span>Archives</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/tags/ title=Tags>
+<span>Tags</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/about/ title=About>
+<span>About</span>
+</a>
+</li></ul>
+</nav>
+</header>
+<main class=main>
+<article class=post-single>
+<header class=post-header>
+<div class=breadcrumbs>
+<a href=https://eric.swiftzer.net/>Home</a>&nbsp;»&nbsp;<a href=https://eric.swiftzer.net/posts/>Posts</a>
+</div>
+<h1 class=post-title>
+2021 iThome 鐵人賽 Day 18：Navigation (2)
+</h1>
+<div class=post-meta>October 3, 2021
+</div>
+</header>
+<div class=post-content>
+<blockquote>
+<p>本篇文章是 <a href=https://ithelp.ithome.com.tw/2021ironman>2021 iThome 鐵人賽</a>參賽題目「<a href=https://ithelp.ithome.com.tw/users/20139666/ironman/4661>寫一個列車抵站時間 Android App</a>」的第 18 篇，你可到 iThome <a href=https://ithelp.ithome.com.tw/articles/10276786>查看原文</a>。</p>
+<p><a href=https://eric.swiftzer.net/2021-ithome-ironman/>文章目錄</a></p>
+</blockquote>
+<p>在 Android，navigation graph 是 resource 的一種，我們先建立 <em>eta.xml</em>。</p>
+<figure>
+<img loading=lazy src=nav-graph-file-system.png> <figcaption>
+eta.xml 在 project 的位置
+</figcaption>
+</figure>
+<p>先附上完整的內容，然後再慢慢講解入面的意思。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=cp>&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+<span class=nt>&lt;navigation</span> <span class=na>xmlns:android=</span><span class=s>&#34;http://schemas.android.com/apk/res/android&#34;</span>
+    <span class=na>xmlns:app=</span><span class=s>&#34;http://schemas.android.com/apk/res-auto&#34;</span>
+    <span class=na>xmlns:tools=</span><span class=s>&#34;http://schemas.android.com/tools&#34;</span>
+    <span class=na>android:id=</span><span class=s>&#34;@+id/eta&#34;</span>
+    <span class=na>app:startDestination=</span><span class=s>&#34;@id/stationListFragment&#34;</span><span class=nt>&gt;</span>
+
+    <span class=nt>&lt;fragment</span>
+        <span class=na>android:id=</span><span class=s>&#34;@+id/stationListFragment&#34;</span>
+        <span class=na>android:name=</span><span class=s>&#34;net.swiftzer.etademo.presentation.stationlist.StationListFragment&#34;</span>
+        <span class=na>android:label=</span><span class=s>&#34;StationListFragment&#34;</span>
+        <span class=na>tools:layout=</span><span class=s>&#34;@layout/station_list_fragment&#34;</span><span class=nt>&gt;</span>
+        <span class=nt>&lt;action</span>
+            <span class=na>android:id=</span><span class=s>&#34;@+id/action_stationListFragment_to_etaFragment&#34;</span>
+            <span class=na>app:destination=</span><span class=s>&#34;@id/etaFragment&#34;</span> <span class=nt>/&gt;</span>
+    <span class=nt>&lt;/fragment&gt;</span>
+    <span class=nt>&lt;fragment</span>
+        <span class=na>android:id=</span><span class=s>&#34;@+id/etaFragment&#34;</span>
+        <span class=na>android:name=</span><span class=s>&#34;net.swiftzer.etademo.presentation.eta.EtaFragment&#34;</span>
+        <span class=na>android:label=</span><span class=s>&#34;EtaFragment&#34;</span>
+        <span class=na>tools:layout=</span><span class=s>&#34;@layout/eta_fragment&#34;</span><span class=nt>&gt;</span>
+        <span class=nt>&lt;argument</span>
+            <span class=na>android:name=</span><span class=s>&#34;line&#34;</span>
+            <span class=na>app:argType=</span><span class=s>&#34;net.swiftzer.etademo.common.Line&#34;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;argument</span>
+            <span class=na>android:name=</span><span class=s>&#34;station&#34;</span>
+            <span class=na>app:argType=</span><span class=s>&#34;net.swiftzer.etademo.common.Station&#34;</span> <span class=nt>/&gt;</span>
+    <span class=nt>&lt;/fragment&gt;</span>
+<span class=nt>&lt;/navigation&gt;</span>
+</code></pre></div><p>切換到 Design 後就能看到兩頁的 layout XML 預覽畫面和各頁之間的導航方向（就是兩頁之間的箭頭）。由於下圖是我在完成 <code>EtaFragment</code> 基本功能後才擷取所以內容比較豐富，如果按照上一篇來做的話應該只會看到兩頁只得 top bar 和下面一大片空白。</p>
+<figure>
+<img loading=lazy src=navigation-editor.png> <figcaption>
+Navigation editor
+</figcaption>
+</figure>
+<p><code>stationListFragment</code> 左上角有個小屋 icon，意思是那一個 navigation graph 的首頁。首頁的意思是一進入那個 navigation graph 會看到那頁，每個 navigation graph 都要指明一個 <code>Fragment</code> 做首頁。在 XML 的寫法是在 <code>&lt;navigation></code> tag 的 <code>app:startDestination</code> 指明那頁的 ID (<code>@id/stationListFragment</code>)。</p>
+<p>而每頁的定義就是用 <code>&lt;fragment></code> tag 定義，以 <code>StationListFragment</code> 為例：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;fragment</span>
+    <span class=na>android:id=</span><span class=s>&#34;@+id/stationListFragment&#34;</span>
+    <span class=na>android:name=</span><span class=s>&#34;net.swiftzer.etademo.presentation.stationlist.StationListFragment&#34;</span>
+    <span class=na>android:label=</span><span class=s>&#34;StationListFragment&#34;</span>
+    <span class=na>tools:layout=</span><span class=s>&#34;@layout/station_list_fragment&#34;</span><span class=nt>&gt;</span>
+    <span class=nt>&lt;action</span>
+        <span class=na>android:id=</span><span class=s>&#34;@+id/action_stationListFragment_to_etaFragment&#34;</span>
+        <span class=na>app:destination=</span><span class=s>&#34;@id/etaFragment&#34;</span> <span class=nt>/&gt;</span>
+<span class=nt>&lt;/fragment&gt;</span>
+</code></pre></div><ul>
+<li><code>android:id</code> 就是用來給那個 navigation 項目定義一個 ID，方便我們引用到（那個 <code>app:startDestination</code> 就是例子）</li>
+<li><code>android:name</code> 是 <code>Fragment</code> 的全名</li>
+<li><code>android:label</code> 跟 manifest 那個 <code>&lt;activity></code> 入面的 <code>android:label</code> 作用差不多，就是給那頁一個讓人看的名稱</li>
+<li><code>tools:layout</code> 就是為了在 IDE 預覽時能看到 layout XML 而設，看到 namesapce 是 <code>tools</code> 就知道了，不寫那個都不會影響運行效果</li>
+</ul>
+<p>至於入面的 <code>&lt;action></code> 就是設定這頁可以跳到另一頁，有點像 iOS Storyboard 的 segue。在這個例子我們設定它能跳到 <code>EtaFragment</code>。其實那個 <code>&lt;action></code> 的 <code>android:id="@+id/action_stationListFragment_to_etaFragment"</code> 是由 Design 介面拖曳 <code>StationListFragment</code> 右邊的圓形再在 <code>EtaFragment</code> 放手自動生成出來的，不用擔心要自己寫這麼長的名字。</p>
+<p>我們轉去看另一個 <code>&lt;fragment></code>，它有另一款 tag 叫 <code>&lt;argument></code>。這個 tag 是定義開啟 <code>Fragment</code> 的 argument。傳統啟動 <code>Activity</code> 和 <code>Fragment</code> 如果要附帶參數的話都會用到 intent extras 或 arguments 傳遞 <code>Bundle</code>。即使用了 Navigation component 這亦不變，變的地方是把參數定義在 XML 內。配合 <a href=https://developer.android.com/guide/navigation/navigation-pass-data>safe args Gradle plugin</a> 就可以令這個過程更 type safe。以往如果要做到 type safe 效果會寫一個 static 的 <code>newInstance</code> method 把這些建立 <code>Bundle</code> 的 code 塞進去，其他地方就不用知道那個 key 是甚麼，而且不會用錯 data type，但要每個 <code>Activity</code> 和 <code>Fragment</code> 都要做一次這個 static method。我們會在之後實際寫 <code>StationListFragment</code> 和 <code>EtaFragment</code> 時再仔細介紹。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml> <span class=nt>&lt;fragment</span>
+    <span class=na>android:id=</span><span class=s>&#34;@+id/etaFragment&#34;</span>
+    <span class=na>android:name=</span><span class=s>&#34;net.swiftzer.etademo.presentation.eta.EtaFragment&#34;</span>
+    <span class=na>android:label=</span><span class=s>&#34;EtaFragment&#34;</span>
+    <span class=na>tools:layout=</span><span class=s>&#34;@layout/eta_fragment&#34;</span><span class=nt>&gt;</span>
+    <span class=nt>&lt;argument</span>
+        <span class=na>android:name=</span><span class=s>&#34;line&#34;</span>
+        <span class=na>app:argType=</span><span class=s>&#34;net.swiftzer.etademo.common.Line&#34;</span> <span class=nt>/&gt;</span>
+    <span class=nt>&lt;argument</span>
+        <span class=na>android:name=</span><span class=s>&#34;station&#34;</span>
+        <span class=na>app:argType=</span><span class=s>&#34;net.swiftzer.etademo.common.Station&#34;</span> <span class=nt>/&gt;</span>
+<span class=nt>&lt;/fragment&gt;</span>
+</code></pre></div><h2 id=mainactivity><code>MainActivity</code><a hidden class=anchor aria-hidden=true href=#mainactivity>#</a></h2>
+<p>定義好 navigation graph 之後，我們要改改原本在 Android Studio 範本的 <code>MainActivity</code>：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=nd>@AndroidEntryPoint</span>
+<span class=k>class</span> <span class=nc>MainActivity</span> <span class=p>:</span> <span class=n>AppCompatActivity</span><span class=p>()</span> <span class=p>{</span>
+
+    <span class=k>private</span> <span class=k>lateinit</span> <span class=k>var</span> <span class=py>binding</span><span class=p>:</span> <span class=n>MainActivityBinding</span>
+    <span class=k>private</span> <span class=k>lateinit</span> <span class=k>var</span> <span class=py>navController</span><span class=p>:</span> <span class=n>NavController</span>
+
+    <span class=k>override</span> <span class=k>fun</span> <span class=nf>onCreate</span><span class=p>(</span><span class=n>savedInstanceState</span><span class=p>:</span> <span class=n>Bundle</span><span class=p>?)</span> <span class=p>{</span>
+        <span class=k>super</span><span class=p>.</span><span class=n>onCreate</span><span class=p>(</span><span class=n>savedInstanceState</span><span class=p>)</span>
+        <span class=n>binding</span> <span class=p>=</span> <span class=n>MainActivityBinding</span><span class=p>.</span><span class=n>inflate</span><span class=p>(</span><span class=n>layoutInflater</span><span class=p>)</span>
+        <span class=n>setContentView</span><span class=p>(</span><span class=n>binding</span><span class=p>.</span><span class=n>root</span><span class=p>)</span>
+        <span class=k>val</span> <span class=py>navHostFragment</span> <span class=p>=</span>
+            <span class=n>supportFragmentManager</span><span class=p>.</span><span class=n>findFragmentById</span><span class=p>(</span><span class=n>binding</span><span class=p>.</span><span class=n>navHostFragment</span><span class=p>.</span><span class=n>id</span><span class=p>)</span> <span class=k>as</span> <span class=n>NavHostFragment</span>
+        <span class=n>navController</span> <span class=p>=</span> <span class=n>navHostFragment</span><span class=p>.</span><span class=n>navController</span>
+    <span class=p>}</span>
+
+    <span class=k>override</span> <span class=k>fun</span> <span class=nf>onNewIntent</span><span class=p>(</span><span class=n>intent</span><span class=p>:</span> <span class=n>Intent</span><span class=p>?)</span> <span class=p>{</span>
+        <span class=k>super</span><span class=p>.</span><span class=n>onNewIntent</span><span class=p>(</span><span class=n>intent</span><span class=p>)</span>
+        <span class=n>navController</span><span class=p>.</span><span class=n>handleDeepLink</span><span class=p>(</span><span class=n>intent</span><span class=p>)</span>
+    <span class=p>}</span>
+
+    <span class=k>override</span> <span class=k>fun</span> <span class=nf>onSupportNavigateUp</span><span class=p>():</span> <span class=n>Boolean</span> <span class=p>=</span> <span class=n>navController</span><span class=p>.</span><span class=n>navigateUp</span><span class=p>()</span>
+<span class=p>}</span>
+</code></pre></div><p>同樣地，我們會加上 <code>@AndroidEntryPoint</code>。這是因為這個 <code>Activity</code> 將會加載帶有 <code>@AndroidEntryPoint</code> 的 <code>Fragment</code>，所以即使這個 <code>Activity</code> 看起來沒有用到 Dagger Hilt 我們還是需要加 <code>@AndroidEntryPoint</code>。如果不加的話之後遇到帶有 <code>@AndroidEntryPoint</code> 的 <code>Fragment</code> app 就會 crash。雖然 Dagger 標榜是透過 compile 時檢查 DI 的設定，但並不包括這部分。</p>
+<p>這次我們會用上 view binding，其實跟 data binding 有幾分相似，但不能 pass variable 去 layout XML 用，亦不能在 layout XML 加入 Java code。它的作用就是讓你不用再寫 <code>findViewById</code> 取得 layout XML 的 view。它比以前的 <a href=https://developer.android.com/topic/libraries/view-binding/migration>Kotlin synthetics</a> 和 <a href=https://github.com/JakeWharton/butterknife>Butterknife</a> 好在它能分析到那些 view ID 是不是只在個別 configuration 才會出現，如果是的話 binding 就會外露 nullable 的 view 讓你引用。</p>
+<p>如果在 <code>Fragment</code> 用 view binding 的話同樣都需要在 <code>onDestroyView</code> 終止所有 binding 引用，好讓那些 view 能被 garbage collection。而 <code>Activity</code> 因為它的 lifecycle 跟 view 一樣，所以不用像 <code>Fragment</code> 用 view/data binding 般要在 <code>onDestroyView</code> 清除引用。（因為 <code>Fragment</code> 比那些 view 長命）</p>
+<p>整個 <code>MainActivity</code> 只是需要做三件事：</p>
+<ol>
+<li>inflate layout XML，入面會有一個 <code>FragmentContainerView</code> 用來顯示 navigation graph 的 <code>Fragment</code>（就是顯示每頁內容的位置）</li>
+<li>在 <code>onNewIntent</code> 時將 <code>Intent</code> 交予 <code>NavController</code> 處理轉頁（就是 app 開了後再啟動 deep link 時通知 Navigation component 轉去對應頁面，雖然這個示範 app 不會有 deep link 但還是示範給你們看）</li>
+<li>在 <code>onSupportNavigateUp</code> 時通知 <code>NavController</code> 跳到 navigation graph 的上一頁或者上一層 graph（這個是按下 action bar 的 back 按鈕時會觸發的 callback，雖然我們不是用系統的 action bar 而是用自行加入的 <code>AppBarLayout</code> 但為防日後不經意地用了原裝 action bar 所以還是加了）</li>
+</ol>
+<p>下面就是 <code>MainActivity</code> 的 layout xml (<code>main_activity.xml</code>)。由於我們的 app 的 toolbar 都是由各自 <code>Fragment</code> 自行處理，所以全個 <code>MainActivity</code> 只需要放一個 <code>FragmentContainerView</code> 就可以了。留意 <code>android:name</code>、 <code>app:defaultNavHost</code> 和 <code>app:navGraph</code> 這三個 attribute。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=cp>&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+<span class=nt>&lt;androidx.fragment.app.FragmentContainerView</span> <span class=na>xmlns:android=</span><span class=s>&#34;http://schemas.android.com/apk/res/android&#34;</span>
+    <span class=na>xmlns:app=</span><span class=s>&#34;http://schemas.android.com/apk/res-auto&#34;</span>
+    <span class=na>xmlns:tools=</span><span class=s>&#34;http://schemas.android.com/tools&#34;</span>
+    <span class=na>android:id=</span><span class=s>&#34;@+id/navHostFragment&#34;</span>
+    <span class=na>android:name=</span><span class=s>&#34;androidx.navigation.fragment.NavHostFragment&#34;</span>
+    <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
+    <span class=na>android:layout_height=</span><span class=s>&#34;match_parent&#34;</span>
+    <span class=na>app:defaultNavHost=</span><span class=s>&#34;true&#34;</span>
+    <span class=na>app:navGraph=</span><span class=s>&#34;@navigation/eta&#34;</span>
+    <span class=na>tools:context=</span><span class=s>&#34;.MainActivity&#34;</span> <span class=nt>/&gt;</span>
+</code></pre></div><p>如果打算加 deep link 的話可以在 manifest 對應 <code>MainActivity</code> 的 <code>&lt;activity></code> 加入 <code>&lt;nav-graph></code>，這樣你就不用針對每個 deep link 加上 <code>&lt;intent-filter></code>。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;activity</span>
+    <span class=na>android:name=</span><span class=s>&#34;.MainActivity&#34;</span>
+    <span class=na>android:exported=</span><span class=s>&#34;true&#34;</span><span class=nt>&gt;</span>
+    <span class=nt>&lt;nav-graph</span> <span class=na>android:value=</span><span class=s>&#34;@navigation/eta&#34;</span> <span class=nt>/&gt;</span>
+    <span class=nt>&lt;intent-filter&gt;</span>
+        <span class=nt>&lt;action</span> <span class=na>android:name=</span><span class=s>&#34;android.intent.action.MAIN&#34;</span> <span class=nt>/&gt;</span>
+
+        <span class=nt>&lt;category</span> <span class=na>android:name=</span><span class=s>&#34;android.intent.category.LAUNCHER&#34;</span> <span class=nt>/&gt;</span>
+    <span class=nt>&lt;/intent-filter&gt;</span>
+<span class=nt>&lt;/activity&gt;</span>
+</code></pre></div><p>完成後執行 app 應該會看到一個只有 toolbar 和空白內容的頁面。這個將會是下一篇會做的部分：車站列表。</p>
+<h2 id=r8-注意事項>R8 注意事項<a hidden class=anchor aria-hidden=true href=#r8-注意事項>#</a></h2>
+<p>如果現在執行有 R8 處理過的 app 的話，一打開 app 就會 crash：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>2021-09-23 22:28:06.228 10900-10900/? E/AndroidRuntime: FATAL EXCEPTION: main
+    Process: net.swiftzer.etademo, PID: 10900
+    java.lang.RuntimeException: Unable to start activity ComponentInfo{net.swiftzer.etademo/net.swiftzer.etademo.MainActivity}: android.view.InflateException: Binary XML file line #11 in net.swiftzer.etademo:layout/main_activity: Binary XML file line #11 in net.swiftzer.etademo:layout/main_activity: Error inflating class androidx.fragment.app.FragmentContainerView
+        略……
+        Caused by: android.view.InflateException: Binary XML file line #11 in net.swiftzer.etademo:layout/main_activity: Binary XML file line #11 in net.swiftzer.etademo:layout/main_activity: Error inflating class androidx.fragment.app.FragmentContainerView
+        Caused by: android.view.InflateException: Binary XML file line #11 in net.swiftzer.etademo:layout/main_activity: Error inflating class androidx.fragment.app.FragmentContainerView
+        Caused by: java.lang.RuntimeException: Exception inflating net.swiftzer.etademo:navigation/eta line 24
+            at androidx.navigation.p.c(Unknown Source:119)
+            at androidx.navigation.NavController.i(:2)
+            at androidx.navigation.fragment.NavHostFragment.M(:43)
+            略……
+        Caused by: java.lang.RuntimeException: java.lang.ClassNotFoundException: net.swiftzer.etademo.common.Line
+            at androidx.navigation.p.d(:1)
+            at androidx.navigation.p.b(:1)
+</code></pre></div><p>原因是我們那個 navigation graph 有引用到 <code>net.swiftzer.etademo.common.Line</code> 和 <code>net.swiftzer.etademo.common.Station</code> 兩個 enum（就是那兩個 <code>&lt;argument></code>）。R8 會把這些 class 混淆（重新命名），所以在啟動時 Navigation component 會找不到這兩個 class。解決方法是把這兩個 enum 補上 <code>@Keep</code> annotation，這樣 R8 就不會把那些 class 混淆。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=nd>@Keep</span>
+<span class=k>enum</span> <span class=k>class</span> <span class=nc>Line</span><span class=p>(</span><span class=k>val</span> <span class=py>zh</span><span class=p>:</span> <span class=n>String</span><span class=p>,</span> <span class=k>val</span> <span class=py>en</span><span class=p>:</span> <span class=n>String</span><span class=p>)</span> <span class=p>{</span>
+    <span class=n>AEL</span><span class=p>(</span><span class=s2>&#34;機場快綫&#34;</span><span class=p>,</span> <span class=s2>&#34;Airport Express&#34;</span><span class=p>),</span>
+    <span class=n>TCL</span><span class=p>(</span><span class=s2>&#34;東涌綫&#34;</span><span class=p>,</span> <span class=s2>&#34;Tung Chung Line&#34;</span><span class=p>),</span>
+    <span class=n>TML</span><span class=p>(</span><span class=s2>&#34;屯馬綫&#34;</span><span class=p>,</span> <span class=s2>&#34;Tuen Ma Line&#34;</span><span class=p>),</span>
+    <span class=n>TKL</span><span class=p>(</span><span class=s2>&#34;將軍澳綫&#34;</span><span class=p>,</span> <span class=s2>&#34;Tseung Kwan O Line&#34;</span><span class=p>),</span>
+<span class=p>}</span>
+</code></pre></div><p>基本上我們凡是見到 XML 檔有 class 的引用都應該要留是把那些 class 剔除在混淆範圍之內。</p>
+<h2 id=小結>小結<a hidden class=anchor aria-hidden=true href=#小結>#</a></h2>
+<p>Navigation component 看似把以往處理一般轉頁和 deep link 的麻煩事變得更易管理，但它是不是真的那麼好用呢？當然不是！如果簡單看過它的文檔或許會覺得它很美好，但去到實際使用時就發覺有大大小小的問題，感覺它就是一個半製成品般。我強烈建議大家看看 <a href=https://www.droidcon.com/2020/12/15/navigation-in-multi-module-projects-and-the-problem-with-androidx-navigation/>Isaac Udy 演講的 Navigation in multi-module projects, and the problem with AndroidX Navigation</a>，裏面有提及當 multi-module 時使用 Navigation component 所遇到的問題和解決方法，但那些解決方法都會令原本的 Navigation component 特色削弱（例如 type safe 的 parameter 變不 type safe），所以我才說 Navigation component 似是一個半製成品。</p>
+</div>
+<footer class=post-footer>
+<ul class=post-tags>
+<li><a href=https://eric.swiftzer.net/tags/2021-ithome-%E9%90%B5%E4%BA%BA%E8%B3%BD/>2021 iThome 鐵人賽</a></li>
+<li><a href=https://eric.swiftzer.net/tags/android/>Android</a></li>
+</ul>
+<nav class=paginav>
+<a class=prev href=https://eric.swiftzer.net/2021/10/2021-ithome-ironman-19-station-list-screen-1/>
+<span class=title>« Prev Page</span>
+<br>
+<span>2021 iThome 鐵人賽 Day 19：Station list screen (1)</span>
+</a>
+<a class=next href=https://eric.swiftzer.net/2021/10/2021-ithome-ironman-17-navigation-1/>
+<span class=title>Next Page »</span>
+<br>
+<span>2021 iThome 鐵人賽 Day 17：Navigation (1)</span>
+</a>
+</nav>
+</footer><div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//efilm.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</article>
+</main><footer class=footer>
+<span>&copy; 2021 <a href=https://eric.swiftzer.net/>EricLog</a></span>
+<span>&#183;</span>
+<span>Powered by <a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a></span>
+<span>&#183;</span>
+<span>Theme <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span>
+</footer>
+<a href=#top aria-label="go to top" title="Go to Top (Alt + G)">
+<button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</button>
+</a>
+<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
+<script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script>
+<script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
+</body>
+</html>

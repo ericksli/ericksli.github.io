@@ -1,0 +1,264 @@
+<!doctype html><html lang=zh-hant-hk dir=auto>
+<head><meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=robots content="index, follow">
+<title>2021 iThome 鐵人賽 Day 11：Data layer testing (2) | EricLog</title>
+<meta name=keywords content="2021 iThome 鐵人賽,Android">
+<meta name=description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 11 篇，你可到 iThome 查看原文。 文章目錄 今天會繼續寫 EtaResponseMapper">
+<meta name=author content>
+<link rel=canonical href=https://ithelp.ithome.com.tw/articles/10272245>
+<link href=/assets/css/stylesheet.min.d1fc837a267f77f6ede89d1a89c4880a90c381d9e6673ad4a76a3ad1900b65f9.css integrity="sha256-0fyDeiZ/d/bt6J0aicSICpDDgdnmZzrUp2o60ZALZfk=" rel="preload stylesheet" as=style>
+<link rel=icon href=https://eric.swiftzer.net/favicon.ico>
+<link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png>
+<link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png>
+<link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png>
+<link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg>
+<meta name=theme-color content="#2e2e33">
+<meta name=msapplication-TileColor content="#2e2e33">
+<meta name=generator content="Hugo 0.88.1">
+<link rel=preconnect href=https://fonts.gstatic.com>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-1268728-8','auto'),ga('send','pageview'))</script>
+<script async src=https://www.google-analytics.com/analytics.js></script>
+<meta property="og:title" content="2021 iThome 鐵人賽 Day 11：Data layer testing (2)">
+<meta property="og:description" content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 11 篇，你可到 iThome 查看原文。 文章目錄 今天會繼續寫 EtaResponseMapper">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://eric.swiftzer.net/2021/09/2021-ithome-ironman-11-data-layer-testing-2/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2021-09-26T00:00:00+08:00">
+<meta property="article:modified_time" content="2021-09-26T00:00:00+08:00">
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="2021 iThome 鐵人賽 Day 11：Data layer testing (2)">
+<meta name=twitter:description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 11 篇，你可到 iThome 查看原文。 文章目錄 今天會繼續寫 EtaResponseMapper">
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"2021 iThome 鐵人賽 Day 11：Data layer testing (2)","item":"https://eric.swiftzer.net/2021/09/2021-ithome-ironman-11-data-layer-testing-2/"}]}</script>
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"2021 iThome 鐵人賽 Day 11：Data layer testing (2)","name":"2021 iThome 鐵人賽 Day 11：Data layer testing (2)","description":"本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 11 篇，你可到 iThome 查看原文。 文章目錄 今天會繼續寫 EtaResponseMapper","keywords":["2021 iThome 鐵人賽","Android"],"articleBody":" 本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 11 篇，你可到 iThome 查看原文。\n文章目錄\n 今天會繼續寫 EtaResponseMapperTest。我們示範的 test case 是正常輸出班次的情景。首先是準備 response：\nval response = mockHttpResponse( statusCode = HttpStatusCode.OK, etaResponse = EtaResponse( status = EtaResponse.STATUS_NORMAL, message = \"successful\", isDelay = EtaResponse.IS_DELAY_FALSE, data = mapOf( \"TKL-TKO\" to EtaResponse.Data( up = listOf( EtaResponse.Eta( plat = \"1\", time = \"2020-01-11 14:28:00\", dest = \"POA\", seq = \"1\", ), EtaResponse.Eta( plat = \"1\", time = \"2020-01-11 14:36:00\", dest = \"LHP\", seq = \"2\", ), ), down = listOf( EtaResponse.Eta( plat = \"2\", time = \"2020-01-11\", dest = \"XXX\", seq = \"\", ), ), ), ), ), ) 在正常的情況下 server 會提供上行及下行的班次。在我們的實作中，上下行其實是用相同方法處理，那我們就在上行的 array 放一些正常的內容然後在下行放有問題的內容，看看我們的 mapper 能否正常處理。\n接着就是 assertion 的部分。我們先檢查輸出的結果是不是 EtaResult.Success，然後用 and 開了一個 lambda。\nexpectThat(mapper.map(response)).isAEtaResult.Success().and { // 入面的 this 就變了 AssertionBuilder  // 這樣就可以繼續深入檢查 EtaResult.Success 的 property } 之後我們就會按照 EtaResult.Success 的每一個 property 檢查。它只有一個 property schedule ，我們再可以開另一層的 lambda 檢查 List 入面的內容。\n針對 collection 的部分，Strikt 提供了幾個 method 方便我們做 assertion：\n isNotEmpty() 檢查 collection 是不是空 hasSize(3) 檢查 collection 是不是有 3 個元素 get(2) 拿 index 第 2 的元素 first() 就是上面 get 的特別版，只取第一個元素 containsExactly(1, 2, 3) collection 入面必須要有這些元素，而且要按同樣次序出現 containsExactlyInAnyOrder(1, 2, 3) 和上面差不多，只是沒規定先後次序  更多的用法可以參考 Strikt 網站。之後我們可以再駁 and 來進入那一個元素作檢查。一般我們都是會先用 get 取得那個 property 的 AssertionBuilder 然後再接駁那些 isEqualTo、isNull 之類的 assertion。留意這個 get 不是 get(0) 那個，parameter 用數字是用來取得 collection 的某一個元素；但如果 parameter 是用 property/method reference 或者 lambda 就是用來取得那個 property。\n以下是 property/method reference 和 lambda 寫法例子：\nval subject: EtaResult.Success.Eta = EtaResult.Success.Eta(...) expectThat(subject) { // property/method reference  get(EtaResult.Success.Eta::platform).isEqualTo(\"1\") // lambda  get { platform }.isEqualTo(\"1\") } 兩者效果都是一樣，但 Strikt 網站指出用 lambda 寫法效能上比用 property/method reference 差。所以如果可以的話都盡量用 property/method reference。\n以下是整個 assertion 的部分：\nexpectThat(mapper.map(response)).isAEtaResult.Success().and { get(EtaResult.Success::schedule).isNotEmpty().and { get(0).and { get(EtaResult.Success.Eta::direction).isEqualTo(EtaResult.Success.Eta.Direction.UP) get(EtaResult.Success.Eta::platform).isEqualTo(\"1\") get(EtaResult.Success.Eta::time).isEqualTo( ZonedDateTime.of( 2020, 1, 11, 14, 28, 0, 0, DEFAULT_TIMEZONE ).toInstant() ) get(EtaResult.Success.Eta::destination).isEqualTo(Station.POA) get(EtaResult.Success.Eta::sequence).isEqualTo(1) } get(1).and { get(EtaResult.Success.Eta::direction).isEqualTo(EtaResult.Success.Eta.Direction.UP) get(EtaResult.Success.Eta::platform).isEqualTo(\"1\") get(EtaResult.Success.Eta::time).isEqualTo( ZonedDateTime.of( 2020, 1, 11, 14, 36, 0, 0, DEFAULT_TIMEZONE ).toInstant() ) get(EtaResult.Success.Eta::destination).isEqualTo(Station.LHP) get(EtaResult.Success.Eta::sequence).isEqualTo(2) } get(2).and { get(EtaResult.Success.Eta::direction).isEqualTo(EtaResult.Success.Eta.Direction.DOWN) get(EtaResult.Success.Eta::platform).isEqualTo(\"2\") get(EtaResult.Success.Eta::time).isEqualTo(Instant.EPOCH) get(EtaResult.Success.Eta::destination).isEqualTo(Station.UNKNOWN) get(EtaResult.Success.Eta::sequence).isEqualTo(0) } } } 留意因為 Instant 有 override equals 和 hashCode，還有是 immutable，所以我們可以直接建構一個新的 Instant 跟輸出做比較，如果那個 class 沒有正確地 override equals 和 hashCode 的話，還是要逐個 property call getter 檢查比較安全。\n你或許會問為甚麼我們不直接建構一個塞好我們期望的內容的 EtaResult.Success object 然後直接 isEqualTo 做比對。這是因為我想善用 Strikt 這類 assertion library 的優勢。Strikt 這類 assertion library 如果 assertion 出問題的話它會輸出詳細的錯誤訊息讓你看。\n@Test fun incident() = runBlockingTest { val response = mockHttpResponse( statusCode = HttpStatusCode.OK, etaResponse = EtaResponse( status = EtaResponse.STATUS_ERROR_OR_ALERT, message = \"Special train service arrangements are now in place on this line.\", url = \"https://www.mtr.com.hk\", ), ) expectThat(mapper.map(response)).isAEtaResult.Incident().and { get(EtaResult.Incident::message).isEqualTo(\"Special train service arrangements are now in place on this line.\") get(EtaResult.Incident::url).isEqualTo(\"https://www.mtr.com.hk/alert/alert_title_wap.html\") } } ▼ Expect that Incident(message=Special train service arrangements are now in place on this line., url=https://www.mtr.com.hk): ✓ is an instance of net.swiftzer.etademo.domain.EtaResult$Incident ▼ value of property message: ✓ is equal to \"Special train service arrangements are now in place on this line.\" ▼ value of property url: ✗ is equal to \"https://www.mtr.com.hk/alert/alert_title_wap.html\" found \"https://www.mtr.com.hk\" 如果直接用 isEqualTo 的話，那 assertion 會寫成：\nexpectThat(mapper.map(response)).isAEtaResult.Incident().isEqualTo( EtaResult.Incident( message = \"Special train service arrangements are now in place on this line.\", url = \"https://www.mtr.com.hk/alert/alert_title_wap.html\", ) ) 之後輸出的錯誤訊息都是把那個 class 的 toString 放給你自己看，但 property 一多你就很難檢查：\n▼ Expect that Incident(message=Special train service arrangements are now in place on this line., url=https://www.mtr.com.hk): ✓ is an instance of net.swiftzer.etademo.domain.EtaResult$Incident ✗ is equal to Incident(message=Special train service arrangements are now in place on this line., url=https://www.mtr.com.hk/alert/alert_title_wap.html) found Incident(message=Special train service arrangements are now in place on this line., url=https://www.mtr.com.hk) EtaResponseMapperTest 的其他 test case 其實寫法都大同小異，所以我就不逐一介紹。有興趣的話可以直接去 GitHub 看 code。\n下一篇會寫 EtaRepositoryImplTest。\n","wordCount":"1287","inLanguage":"en","datePublished":"2021-09-26T00:00:00+08:00","dateModified":"2021-09-26T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2021/09/2021-ithome-ironman-11-data-layer-testing-2/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
+</head>
+<body id=top>
+<script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
+<noscript>
+<style type=text/css>#theme-toggle,.top-link{display:none}</style>
+<style>@media(prefers-color-scheme:dark){:root{--theme:#1d1e20;--entry:#2e2e33;--primary:rgba(255, 255, 255, 0.84);--secondary:rgba(255, 255, 255, 0.56);--tertiary:rgba(255, 255, 255, 0.16);--content:rgba(255, 255, 255, 0.74);--hljs-bg:#2e2e33;--code-bg:#37383e;--border:#333}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
+</noscript>
+<header class=header>
+<nav class=nav>
+<div class=logo>
+<a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
+<span class=logo-switches>
+<button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+</button>
+</span>
+</div>
+<ul id=menu onscroll=menu_on_scroll()>
+<li>
+<a href=https://eric.swiftzer.net/fonts/ title=Fonts>
+<span>Fonts</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/archives/ title=Archives>
+<span>Archives</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/tags/ title=Tags>
+<span>Tags</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/about/ title=About>
+<span>About</span>
+</a>
+</li></ul>
+</nav>
+</header>
+<main class=main>
+<article class=post-single>
+<header class=post-header>
+<div class=breadcrumbs>
+<a href=https://eric.swiftzer.net/>Home</a>&nbsp;»&nbsp;<a href=https://eric.swiftzer.net/posts/>Posts</a>
+</div>
+<h1 class=post-title>
+2021 iThome 鐵人賽 Day 11：Data layer testing (2)
+</h1>
+<div class=post-meta>September 26, 2021
+</div>
+</header>
+<div class=post-content>
+<blockquote>
+<p>本篇文章是 <a href=https://ithelp.ithome.com.tw/2021ironman>2021 iThome 鐵人賽</a>參賽題目「<a href=https://ithelp.ithome.com.tw/users/20139666/ironman/4661>寫一個列車抵站時間 Android App</a>」的第 11 篇，你可到 iThome <a href=https://ithelp.ithome.com.tw/articles/10272245>查看原文</a>。</p>
+<p><a href=https://eric.swiftzer.net/2021-ithome-ironman/>文章目錄</a></p>
+</blockquote>
+<p>今天會繼續寫 <code>EtaResponseMapperTest</code>。我們示範的 test case 是正常輸出班次的情景。首先是準備 response：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>val</span> <span class=py>response</span> <span class=p>=</span> <span class=n>mockHttpResponse</span><span class=p>(</span>
+    <span class=n>statusCode</span> <span class=p>=</span> <span class=n>HttpStatusCode</span><span class=p>.</span><span class=n>OK</span><span class=p>,</span>
+    <span class=n>etaResponse</span> <span class=p>=</span> <span class=n>EtaResponse</span><span class=p>(</span>
+        <span class=n>status</span> <span class=p>=</span> <span class=n>EtaResponse</span><span class=p>.</span><span class=n>STATUS_NORMAL</span><span class=p>,</span>
+        <span class=n>message</span> <span class=p>=</span> <span class=s2>&#34;successful&#34;</span><span class=p>,</span>
+        <span class=n>isDelay</span> <span class=p>=</span> <span class=n>EtaResponse</span><span class=p>.</span><span class=n>IS_DELAY_FALSE</span><span class=p>,</span>
+        <span class=k>data</span> <span class=p>=</span> <span class=n>mapOf</span><span class=p>(</span>
+            <span class=s2>&#34;TKL-TKO&#34;</span> <span class=n>to</span> <span class=n>EtaResponse</span><span class=p>.</span><span class=n>Data</span><span class=p>(</span>
+                <span class=n>up</span> <span class=p>=</span> <span class=n>listOf</span><span class=p>(</span>
+                    <span class=n>EtaResponse</span><span class=p>.</span><span class=n>Eta</span><span class=p>(</span>
+                        <span class=n>plat</span> <span class=p>=</span> <span class=s2>&#34;1&#34;</span><span class=p>,</span>
+                        <span class=n>time</span> <span class=p>=</span> <span class=s2>&#34;2020-01-11 14:28:00&#34;</span><span class=p>,</span>
+                        <span class=n>dest</span> <span class=p>=</span> <span class=s2>&#34;POA&#34;</span><span class=p>,</span>
+                        <span class=n>seq</span> <span class=p>=</span> <span class=s2>&#34;1&#34;</span><span class=p>,</span>
+                    <span class=p>),</span>
+                    <span class=n>EtaResponse</span><span class=p>.</span><span class=n>Eta</span><span class=p>(</span>
+                        <span class=n>plat</span> <span class=p>=</span> <span class=s2>&#34;1&#34;</span><span class=p>,</span>
+                        <span class=n>time</span> <span class=p>=</span> <span class=s2>&#34;2020-01-11 14:36:00&#34;</span><span class=p>,</span>
+                        <span class=n>dest</span> <span class=p>=</span> <span class=s2>&#34;LHP&#34;</span><span class=p>,</span>
+                        <span class=n>seq</span> <span class=p>=</span> <span class=s2>&#34;2&#34;</span><span class=p>,</span>
+                    <span class=p>),</span>
+                <span class=p>),</span>
+                <span class=n>down</span> <span class=p>=</span> <span class=n>listOf</span><span class=p>(</span>
+                    <span class=n>EtaResponse</span><span class=p>.</span><span class=n>Eta</span><span class=p>(</span>
+                        <span class=n>plat</span> <span class=p>=</span> <span class=s2>&#34;2&#34;</span><span class=p>,</span>
+                        <span class=n>time</span> <span class=p>=</span> <span class=s2>&#34;2020-01-11&#34;</span><span class=p>,</span>
+                        <span class=n>dest</span> <span class=p>=</span> <span class=s2>&#34;XXX&#34;</span><span class=p>,</span>
+                        <span class=n>seq</span> <span class=p>=</span> <span class=s2>&#34;&#34;</span><span class=p>,</span>
+                    <span class=p>),</span>
+                <span class=p>),</span>
+            <span class=p>),</span>
+        <span class=p>),</span>
+    <span class=p>),</span>
+<span class=p>)</span>
+</code></pre></div><p>在正常的情況下 server 會提供上行及下行的班次。在我們的實作中，上下行其實是用相同方法處理，那我們就在上行的 array 放一些正常的內容然後在下行放有問題的內容，看看我們的 mapper 能否正常處理。</p>
+<p>接着就是 assertion 的部分。我們先檢查輸出的結果是不是 <code>EtaResult.Success</code>，然後用 <code>and</code> 開了一個 lambda。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=n>expectThat</span><span class=p>(</span><span class=n>mapper</span><span class=p>.</span><span class=n>map</span><span class=p>(</span><span class=n>response</span><span class=p>)).</span><span class=n>isA</span><span class=p>&lt;</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>&gt;().</span><span class=n>and</span> <span class=p>{</span>
+    <span class=c1>// 入面的 this 就變了 AssertionBuilder&lt;EtaResult.Success&gt;
+</span><span class=c1></span>    <span class=c1>// 這樣就可以繼續深入檢查 EtaResult.Success 的 property
+</span><span class=c1></span><span class=p>}</span>
+</code></pre></div><p>之後我們就會按照 <code>EtaResult.Success</code> 的每一個 property 檢查。它只有一個 property <code>schedule</code> ，我們再可以開另一層的 lambda 檢查 <code>List&lt;EtaResult.Success.Eta></code> 入面的內容。</p>
+<p>針對 collection 的部分，Strikt 提供了幾個 method 方便我們做 assertion：</p>
+<ul>
+<li><code>isNotEmpty()</code> 檢查 collection 是不是空</li>
+<li><code>hasSize(3)</code> 檢查 collection 是不是有 3 個元素</li>
+<li><code>get(2)</code> 拿 index 第 2 的元素</li>
+<li><code>first()</code> 就是上面 <code>get</code> 的特別版，只取第一個元素</li>
+<li><code>containsExactly(1, 2, 3)</code> collection 入面必須要有這些元素，而且要按同樣次序出現</li>
+<li><code>containsExactlyInAnyOrder(1, 2, 3)</code> 和上面差不多，只是沒規定先後次序</li>
+</ul>
+<p>更多的用法可以參考 <a href=https://strikt.io/wiki/collection-elements/>Strikt 網站</a>。之後我們可以再駁 <code>and</code> 來進入那一個元素作檢查。一般我們都是會先用 <code>get</code> 取得那個 property 的 <code>AssertionBuilder</code> 然後再接駁那些 <code>isEqualTo</code>、<code>isNull</code> 之類的 assertion。留意這個 <code>get</code> 不是 <code>get(0)</code> 那個，parameter 用數字是用來取得 collection 的某一個元素；但如果 parameter 是用 property/method reference 或者 lambda 就是用來取得那個 property。</p>
+<p>以下是 property/method reference 和 lambda 寫法例子：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>val</span> <span class=py>subject</span><span class=p>:</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span> <span class=p>=</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>(</span><span class=o>..</span><span class=p>.)</span>
+<span class=n>expectThat</span><span class=p>(</span><span class=n>subject</span><span class=p>)</span> <span class=p>{</span>
+    <span class=c1>// property/method reference
+</span><span class=c1></span>    <span class=k>get</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=o>::</span><span class=n>platform</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=s2>&#34;1&#34;</span><span class=p>)</span>
+    <span class=c1>// lambda
+</span><span class=c1></span>    <span class=k>get</span> <span class=p>{</span> <span class=n>platform</span> <span class=p>}.</span><span class=n>isEqualTo</span><span class=p>(</span><span class=s2>&#34;1&#34;</span><span class=p>)</span>
+<span class=p>}</span>
+</code></pre></div><p>兩者效果都是一樣，但 Strikt 網站指出用 lambda 寫法效能上比用 property/method reference 差。所以如果可以的話都盡量用 property/method reference。</p>
+<p>以下是整個 assertion 的部分：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=n>expectThat</span><span class=p>(</span><span class=n>mapper</span><span class=p>.</span><span class=n>map</span><span class=p>(</span><span class=n>response</span><span class=p>)).</span><span class=n>isA</span><span class=p>&lt;</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>&gt;().</span><span class=n>and</span> <span class=p>{</span>
+    <span class=k>get</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=o>::</span><span class=n>schedule</span><span class=p>).</span><span class=n>isNotEmpty</span><span class=p>().</span><span class=n>and</span> <span class=p>{</span>
+        <span class=k>get</span><span class=p>(</span><span class=m>0</span><span class=p>).</span><span class=n>and</span> <span class=p>{</span>
+            <span class=k>get</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=o>::</span><span class=n>direction</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=o>::</span><span class=n>platform</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=s2>&#34;1&#34;</span><span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=o>::</span><span class=n>time</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span>
+                <span class=n>ZonedDateTime</span><span class=p>.</span><span class=n>of</span><span class=p>(</span>
+                    <span class=m>2020</span><span class=p>,</span> <span class=m>1</span><span class=p>,</span> <span class=m>11</span><span class=p>,</span> <span class=m>14</span><span class=p>,</span> <span class=m>28</span><span class=p>,</span> <span class=m>0</span><span class=p>,</span> <span class=m>0</span><span class=p>,</span>
+                    <span class=n>DEFAULT_TIMEZONE</span>
+                <span class=p>).</span><span class=n>toInstant</span><span class=p>()</span>
+            <span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=o>::</span><span class=n>destination</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=n>Station</span><span class=p>.</span><span class=n>POA</span><span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=o>::</span><span class=n>sequence</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=m>1</span><span class=p>)</span>
+        <span class=p>}</span>
+        <span class=k>get</span><span class=p>(</span><span class=m>1</span><span class=p>).</span><span class=n>and</span> <span class=p>{</span>
+            <span class=k>get</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=o>::</span><span class=n>direction</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>UP</span><span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=o>::</span><span class=n>platform</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=s2>&#34;1&#34;</span><span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=o>::</span><span class=n>time</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span>
+                <span class=n>ZonedDateTime</span><span class=p>.</span><span class=n>of</span><span class=p>(</span>
+                    <span class=m>2020</span><span class=p>,</span> <span class=m>1</span><span class=p>,</span> <span class=m>11</span><span class=p>,</span> <span class=m>14</span><span class=p>,</span> <span class=m>36</span><span class=p>,</span> <span class=m>0</span><span class=p>,</span> <span class=m>0</span><span class=p>,</span>
+                    <span class=n>DEFAULT_TIMEZONE</span>
+                <span class=p>).</span><span class=n>toInstant</span><span class=p>()</span>
+            <span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=o>::</span><span class=n>destination</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=n>Station</span><span class=p>.</span><span class=n>LHP</span><span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=o>::</span><span class=n>sequence</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=m>2</span><span class=p>)</span>
+        <span class=p>}</span>
+        <span class=k>get</span><span class=p>(</span><span class=m>2</span><span class=p>).</span><span class=n>and</span> <span class=p>{</span>
+            <span class=k>get</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=o>::</span><span class=n>direction</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>.</span><span class=n>Direction</span><span class=p>.</span><span class=n>DOWN</span><span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=o>::</span><span class=n>platform</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=s2>&#34;2&#34;</span><span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=o>::</span><span class=n>time</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=n>Instant</span><span class=p>.</span><span class=n>EPOCH</span><span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=o>::</span><span class=n>destination</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=n>Station</span><span class=p>.</span><span class=n>UNKNOWN</span><span class=p>)</span>
+            <span class=k>get</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=o>::</span><span class=n>sequence</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=m>0</span><span class=p>)</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>留意因為 <code>Instant</code> 有 override <code>equals</code> 和 <code>hashCode</code>，還有是 immutable，所以我們可以直接建構一個新的 <code>Instant</code> 跟輸出做比較，如果那個 class 沒有正確地 override <code>equals</code> 和 <code>hashCode</code> 的話，還是要逐個 property call getter 檢查比較安全。</p>
+<p>你或許會問為甚麼我們不直接建構一個塞好我們期望的內容的 <code>EtaResult.Success</code> object 然後直接 <code>isEqualTo</code> 做比對。這是因為我想善用 Strikt 這類 assertion library 的優勢。Strikt 這類 assertion library 如果 assertion 出問題的話它會輸出詳細的錯誤訊息讓你看。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=nd>@Test</span>
+<span class=k>fun</span> <span class=nf>incident</span><span class=p>()</span> <span class=p>=</span> <span class=n>runBlockingTest</span> <span class=p>{</span>
+    <span class=k>val</span> <span class=py>response</span> <span class=p>=</span> <span class=n>mockHttpResponse</span><span class=p>(</span>
+        <span class=n>statusCode</span> <span class=p>=</span> <span class=n>HttpStatusCode</span><span class=p>.</span><span class=n>OK</span><span class=p>,</span>
+        <span class=n>etaResponse</span> <span class=p>=</span> <span class=n>EtaResponse</span><span class=p>(</span>
+            <span class=n>status</span> <span class=p>=</span> <span class=n>EtaResponse</span><span class=p>.</span><span class=n>STATUS_ERROR_OR_ALERT</span><span class=p>,</span>
+            <span class=n>message</span> <span class=p>=</span> <span class=s2>&#34;Special train service arrangements are now in place on this line.&#34;</span><span class=p>,</span>
+            <span class=n>url</span> <span class=p>=</span> <span class=s2>&#34;https://www.mtr.com.hk&#34;</span><span class=p>,</span>
+        <span class=p>),</span>
+    <span class=p>)</span>
+    <span class=n>expectThat</span><span class=p>(</span><span class=n>mapper</span><span class=p>.</span><span class=n>map</span><span class=p>(</span><span class=n>response</span><span class=p>)).</span><span class=n>isA</span><span class=p>&lt;</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Incident</span><span class=p>&gt;().</span><span class=n>and</span> <span class=p>{</span>
+        <span class=k>get</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Incident</span><span class=o>::</span><span class=n>message</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=s2>&#34;Special train service arrangements are now in place on this line.&#34;</span><span class=p>)</span>
+        <span class=k>get</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Incident</span><span class=o>::</span><span class=n>url</span><span class=p>).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=s2>&#34;https://www.mtr.com.hk/alert/alert_title_wap.html&#34;</span><span class=p>)</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>▼ Expect that Incident(message=Special train service arrangements are now in place on this line., url=https://www.mtr.com.hk):
+  ✓ is an instance of net.swiftzer.etademo.domain.EtaResult$Incident
+  ▼ value of property message:
+    ✓ is equal to &#34;Special train service arrangements are now in place on this line.&#34;
+  ▼ value of property url:
+    ✗ is equal to &#34;https://www.mtr.com.hk/alert/alert_title_wap.html&#34;
+            found &#34;https://www.mtr.com.hk&#34;
+</code></pre></div><p>如果直接用 <code>isEqualTo</code> 的話，那 assertion 會寫成：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=n>expectThat</span><span class=p>(</span><span class=n>mapper</span><span class=p>.</span><span class=n>map</span><span class=p>(</span><span class=n>response</span><span class=p>)).</span><span class=n>isA</span><span class=p>&lt;</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Incident</span><span class=p>&gt;().</span><span class=n>isEqualTo</span><span class=p>(</span>
+    <span class=n>EtaResult</span><span class=p>.</span><span class=n>Incident</span><span class=p>(</span>
+        <span class=n>message</span> <span class=p>=</span> <span class=s2>&#34;Special train service arrangements are now in place on this line.&#34;</span><span class=p>,</span>
+        <span class=n>url</span> <span class=p>=</span> <span class=s2>&#34;https://www.mtr.com.hk/alert/alert_title_wap.html&#34;</span><span class=p>,</span>
+    <span class=p>)</span>
+<span class=p>)</span>
+</code></pre></div><p>之後輸出的錯誤訊息都是把那個 class 的 <code>toString</code> 放給你自己看，但 property 一多你就很難檢查：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>▼ Expect that Incident(message=Special train service arrangements are now in place on this line., url=https://www.mtr.com.hk):
+  ✓ is an instance of net.swiftzer.etademo.domain.EtaResult$Incident
+  ✗ is equal to Incident(message=Special train service arrangements are now in place on this line., url=https://www.mtr.com.hk/alert/alert_title_wap.html)
+          found Incident(message=Special train service arrangements are now in place on this line., url=https://www.mtr.com.hk)
+</code></pre></div><p><code>EtaResponseMapperTest</code> 的其他 test case 其實寫法都大同小異，所以我就不逐一介紹。有興趣的話可以直接<a href=https://github.com/ericksli/eta-demo/blob/main/app/src/test/java/net/swiftzer/etademo/data/EtaResponseMapperTest.kt>去 GitHub 看 code</a>。</p>
+<p>下一篇會寫 <code>EtaRepositoryImplTest</code>。</p>
+</div>
+<footer class=post-footer>
+<ul class=post-tags>
+<li><a href=https://eric.swiftzer.net/tags/2021-ithome-%E9%90%B5%E4%BA%BA%E8%B3%BD/>2021 iThome 鐵人賽</a></li>
+<li><a href=https://eric.swiftzer.net/tags/android/>Android</a></li>
+</ul>
+<nav class=paginav>
+<a class=prev href=https://eric.swiftzer.net/2021/09/2021-ithome-ironman-12-data-layer-testing-3/>
+<span class=title>« Prev Page</span>
+<br>
+<span>2021 iThome 鐵人賽 Day 12：Data layer testing (3)</span>
+</a>
+<a class=next href=https://eric.swiftzer.net/2021/09/2021-ithome-ironman-10-data-layer-testing-1/>
+<span class=title>Next Page »</span>
+<br>
+<span>2021 iThome 鐵人賽 Day 10：Data layer testing (1)</span>
+</a>
+</nav>
+</footer><div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//efilm.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</article>
+</main><footer class=footer>
+<span>&copy; 2021 <a href=https://eric.swiftzer.net/>EricLog</a></span>
+<span>&#183;</span>
+<span>Powered by <a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a></span>
+<span>&#183;</span>
+<span>Theme <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span>
+</footer>
+<a href=#top aria-label="go to top" title="Go to Top (Alt + G)">
+<button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</button>
+</a>
+<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
+<script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script>
+<script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
+</body>
+</html>

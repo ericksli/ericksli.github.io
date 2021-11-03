@@ -1,0 +1,196 @@
+<!doctype html><html lang=zh-hant-hk dir=auto>
+<head><meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=robots content="index, follow">
+<title>2021 iThome 鐵人賽 Day 15：Domain layer implementation | EricLog</title>
+<meta name=keywords content="2021 iThome 鐵人賽,Android">
+<meta name=description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 15 篇，你可到 iThome 查看原文。 文章目錄 經過這麼多集的 data layer 後，我們來到 domain layer。D">
+<meta name=author content>
+<link rel=canonical href=https://ithelp.ithome.com.tw/articles/10275114>
+<link href=/assets/css/stylesheet.min.d1fc837a267f77f6ede89d1a89c4880a90c381d9e6673ad4a76a3ad1900b65f9.css integrity="sha256-0fyDeiZ/d/bt6J0aicSICpDDgdnmZzrUp2o60ZALZfk=" rel="preload stylesheet" as=style>
+<link rel=icon href=https://eric.swiftzer.net/favicon.ico>
+<link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png>
+<link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png>
+<link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png>
+<link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg>
+<meta name=theme-color content="#2e2e33">
+<meta name=msapplication-TileColor content="#2e2e33">
+<meta name=generator content="Hugo 0.88.1">
+<link rel=preconnect href=https://fonts.gstatic.com>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-1268728-8','auto'),ga('send','pageview'))</script>
+<script async src=https://www.google-analytics.com/analytics.js></script>
+<meta property="og:title" content="2021 iThome 鐵人賽 Day 15：Domain layer implementation">
+<meta property="og:description" content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 15 篇，你可到 iThome 查看原文。 文章目錄 經過這麼多集的 data layer 後，我們來到 domain layer。D">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://eric.swiftzer.net/2021/09/2021-ithome-ironman-15-domain-layer-implementation/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2021-09-30T00:00:00+08:00">
+<meta property="article:modified_time" content="2021-09-30T00:00:00+08:00">
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="2021 iThome 鐵人賽 Day 15：Domain layer implementation">
+<meta name=twitter:description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 15 篇，你可到 iThome 查看原文。 文章目錄 經過這麼多集的 data layer 後，我們來到 domain layer。D">
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"2021 iThome 鐵人賽 Day 15：Domain layer implementation","item":"https://eric.swiftzer.net/2021/09/2021-ithome-ironman-15-domain-layer-implementation/"}]}</script>
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"2021 iThome 鐵人賽 Day 15：Domain layer implementation","name":"2021 iThome 鐵人賽 Day 15：Domain layer implementation","description":"本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 15 篇，你可到 iThome 查看原文。 文章目錄 經過這麼多集的 data layer 後，我們來到 domain layer。D","keywords":["2021 iThome 鐵人賽","Android"],"articleBody":" 本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 15 篇，你可到 iThome 查看原文。\n文章目錄\n 經過這麼多集的 data layer 後，我們來到 domain layer。Domain layer 的用途是用來放 business logic，並向 presentation layer（即是 Activity、Fragment、ViewModel、layout XML 這層）提供一個表象 (façade) 去用跟 data 互動。你或許會問為甚麼我們不在 ViewModel 直接 call 之前寫好的 repository 而要經 domain layer，這是為了日後功能變更提供彈性。例如一個新聞 app 會有新聞列表頁跟新聞正文頁，當按下新聞列表的項目時就會進入正文頁。在正文頁按了收藏後返回列表頁就會發現剛才那個項目出現了一個收藏 icon。如果在 data layer 跟 presentation layer 之間直接接駁的話，那個列表頁在收藏狀態變動後自動更新的 logic 就會放入 ViewModel 內。（可能是正文頁在按下收藏 icon 時用 event bus 通知其他 ViewModel 去更新 UI。）如果再多幾個地方跟那個收藏狀態有關連的話那些觸發檢查更新的 code 就會放在各個 ViewModel 之中，日後收藏功能再有改動就很麻煩。另外，一些複雜的東西例如之前提及過的車費計算都不是單純在網路上 call API 然後稍加修飾就輸出去 UI 上，而是真的有 business logic 在 mobile app 內進行。那些 business logic 都是會放在 domain layer 入面。可能車費計算背後有很多的 class，但我們只外露幾個 use case 或者 interactor 讓 presentation layer call，這樣就把背後複雜的東西隱藏起來。\n其實叫 interactor 或者 use case 我覺得沒有太大分別，反正它們都是把背後的東西（例如與 backend API、本地 database 互動、business logic）隱藏起來，並且將「收藏」功能這樣改一處地方就能通知另一處要更新的 logic 移離 presentation layer（另一個例子是收到 push notification 後要更新資料）。通常一個 use case 只會做一個動作，如果是要做齊增刪查改 (create, read, update, delete) 的話那就會有四個 use case。有些人會偏好做一個通用的 use case interface（就像我們做 mapper 要有個 mapper interface 般要所有 mapper 都 implement 同一個 interface），但缺點是如果要傳遞參數的話就會變得很麻煩，每個 use case 都要做一個 data class 去載住參數（或者是用 Map 裝着）。所以我們這次是每一個 use case 都做一個專門的 interface。\n車站列表 示範 app 會有兩個 use case，第一個是提供車站列表供用戶選取查閱班次的車站。首先準備它的 interface class GetLinesAndStationsUseCase：\ninterface GetLinesAndStationsUseCase { operator fun invoke(): MapLine, SetStation } 用了 operator fun invoke() 是因為之後 ViewModel 可以把 variable 當 method call，這樣看起上來更簡潔。這個 syntax 在 Kotlin 叫 operator overloading。以下就是例子：\nval getLinesAndStations: GetLinesAndStationsUseCase val result: MapLine, SetStation = getLinesAndStations() 然後是它的實作：\nclass GetLinesAndStationsUseCaseImpl @Inject constructor( private val repository: EtaRepository, ) : GetLinesAndStationsUseCase { override fun invoke(): MapLine, SetStation = repository.getLinesAndStations() } 因為這個 use case 沒有特別的 logic 要處理，其實就是把 EtaRepository 拿到的東西左手交右手給 ViewModel 用。\n抵站時間 另一個 use case 是取得車站的抵站時間，背後就是 call 港鐵的 API。首先我們都是要準備 GetEtaUseCase interface：\ninterface GetEtaUseCase { suspend operator fun invoke( language: Language, line: Line, station: Station, sortBy: SortBy, ): EtaResult enum class SortBy { DIRECTION, TIME } } 這次 operator fun 我們加了 suspend keyword 和多了參數。Kotlin operator overloading 是容許這樣做的。\n由於我們的示範 app 沒有做到強行更改 app locale，app 的界面語言是依據系統語言來顯示，所以 call API 時語言參數就由 presentation layer 提供。如果你的 app 有強行更改 app locale 的話，語言部分其實可以在 use case 實作內向查閱 shared preferences 或 data store 之類的儲存位置而無需由 presentation layer 提供。下面是它的實作：\nclass GetEtaUseCaseImpl @Inject constructor( private val repository: EtaRepository, ) : GetEtaUseCase { override suspend fun invoke( language: Language, line: Line, station: Station, sortBy: GetEtaUseCase.SortBy, ): EtaResult = when (val result = repository.getEta(language, line, station)) { is EtaResult.Success - { val comparator: ComparatorEtaResult.Success.Eta = when (sortBy) { GetEtaUseCase.SortBy.DIRECTION - compareBy({ it.direction }, { it.sequence }) GetEtaUseCase.SortBy.TIME - compareBy({ it.time }, { it.sequence }) } result.copy(schedule = result.schedule.sortedWith(comparator)) } else - result } } 這次為了增加一些「business logic」，我們就加了一個排序功能。用戶可以把班次按行車方向（上行和下行）或者按時間排列。排序是用 Comparator 來做，用法就是在 compareBy 提供一個或多個 selector lambda。以 SortBy.DIRECTION 為例，compareBy({ it.direction }, { it.sequence )} 的意思是先按 EtaResult.Success.Eta.direction 排，然後再按 EtaResult.Success.Eta.sequence 排。排完之後我們直接把原先的 EtaResult.Success 內的 schedule 換成重新排序過的 list。\n如果項目數量多的話，我們應該叫 backend 負責排；如果是由本地的 database 提供的話就應該由 database 負責排序。這次是因為港鐵 API 沒有提供這個功能而且項目數量少才會這樣寫。\nDagger 最後，不要忘記加入 Dagger binding。我們這次開一個全新的 Dagger module，同樣地都是 @InstallIn(SingletonComponent::class)。\n@Module @InstallIn(SingletonComponent::class) interface DomainModule { @Binds fun bindGetEtaUseCase(impl: GetEtaUseCaseImpl): GetEtaUseCase @Binds fun bindGetLinesAndStationsUseCase(impl: GetLinesAndStationsUseCaseImpl): GetLinesAndStationsUseCase }  完整的 code 可以到 GitHub repo 查閱，下一篇我們會幫這兩個 use case implementation 寫 unit test。\n","wordCount":"1705","inLanguage":"en","datePublished":"2021-09-30T00:00:00+08:00","dateModified":"2021-09-30T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2021/09/2021-ithome-ironman-15-domain-layer-implementation/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
+</head>
+<body id=top>
+<script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
+<noscript>
+<style type=text/css>#theme-toggle,.top-link{display:none}</style>
+<style>@media(prefers-color-scheme:dark){:root{--theme:#1d1e20;--entry:#2e2e33;--primary:rgba(255, 255, 255, 0.84);--secondary:rgba(255, 255, 255, 0.56);--tertiary:rgba(255, 255, 255, 0.16);--content:rgba(255, 255, 255, 0.74);--hljs-bg:#2e2e33;--code-bg:#37383e;--border:#333}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
+</noscript>
+<header class=header>
+<nav class=nav>
+<div class=logo>
+<a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
+<span class=logo-switches>
+<button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+</button>
+</span>
+</div>
+<ul id=menu onscroll=menu_on_scroll()>
+<li>
+<a href=https://eric.swiftzer.net/fonts/ title=Fonts>
+<span>Fonts</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/archives/ title=Archives>
+<span>Archives</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/tags/ title=Tags>
+<span>Tags</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/about/ title=About>
+<span>About</span>
+</a>
+</li></ul>
+</nav>
+</header>
+<main class=main>
+<article class=post-single>
+<header class=post-header>
+<div class=breadcrumbs>
+<a href=https://eric.swiftzer.net/>Home</a>&nbsp;»&nbsp;<a href=https://eric.swiftzer.net/posts/>Posts</a>
+</div>
+<h1 class=post-title>
+2021 iThome 鐵人賽 Day 15：Domain layer implementation
+</h1>
+<div class=post-meta>September 30, 2021
+</div>
+</header>
+<div class=post-content>
+<blockquote>
+<p>本篇文章是 <a href=https://ithelp.ithome.com.tw/2021ironman>2021 iThome 鐵人賽</a>參賽題目「<a href=https://ithelp.ithome.com.tw/users/20139666/ironman/4661>寫一個列車抵站時間 Android App</a>」的第 15 篇，你可到 iThome <a href=https://ithelp.ithome.com.tw/articles/10275114>查看原文</a>。</p>
+<p><a href=https://eric.swiftzer.net/2021-ithome-ironman/>文章目錄</a></p>
+</blockquote>
+<p>經過這麼多集的 data layer 後，我們來到 domain layer。Domain layer 的用途是用來放 business logic，並向 presentation layer（即是 <code>Activity</code>、<code>Fragment</code>、<code>ViewModel</code>、layout XML 這層）提供一個表象 (façade) 去用跟 data 互動。你或許會問為甚麼我們不在 <code>ViewModel</code> 直接 call 之前寫好的 repository 而要經 domain layer，這是為了日後功能變更提供彈性。例如一個新聞 app 會有新聞列表頁跟新聞正文頁，當按下新聞列表的項目時就會進入正文頁。在正文頁按了收藏後返回列表頁就會發現剛才那個項目出現了一個收藏 icon。如果在 data layer 跟 presentation layer 之間直接接駁的話，那個列表頁在收藏狀態變動後自動更新的 logic 就會放入 <code>ViewModel</code> 內。（可能是正文頁在按下收藏 icon 時用 event bus 通知其他 <code>ViewModel</code> 去更新 UI。）如果再多幾個地方跟那個收藏狀態有關連的話那些觸發檢查更新的 code 就會放在各個 <code>ViewModel</code> 之中，日後收藏功能再有改動就很麻煩。另外，一些複雜的東西例如之前提及過的車費計算都不是單純在網路上 call API 然後稍加修飾就輸出去 UI 上，而是真的有 business logic 在 mobile app 內進行。那些 business logic 都是會放在 domain layer 入面。可能車費計算背後有很多的 class，但我們只外露幾個 use case 或者 interactor 讓 presentation layer call，這樣就把背後複雜的東西隱藏起來。</p>
+<p>其實叫 interactor 或者 use case 我覺得沒有太大分別，反正它們都是把背後的東西（例如與 backend API、本地 database 互動、business logic）隱藏起來，並且將「收藏」功能這樣改一處地方就能通知另一處要更新的 logic 移離 presentation layer（另一個例子是收到 push notification 後要更新資料）。通常一個 use case 只會做一個動作，如果是要做齊<a href=https://zh.wikipedia.org/wiki/%E5%A2%9E%E5%88%AA%E6%9F%A5%E6%94%B9>增刪查改</a> (create, read, update, delete) 的話那就會有四個 use case。有些人會偏好做一個通用的 use case interface（就像我們做 mapper 要有個 mapper interface 般要所有 mapper 都 implement 同一個 interface），但缺點是如果要傳遞參數的話就會變得很麻煩，每個 use case 都要做一個 data class 去載住參數（或者是用 <code>Map</code> 裝着）。所以我們這次是每一個 use case 都做一個專門的 interface。</p>
+<h2 id=車站列表>車站列表<a hidden class=anchor aria-hidden=true href=#車站列表>#</a></h2>
+<p>示範 app 會有兩個 use case，第一個是提供車站列表供用戶選取查閱班次的車站。首先準備它的 interface class <code>GetLinesAndStationsUseCase</code>：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>interface</span> <span class=nc>GetLinesAndStationsUseCase</span> <span class=p>{</span>
+    <span class=k>operator</span> <span class=k>fun</span> <span class=nf>invoke</span><span class=p>():</span> <span class=n>Map</span><span class=p>&lt;</span><span class=n>Line</span><span class=p>,</span> <span class=n>Set</span><span class=p>&lt;</span><span class=n>Station</span><span class=p>&gt;&gt;</span>
+<span class=p>}</span>
+</code></pre></div><p>用了 <code>operator fun invoke()</code> 是因為之後 ViewModel 可以把 variable 當 method call，這樣看起上來更簡潔。這個 syntax 在 Kotlin 叫 <a href=https://kotlinlang.org/docs/operator-overloading.html>operator overloading</a>。以下就是例子：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>val</span> <span class=py>getLinesAndStations</span><span class=p>:</span> <span class=n>GetLinesAndStationsUseCase</span>
+
+<span class=k>val</span> <span class=py>result</span><span class=p>:</span> <span class=n>Map</span><span class=p>&lt;</span><span class=n>Line</span><span class=p>,</span> <span class=n>Set</span><span class=p>&lt;</span><span class=n>Station</span><span class=p>&gt;&gt;</span> <span class=p>=</span> <span class=n>getLinesAndStations</span><span class=p>()</span>
+</code></pre></div><p>然後是它的實作：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>class</span> <span class=nc>GetLinesAndStationsUseCaseImpl</span> <span class=nd>@Inject</span> <span class=k>constructor</span><span class=p>(</span>
+    <span class=k>private</span> <span class=k>val</span> <span class=py>repository</span><span class=p>:</span> <span class=n>EtaRepository</span><span class=p>,</span>
+<span class=p>)</span> <span class=p>:</span> <span class=n>GetLinesAndStationsUseCase</span> <span class=p>{</span>
+    <span class=k>override</span> <span class=k>fun</span> <span class=nf>invoke</span><span class=p>():</span> <span class=n>Map</span><span class=p>&lt;</span><span class=n>Line</span><span class=p>,</span> <span class=n>Set</span><span class=p>&lt;</span><span class=n>Station</span><span class=p>&gt;&gt;</span> <span class=p>=</span> <span class=n>repository</span><span class=p>.</span><span class=n>getLinesAndStations</span><span class=p>()</span>
+<span class=p>}</span>
+</code></pre></div><p>因為這個 use case 沒有特別的 logic 要處理，其實就是把 <code>EtaRepository</code> 拿到的東西左手交右手給 ViewModel 用。</p>
+<h2 id=抵站時間>抵站時間<a hidden class=anchor aria-hidden=true href=#抵站時間>#</a></h2>
+<p>另一個 use case 是取得車站的抵站時間，背後就是 call 港鐵的 API。首先我們都是要準備 <code>GetEtaUseCase</code> interface：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>interface</span> <span class=nc>GetEtaUseCase</span> <span class=p>{</span>
+    <span class=k>suspend</span> <span class=k>operator</span> <span class=k>fun</span> <span class=nf>invoke</span><span class=p>(</span>
+        <span class=n>language</span><span class=p>:</span> <span class=n>Language</span><span class=p>,</span>
+        <span class=n>line</span><span class=p>:</span> <span class=n>Line</span><span class=p>,</span>
+        <span class=n>station</span><span class=p>:</span> <span class=n>Station</span><span class=p>,</span>
+        <span class=n>sortBy</span><span class=p>:</span> <span class=n>SortBy</span><span class=p>,</span>
+    <span class=p>):</span> <span class=n>EtaResult</span>
+
+    <span class=k>enum</span> <span class=k>class</span> <span class=nc>SortBy</span> <span class=p>{</span> <span class=n>DIRECTION</span><span class=p>,</span> <span class=n>TIME</span> <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>這次 <code>operator fun</code> 我們加了 <code>suspend</code> keyword 和多了參數。Kotlin operator overloading 是容許這樣做的。</p>
+<p>由於我們的示範 app 沒有做到強行更改 app locale，app 的界面語言是依據系統語言來顯示，所以 call API 時語言參數就由 presentation layer 提供。如果你的 app 有強行更改 app locale 的話，語言部分其實可以在 use case 實作內向查閱 shared preferences 或 data store 之類的儲存位置而無需由 presentation layer 提供。下面是它的實作：</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>class</span> <span class=nc>GetEtaUseCaseImpl</span> <span class=nd>@Inject</span> <span class=k>constructor</span><span class=p>(</span>
+    <span class=k>private</span> <span class=k>val</span> <span class=py>repository</span><span class=p>:</span> <span class=n>EtaRepository</span><span class=p>,</span>
+<span class=p>)</span> <span class=p>:</span> <span class=n>GetEtaUseCase</span> <span class=p>{</span>
+    <span class=k>override</span> <span class=k>suspend</span> <span class=k>fun</span> <span class=nf>invoke</span><span class=p>(</span>
+        <span class=n>language</span><span class=p>:</span> <span class=n>Language</span><span class=p>,</span>
+        <span class=n>line</span><span class=p>:</span> <span class=n>Line</span><span class=p>,</span>
+        <span class=n>station</span><span class=p>:</span> <span class=n>Station</span><span class=p>,</span>
+        <span class=n>sortBy</span><span class=p>:</span> <span class=n>GetEtaUseCase</span><span class=p>.</span><span class=n>SortBy</span><span class=p>,</span>
+    <span class=p>):</span> <span class=n>EtaResult</span> <span class=p>=</span> <span class=k>when</span> <span class=p>(</span><span class=k>val</span> <span class=py>result</span> <span class=p>=</span> <span class=n>repository</span><span class=p>.</span><span class=n>getEta</span><span class=p>(</span><span class=n>language</span><span class=p>,</span> <span class=n>line</span><span class=p>,</span> <span class=n>station</span><span class=p>))</span> <span class=p>{</span>
+        <span class=k>is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span> <span class=o>-&gt;</span> <span class=p>{</span>
+            <span class=k>val</span> <span class=py>comparator</span><span class=p>:</span> <span class=n>Comparator</span><span class=p>&lt;</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>.</span><span class=n>Eta</span><span class=p>&gt;</span> <span class=p>=</span> <span class=k>when</span> <span class=p>(</span><span class=n>sortBy</span><span class=p>)</span> <span class=p>{</span>
+                <span class=n>GetEtaUseCase</span><span class=p>.</span><span class=n>SortBy</span><span class=p>.</span><span class=n>DIRECTION</span> <span class=o>-&gt;</span> <span class=n>compareBy</span><span class=p>({</span> <span class=k>it</span><span class=p>.</span><span class=n>direction</span> <span class=p>},</span> <span class=p>{</span> <span class=k>it</span><span class=p>.</span><span class=n>sequence</span> <span class=p>})</span>
+                <span class=n>GetEtaUseCase</span><span class=p>.</span><span class=n>SortBy</span><span class=p>.</span><span class=n>TIME</span> <span class=o>-&gt;</span> <span class=n>compareBy</span><span class=p>({</span> <span class=k>it</span><span class=p>.</span><span class=n>time</span> <span class=p>},</span> <span class=p>{</span> <span class=k>it</span><span class=p>.</span><span class=n>sequence</span> <span class=p>})</span>
+            <span class=p>}</span>
+            <span class=n>result</span><span class=p>.</span><span class=n>copy</span><span class=p>(</span><span class=n>schedule</span> <span class=p>=</span> <span class=n>result</span><span class=p>.</span><span class=n>schedule</span><span class=p>.</span><span class=n>sortedWith</span><span class=p>(</span><span class=n>comparator</span><span class=p>))</span>
+        <span class=p>}</span>
+        <span class=k>else</span> <span class=o>-&gt;</span> <span class=n>result</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>這次為了增加一些「business logic」，我們就加了一個排序功能。用戶可以把班次按行車方向（上行和下行）或者按時間排列。排序是用 <code>Comparator</code> 來做，用法就是在 <code>compareBy</code> 提供一個或多個 selector lambda。以 <code>SortBy.DIRECTION</code> 為例，<code>compareBy({ it.direction }, { it.sequence )}</code> 的意思是先按 <code>EtaResult.Success.Eta.direction</code> 排，然後再按 <code>EtaResult.Success.Eta.sequence</code> 排。排完之後我們直接把原先的 <code>EtaResult.Success</code> 內的 <code>schedule</code> 換成重新排序過的 list。</p>
+<p>如果項目數量多的話，我們應該叫 backend 負責排；如果是由本地的 database 提供的話就應該由 database 負責排序。這次是因為港鐵 API 沒有提供這個功能而且項目數量少才會這樣寫。</p>
+<h2 id=dagger>Dagger<a hidden class=anchor aria-hidden=true href=#dagger>#</a></h2>
+<p>最後，不要忘記加入 Dagger binding。我們這次開一個全新的 Dagger module，同樣地都是 <code>@InstallIn(SingletonComponent::class)</code>。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=nd>@Module</span>
+<span class=nd>@InstallIn</span><span class=p>(</span><span class=n>SingletonComponent</span><span class=o>::</span><span class=k>class</span><span class=p>)</span>
+<span class=k>interface</span> <span class=nc>DomainModule</span> <span class=p>{</span>
+
+    <span class=nd>@Binds</span>
+    <span class=k>fun</span> <span class=nf>bindGetEtaUseCase</span><span class=p>(</span><span class=n>impl</span><span class=p>:</span> <span class=n>GetEtaUseCaseImpl</span><span class=p>):</span> <span class=n>GetEtaUseCase</span>
+
+    <span class=nd>@Binds</span>
+    <span class=k>fun</span> <span class=nf>bindGetLinesAndStationsUseCase</span><span class=p>(</span><span class=n>impl</span><span class=p>:</span> <span class=n>GetLinesAndStationsUseCaseImpl</span><span class=p>):</span> <span class=n>GetLinesAndStationsUseCase</span>
+<span class=p>}</span>
+</code></pre></div><hr>
+<p>完整的 code 可以到 <a href=https://github.com/ericksli/eta-demo/tree/main/app/src/main/java/net/swiftzer/etademo/domain>GitHub repo</a> 查閱，下一篇我們會幫這兩個 use case implementation 寫 unit test。</p>
+</div>
+<footer class=post-footer>
+<ul class=post-tags>
+<li><a href=https://eric.swiftzer.net/tags/2021-ithome-%E9%90%B5%E4%BA%BA%E8%B3%BD/>2021 iThome 鐵人賽</a></li>
+<li><a href=https://eric.swiftzer.net/tags/android/>Android</a></li>
+</ul>
+<nav class=paginav>
+<a class=prev href=https://eric.swiftzer.net/2021/10/2021-ithome-ironman-16-domain-layer-testing/>
+<span class=title>« Prev Page</span>
+<br>
+<span>2021 iThome 鐵人賽 Day 16：Domain layer testing</span>
+</a>
+<a class=next href=https://eric.swiftzer.net/2021/09/2021-ithome-ironman-14-flipper/>
+<span class=title>Next Page »</span>
+<br>
+<span>2021 iThome 鐵人賽 Day 14：Flipper</span>
+</a>
+</nav>
+</footer><div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//efilm.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</article>
+</main><footer class=footer>
+<span>&copy; 2021 <a href=https://eric.swiftzer.net/>EricLog</a></span>
+<span>&#183;</span>
+<span>Powered by <a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a></span>
+<span>&#183;</span>
+<span>Theme <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span>
+</footer>
+<a href=#top aria-label="go to top" title="Go to Top (Alt + G)">
+<button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</button>
+</a>
+<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
+<script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script>
+<script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!doctype html><html lang=zh-hant-hk dir=auto>
+<head><meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=robots content="index, follow">
+<title>2021 iThome 鐵人賽 Day 3：Endpoint | EricLog</title>
+<meta name=keywords content="2021 iThome 鐵人賽,Android">
+<meta name=description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 3 篇，你可到 iThome 查看原文。 文章目錄 我們用到的 API endpoint 只有一個，就是用來取得港鐵機場快">
+<meta name=author content>
+<link rel=canonical href=https://ithelp.ithome.com.tw/articles/10266378>
+<link href=/assets/css/stylesheet.min.d1fc837a267f77f6ede89d1a89c4880a90c381d9e6673ad4a76a3ad1900b65f9.css integrity="sha256-0fyDeiZ/d/bt6J0aicSICpDDgdnmZzrUp2o60ZALZfk=" rel="preload stylesheet" as=style>
+<link rel=icon href=https://eric.swiftzer.net/favicon.ico>
+<link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png>
+<link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png>
+<link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png>
+<link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg>
+<meta name=theme-color content="#2e2e33">
+<meta name=msapplication-TileColor content="#2e2e33">
+<meta name=generator content="Hugo 0.88.1">
+<link rel=preconnect href=https://fonts.gstatic.com>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-1268728-8','auto'),ga('send','pageview'))</script>
+<script async src=https://www.google-analytics.com/analytics.js></script>
+<meta property="og:title" content="2021 iThome 鐵人賽 Day 3：Endpoint">
+<meta property="og:description" content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 3 篇，你可到 iThome 查看原文。 文章目錄 我們用到的 API endpoint 只有一個，就是用來取得港鐵機場快">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://eric.swiftzer.net/2021/09/2021-ithome-ironman-03-endpoint/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2021-09-18T00:00:00+08:00">
+<meta property="article:modified_time" content="2021-09-18T00:00:00+08:00">
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="2021 iThome 鐵人賽 Day 3：Endpoint">
+<meta name=twitter:description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 3 篇，你可到 iThome 查看原文。 文章目錄 我們用到的 API endpoint 只有一個，就是用來取得港鐵機場快">
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"2021 iThome 鐵人賽 Day 3：Endpoint","item":"https://eric.swiftzer.net/2021/09/2021-ithome-ironman-03-endpoint/"}]}</script>
+<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"2021 iThome 鐵人賽 Day 3：Endpoint","name":"2021 iThome 鐵人賽 Day 3：Endpoint","description":"本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 3 篇，你可到 iThome 查看原文。 文章目錄 我們用到的 API endpoint 只有一個，就是用來取得港鐵機場快","keywords":["2021 iThome 鐵人賽","Android"],"articleBody":" 本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 3 篇，你可到 iThome 查看原文。\n文章目錄\n 我們用到的 API endpoint 只有一個，就是用來取得港鐵機場快綫、東涌綫、屯馬綫及將軍澳綫最多四班即將到站列車的抵達時間。車站清單我們會直接寫死在 app 裏面。API 的使用方法可以在資料一線通網站（香港政府 open data 的網站）內找到。這個 API 是不需要額外申請 API key，只是一個普通的 HTTP GET request，然後 response body 是一個 JSON object。\n打開「數據字典」PDF 檔，可以找到各車站及行車綫的代碼和 response body JSON object 的說明。當中我們主要用到的 property 大致上是：\n plat 月台編號 time 時間（留意它的格式並非按照 ISO 8601） dest 目的地車站代碼 seq 次序（我們要按照這個順序顯示班次）  再看「港鐵實時列車服務資訊 API 規範文件」PDF 檔，它提供了幾個 HTTP response status code 的意義和一些 response body 例子。例如當事故發生時那個 API 會提供一段文字讓我們顯示。\nResponse data class 一般而言，我們都不會直接用 Android SDK 入面的 org.json 套件（即是 JSONObject 那些 class）來將 API response 的 JSON 轉成 Java/Kotlin object。因為要為每個 property 逐個寫 code，費時失事，所以我們都會用其他 deserialization library 去做 JSON 和 Java/Kotlin object 轉換。\n在使用那些 library 之前，我們要準備 API response JSON 對應的 Kotlin data class。那個 data class 基本上就是要跟 JSON object 的結構相同，即是 response 的那個 property 是 string 就要在 data class 開對應的 string property。另外，我們只對整個 response 入面的某幾個 property 感興趣，所以在準備 data class 只針對那幾個 property 而造，其餘的東西我們就略過。\n下面就是完成後的 data class，最尾的 companion object 放了幾個 constant 方便之後處理。\ndata class EtaResponse( /** * system status code. */ val status: Int = STATUS_ERROR_OR_ALERT, /** * Alert message. */ val message: String = \"\", /** * URL for Special Train Services Arrangement case. */ val url: String = \"\", /** * Indicate if the train is delayed. */ val isDelay: String = IS_DELAY_FALSE, val data: MapString, Data = emptyMap() ) { data class Data( /** * Indicate the destinations of the train in the specific line (up trip). */ val up: ListEta = emptyList(), /** * Indicate the destinations of the train in the specific line (down trip). */ val down: ListEta = emptyList() ) data class Eta( /** * Platform numbers for the departure / arrival train. */ val plat: String = \"1\", /** * Estimated arrival time (or departure time) of the train. */ val time: String = EMPTY_TIMESTAMP, /** * MTR Station Code in capital letters. */ val dest: String = \"\", /** * The sequence of the 4 upcoming trains. */ val seq: String = \"0\" ) companion object { const val EMPTY_TIMESTAMP = \"-\" const val STATUS_NORMAL = 1 const val STATUS_ERROR_OR_ALERT = 0 const val IS_DELAY_TRUE = \"Y\" const val IS_DELAY_FALSE = \"N\" } } 小結 我們已經準備好 response 的 data class。下一篇我們會介紹不同的 JSON deserialization library 並且將 EtaResponse 加上 deserialization library 的 annotation。\n","wordCount":"869","inLanguage":"en","datePublished":"2021-09-18T00:00:00+08:00","dateModified":"2021-09-18T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2021/09/2021-ithome-ironman-03-endpoint/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
+</head>
+<body id=top>
+<script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
+<noscript>
+<style type=text/css>#theme-toggle,.top-link{display:none}</style>
+<style>@media(prefers-color-scheme:dark){:root{--theme:#1d1e20;--entry:#2e2e33;--primary:rgba(255, 255, 255, 0.84);--secondary:rgba(255, 255, 255, 0.56);--tertiary:rgba(255, 255, 255, 0.16);--content:rgba(255, 255, 255, 0.74);--hljs-bg:#2e2e33;--code-bg:#37383e;--border:#333}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
+</noscript>
+<header class=header>
+<nav class=nav>
+<div class=logo>
+<a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
+<span class=logo-switches>
+<button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+</button>
+</span>
+</div>
+<ul id=menu onscroll=menu_on_scroll()>
+<li>
+<a href=https://eric.swiftzer.net/fonts/ title=Fonts>
+<span>Fonts</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/archives/ title=Archives>
+<span>Archives</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/tags/ title=Tags>
+<span>Tags</span>
+</a>
+</li>
+<li>
+<a href=https://eric.swiftzer.net/about/ title=About>
+<span>About</span>
+</a>
+</li></ul>
+</nav>
+</header>
+<main class=main>
+<article class=post-single>
+<header class=post-header>
+<div class=breadcrumbs>
+<a href=https://eric.swiftzer.net/>Home</a>&nbsp;»&nbsp;<a href=https://eric.swiftzer.net/posts/>Posts</a>
+</div>
+<h1 class=post-title>
+2021 iThome 鐵人賽 Day 3：Endpoint
+</h1>
+<div class=post-meta>September 18, 2021
+</div>
+</header>
+<div class=post-content>
+<blockquote>
+<p>本篇文章是 <a href=https://ithelp.ithome.com.tw/2021ironman>2021 iThome 鐵人賽</a>參賽題目「<a href=https://ithelp.ithome.com.tw/users/20139666/ironman/4661>寫一個列車抵站時間 Android App</a>」的第 3 篇，你可到 iThome <a href=https://ithelp.ithome.com.tw/articles/10266378>查看原文</a>。</p>
+<p><a href=https://eric.swiftzer.net/2021-ithome-ironman/>文章目錄</a></p>
+</blockquote>
+<p>我們用到的 API endpoint 只有一個，就是用來取得港鐵機場快綫、東涌綫、屯馬綫及將軍澳綫最多四班即將到站列車的抵達時間。車站清單我們會直接寫死在 app 裏面。API 的使用方法可以在<a href=https://data.gov.hk/tc-data/dataset/mtr-data2-nexttrain-data>資料一線通網站</a>（香港政府 open data 的網站）內找到。這個 API 是不需要額外申請 API key，只是一個普通的 HTTP GET request，然後 response body 是一個 JSON object。</p>
+<p>打開「數據字典」PDF 檔，可以找到各車站及行車綫的代碼和 response body JSON object 的說明。當中我們主要用到的 property 大致上是：</p>
+<ul>
+<li><code>plat</code> 月台編號</li>
+<li><code>time</code> 時間（留意它的格式並非按照 <a href=https://zh.wikipedia.org/zh-hk/ISO_8601>ISO 8601</a>）</li>
+<li><code>dest</code> 目的地車站代碼</li>
+<li><code>seq</code> 次序（我們要按照這個順序顯示班次）</li>
+</ul>
+<p>再看「港鐵實時列車服務資訊 API 規範文件」PDF 檔，它提供了幾個 HTTP response status code 的意義和一些 response body 例子。例如當事故發生時那個 API 會提供一段文字讓我們顯示。</p>
+<h2 id=response-data-class>Response data class<a hidden class=anchor aria-hidden=true href=#response-data-class>#</a></h2>
+<p>一般而言，我們都不會直接用 Android SDK 入面的 <a href=https://developer.android.com/reference/org/json/package-summary>org.json 套件</a>（即是 <code>JSONObject</code> 那些 class）來將 API response 的 JSON 轉成 Java/Kotlin object。因為要為每個 property 逐個寫 code，費時失事，所以我們都會用其他 deserialization library 去做 JSON 和 Java/Kotlin object 轉換。</p>
+<p>在使用那些 library 之前，我們要準備 API response JSON 對應的 Kotlin data class。那個 data class 基本上就是要跟 JSON object 的結構相同，即是 response 的那個 property 是 string 就要在 data class 開對應的 string property。另外，我們只對整個 response 入面的某幾個 property 感興趣，所以在準備 data class 只針對那幾個 property 而造，其餘的東西我們就略過。</p>
+<p>下面就是完成後的 data class，最尾的 companion object 放了幾個 constant 方便之後處理。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>data</span> <span class=k>class</span> <span class=nc>EtaResponse</span><span class=p>(</span>
+    <span class=cm>/**
+</span><span class=cm>     * system status code.
+</span><span class=cm>     */</span>
+    <span class=k>val</span> <span class=py>status</span><span class=p>:</span> <span class=n>Int</span> <span class=p>=</span> <span class=n>STATUS_ERROR_OR_ALERT</span><span class=p>,</span>
+    <span class=cm>/**
+</span><span class=cm>     * Alert message.
+</span><span class=cm>     */</span>
+    <span class=k>val</span> <span class=py>message</span><span class=p>:</span> <span class=n>String</span> <span class=p>=</span> <span class=s2>&#34;&#34;</span><span class=p>,</span>
+    <span class=cm>/**
+</span><span class=cm>     * URL for Special Train Services Arrangement case.
+</span><span class=cm>     */</span>
+    <span class=k>val</span> <span class=py>url</span><span class=p>:</span> <span class=n>String</span> <span class=p>=</span> <span class=s2>&#34;&#34;</span><span class=p>,</span>
+    <span class=cm>/**
+</span><span class=cm>     * Indicate if the train is delayed.
+</span><span class=cm>     */</span>
+    <span class=k>val</span> <span class=py>isDelay</span><span class=p>:</span> <span class=n>String</span> <span class=p>=</span> <span class=n>IS_DELAY_FALSE</span><span class=p>,</span>
+    <span class=k>val</span> <span class=py>data</span><span class=p>:</span> <span class=n>Map</span><span class=p>&lt;</span><span class=n>String</span><span class=p>,</span> <span class=n>Data</span><span class=p>&gt;</span> <span class=p>=</span> <span class=n>emptyMap</span><span class=p>()</span>
+<span class=p>)</span> <span class=p>{</span>
+    <span class=k>data</span> <span class=k>class</span> <span class=nc>Data</span><span class=p>(</span>
+        <span class=cm>/**
+</span><span class=cm>         * Indicate the destinations of the train in the specific line (up trip).
+</span><span class=cm>         */</span>
+        <span class=k>val</span> <span class=py>up</span><span class=p>:</span> <span class=n>List</span><span class=p>&lt;</span><span class=n>Eta</span><span class=p>&gt;</span> <span class=p>=</span> <span class=n>emptyList</span><span class=p>(),</span>
+        <span class=cm>/**
+</span><span class=cm>         * Indicate the destinations of the train in the specific line (down trip).
+</span><span class=cm>         */</span>
+        <span class=k>val</span> <span class=py>down</span><span class=p>:</span> <span class=n>List</span><span class=p>&lt;</span><span class=n>Eta</span><span class=p>&gt;</span> <span class=p>=</span> <span class=n>emptyList</span><span class=p>()</span>
+    <span class=p>)</span>
+
+    <span class=k>data</span> <span class=k>class</span> <span class=nc>Eta</span><span class=p>(</span>
+        <span class=cm>/**
+</span><span class=cm>         * Platform numbers for the departure / arrival train.
+</span><span class=cm>         */</span>
+        <span class=k>val</span> <span class=py>plat</span><span class=p>:</span> <span class=n>String</span> <span class=p>=</span> <span class=s2>&#34;1&#34;</span><span class=p>,</span>
+        <span class=cm>/**
+</span><span class=cm>         * Estimated arrival time (or departure time) of the train.
+</span><span class=cm>         */</span>
+        <span class=k>val</span> <span class=py>time</span><span class=p>:</span> <span class=n>String</span> <span class=p>=</span> <span class=n>EMPTY_TIMESTAMP</span><span class=p>,</span>
+        <span class=cm>/**
+</span><span class=cm>         * MTR Station Code in capital letters.
+</span><span class=cm>         */</span>
+        <span class=k>val</span> <span class=py>dest</span><span class=p>:</span> <span class=n>String</span> <span class=p>=</span> <span class=s2>&#34;&#34;</span><span class=p>,</span>
+        <span class=cm>/**
+</span><span class=cm>         * The sequence of the 4 upcoming trains.
+</span><span class=cm>         */</span>
+        <span class=k>val</span> <span class=py>seq</span><span class=p>:</span> <span class=n>String</span> <span class=p>=</span> <span class=s2>&#34;0&#34;</span>
+    <span class=p>)</span>
+
+    <span class=k>companion</span> <span class=k>object</span> <span class=p>{</span>
+        <span class=k>const</span> <span class=k>val</span> <span class=py>EMPTY_TIMESTAMP</span> <span class=p>=</span> <span class=s2>&#34;-&#34;</span>
+
+        <span class=k>const</span> <span class=k>val</span> <span class=py>STATUS_NORMAL</span> <span class=p>=</span> <span class=m>1</span>
+        <span class=k>const</span> <span class=k>val</span> <span class=py>STATUS_ERROR_OR_ALERT</span> <span class=p>=</span> <span class=m>0</span>
+        <span class=k>const</span> <span class=k>val</span> <span class=py>IS_DELAY_TRUE</span> <span class=p>=</span> <span class=s2>&#34;Y&#34;</span>
+        <span class=k>const</span> <span class=k>val</span> <span class=py>IS_DELAY_FALSE</span> <span class=p>=</span> <span class=s2>&#34;N&#34;</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><h2 id=小結>小結<a hidden class=anchor aria-hidden=true href=#小結>#</a></h2>
+<p>我們已經準備好 response 的 data class。下一篇我們會介紹不同的 JSON deserialization library 並且將 <code>EtaResponse</code> 加上 deserialization library 的 annotation。</p>
+</div>
+<footer class=post-footer>
+<ul class=post-tags>
+<li><a href=https://eric.swiftzer.net/tags/2021-ithome-%E9%90%B5%E4%BA%BA%E8%B3%BD/>2021 iThome 鐵人賽</a></li>
+<li><a href=https://eric.swiftzer.net/tags/android/>Android</a></li>
+</ul>
+<nav class=paginav>
+<a class=prev href=https://eric.swiftzer.net/2021/09/2021-ithome-ironman-04-deserialization/>
+<span class=title>« Prev Page</span>
+<br>
+<span>2021 iThome 鐵人賽 Day 4：Deserialization</span>
+</a>
+<a class=next href=https://eric.swiftzer.net/2021/09/2021-ithome-ironman-02-architecture/>
+<span class=title>Next Page »</span>
+<br>
+<span>2021 iThome 鐵人賽 Day 2：Architecture</span>
+</a>
+</nav>
+</footer><div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//efilm.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</article>
+</main><footer class=footer>
+<span>&copy; 2021 <a href=https://eric.swiftzer.net/>EricLog</a></span>
+<span>&#183;</span>
+<span>Powered by <a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a></span>
+<span>&#183;</span>
+<span>Theme <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span>
+</footer>
+<a href=#top aria-label="go to top" title="Go to Top (Alt + G)">
+<button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
+</button>
+</a>
+<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
+<script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script>
+<script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
+</body>
+</html>
