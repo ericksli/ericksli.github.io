@@ -10,7 +10,7 @@ permalinks:
 pygmentsUseClasses: true
 hasCJKLanguage: true
 rssLimit: 10
-googleAnalytics: UA-1268728-8
+googleAnalytics: G-D93F946T73
 disqusShortname: efilm
 markup:
   goldmark:
