@@ -1,372 +1,231 @@
-<!doctype html><html lang=zh-hant-hk dir=auto>
-<head><meta charset=utf-8>
-<meta http-equiv=x-ua-compatible content="IE=edge">
-<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta name=robots content="index, follow">
-<title>2021 iThome 鐵人賽 Day 25：ETA screen (4) | EricLog</title>
-<meta name=keywords content="2021 iThome 鐵人賽,Android">
-<meta name=description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 25 篇，你可到 iThome 查看原文。 文章目錄 現在來到整個 app 最後一個功能：錯誤 banner。">
-<meta name=author content>
-<link rel=canonical href=https://ithelp.ithome.com.tw/articles/10279995>
-<link href=/assets/css/stylesheet.min.d1fc837a267f77f6ede89d1a89c4880a90c381d9e6673ad4a76a3ad1900b65f9.css integrity="sha256-0fyDeiZ/d/bt6J0aicSICpDDgdnmZzrUp2o60ZALZfk=" rel="preload stylesheet" as=style>
-<link rel=icon href=https://eric.swiftzer.net/favicon.ico>
-<link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png>
-<link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png>
-<link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png>
-<link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg>
-<meta name=theme-color content="#2e2e33">
-<meta name=msapplication-TileColor content="#2e2e33">
-<meta name=generator content="Hugo 0.88.1">
-<link rel=preconnect href=https://fonts.gstatic.com>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-1268728-8','auto'),ga('send','pageview'))</script>
-<script async src=https://www.google-analytics.com/analytics.js></script>
-<meta property="og:title" content="2021 iThome 鐵人賽 Day 25：ETA screen (4)">
-<meta property="og:description" content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 25 篇，你可到 iThome 查看原文。 文章目錄 現在來到整個 app 最後一個功能：錯誤 banner。">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://eric.swiftzer.net/2021/10/2021-ithome-ironman-25-eta-screen-4/"><meta property="article:section" content="posts">
-<meta property="article:published_time" content="2021-10-10T00:00:00+08:00">
-<meta property="article:modified_time" content="2021-10-10T00:00:00+08:00">
-<meta name=twitter:card content="summary">
-<meta name=twitter:title content="2021 iThome 鐵人賽 Day 25：ETA screen (4)">
-<meta name=twitter:description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 25 篇，你可到 iThome 查看原文。 文章目錄 現在來到整個 app 最後一個功能：錯誤 banner。">
-<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"2021 iThome 鐵人賽 Day 25：ETA screen (4)","item":"https://eric.swiftzer.net/2021/10/2021-ithome-ironman-25-eta-screen-4/"}]}</script>
-<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"2021 iThome 鐵人賽 Day 25：ETA screen (4)","name":"2021 iThome 鐵人賽 Day 25：ETA screen (4)","description":"本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 25 篇，你可到 iThome 查看原文。 文章目錄 現在來到整個 app 最後一個功能：錯誤 banner。","keywords":["2021 iThome 鐵人賽","Android"],"articleBody":" 本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 25 篇，你可到 iThome 查看原文。\n文章目錄\n 現在來到整個 app 最後一個功能：錯誤 banner。這個 banner 出現的目的是因為鐵路隧道沿綫的電話上網訊號都接收得不太好（因為太多人同時在用），很容易出現錯誤。如果自動更新時有不能上網的錯誤會彈出全頁錯誤畫面的話效果就不太好。所以就設計了 banner 形式的顯示錯誤方式。\nLayout XML 現在先看看 EtaFragment layout XML 的改動：\n  xmlns:android=\"http://schemas.android.com/apk/res/android\" xmlns:app=\"http://schemas.android.com/apk/res-auto\" xmlns:tools=\"http://schemas.android.com/tools\"   android:layout_width=\"match_parent\" android:layout_height=\"match_parent\"  android:layout_width=\"match_parent\" android:layout_height=\"wrap_content\"    isVisible=\"@{viewModel.showEtaList}\" android:layout_width=\"match_parent\" android:layout_height=\"match_parent\" android:divider=\"?android:listDivider\" android:orientation=\"vertical\" android:showDividers=\"middle\" app:layout_behavior=\"@string/appbar_scrolling_view_behavior\"   isVisible=\"@{viewModel.showErrorBanner}\" android:layout_width=\"match_parent\" android:layout_height=\"wrap_content\" android:gravity=\"center_vertical\" android:orientation=\"horizontal\" android:paddingStart=\"16dp\" android:paddingTop=\"8dp\" android:paddingEnd=\"16dp\" android:paddingBottom=\"8dp\" tools:visibility=\"visible\"  android:layout_width=\"0dp\" android:layout_height=\"wrap_content\" android:layout_marginEnd=\"16dp\" android:layout_weight=\"1\" android:text=\"@{etaPresenter.mapErrorMessage(viewModel.errorResult)}\" android:textAlignment=\"viewStart\" android:textAppearance=\"?textAppearanceBody1\" android:textColor=\"@color/design_default_color_error\" tools:text=\"@string/error\" /  style=\"@style/Widget.MaterialComponents.Button.TextButton\" android:layout_width=\"wrap_content\" android:layout_height=\"wrap_content\" android:onClick=\"@{() - viewModel.refresh()}\" android:text=\"@string/try_again\" /    android:id=\"@+id/recyclerView\" android:layout_width=\"match_parent\" android:layout_height=\"0dp\" android:layout_weight=\"1\" tools:listitem=\"@layout/eta_list_eta_item\" /    isVisible=\"@{viewModel.showFullScreenError}\" android:layout_width=\"match_parent\" android:layout_height=\"match_parent\" android:fillViewport=\"true\" app:layout_behavior=\"@string/appbar_scrolling_view_behavior\"      主要是多了一個 LinearLayout 來放 banner 及原有的 RecyclerView。另外就是把 viewModel.showError 改名為更明顯的 viewModel.showFullScreenError。\nEtaViewModel 由於 banner 顯示的同時亦都要顯示上一次成功載入的班次，所以原先 etaResult 所提供的 TimedValue 並不能同時提供現在的錯誤和上一次成功載入的結果。我們的目標是要把這兩樣資訊都由 etaResult 一併提供，因為這樣做的話比起分兩個 StateFlow 存放這兩樣東西更易控制。\n由於要用一個 StateFlow 表達兩樣東西，我們需要造一個專門的 data class CachedResult 表達它。雖然 Kotlin Standard Library 有 Pair 可以用，但過幾個月再看這段 code 的話應該都忘了是甚麼意思。\nprivate data class CachedResult( val lastSuccessResult: EtaResult.Success? = null, val lastFailResult: EtaFailResult? = null, val currentResult: TimedValueLoadableEtaResult = TimedValue( value = Loadable.Loading, updatedAt = Instant.EPOCH ), ) 而 etaResult 的 type 亦都改為 StateFlow。\nprivate val etaResult: StateFlowCachedResult = triggerRefresh .consumeAsFlow() .flatMapLatest { flowOf( flowOf(TimedValue(value = Loadable.Loading, updatedAt = clock.instant())), combine( language, line, station, sortedBy, ) { language, line, station, sortedBy - TimedValue( value = Loadable.Loaded(getEta(language, line, station, sortedBy)), updatedAt = clock.instant(), ) }.onEach { // schedule the next refresh after loading  autoRefreshScope.launch { delay(AUTO_REFRESH_INTERVAL) triggerRefresh.send(Unit) } }, ).flattenConcat() } .scan(CachedResult()) { acc, currentValue - if (currentValue.value is Loadable.Loaded) { val currentResult = currentValue.value.value CachedResult( lastSuccessResult = if (currentResult is EtaResult.Success) currentResult else acc.lastSuccessResult, lastFailResult = if (currentResult is EtaFailResult) currentResult else null, currentResult = currentValue, ) } else { acc.copy(currentResult = currentValue) } } .stateIn( scope = viewModelScope, started = SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MILLIS), initialValue = CachedResult(), ) 前段的載入中和 call API 的部分是和上一篇沒分別，分別在於之後多了 scan 和 stateIn 的 initialValue 轉做 CachedResult()。\nscan 就是本篇的關鍵所在。如果翻查 KDoc 的話，會看到以下示例：\n flowOf(1, 2, 3).scan(emptyList()) { acc, value - acc + value }.toList() will produce [], [1], [1, 2], [1, 2, 3]]\n 這個 operator 有另一個別名叫 runningFold，看到 fold 就知道它是 reduce 的意思。reduce 就是把一連串的元素壓成一個元素，Kotlin collection 的 fold 跟 reduce 差別就是 fold 可以提供 lambda 內 accumulator 的初始值，而 reduce lambda 在第一次 call 的時候 accumulator 和 value 參數會提供 collection 的第一二項元素。回到 scan 的部分，從上面的例子看到它的初始值是 empty list，每次都把 acc（上一次的結果）駁長，最終生成了一個包含所有元素的 list。我們可以借助這個 operator 把先前成功載入的結果和目前最新的結果整合成一個值交到下游。所以 scan 那個 lambda 如果現在是載入中的話那就用 data class 的 copy 保留 CachedResult 的 lastSuccessResult 和 lastFailResult。但當載入完成後就把 CachedResult 的所有內容換走。\n由於我們這次改了 etaResult 的 type，所以又會像上一篇一樣把所有用到 etaResult 的地方修改一遍。但直接用 etaResult 會比較麻煩，故此引入了另一個中途 StateFlow 和 enum 來表達現在要顯示的畫面：\nprivate enum class ScreenState { LOADING, ETA, FULL_SCREEN_ERROR, ETA_WITH_ERROR_BANNER, } private val screenState = etaResult.map { when (it.currentResult.value) { is Loadable.Loaded - { when (it.currentResult.value.value) { EtaResult.Delay, is EtaResult.Incident - ScreenState.FULL_SCREEN_ERROR is EtaResult.Error, EtaResult.InternalServerError, EtaResult.TooManyRequests - if (it.lastSuccessResult != null) { ScreenState.ETA_WITH_ERROR_BANNER } else { ScreenState.FULL_SCREEN_ERROR } is EtaResult.Success - ScreenState.ETA } } Loadable.Loading - when (it.lastFailResult) { EtaResult.Delay, is EtaResult.Incident - ScreenState.FULL_SCREEN_ERROR is EtaResult.Error, EtaResult.InternalServerError, EtaResult.TooManyRequests - if (it.lastSuccessResult != null) { ScreenState.ETA_WITH_ERROR_BANNER } else { ScreenState.FULL_SCREEN_ERROR } null - if (it.lastSuccessResult != null) { ScreenState.ETA } else { ScreenState.LOADING } } } } 有了這個 screenState 判斷何時要顯示那種畫面我們就容易修改其餘的地方。\nprivate val loadedEtaResult = etaResult .map { it.currentResult.value } .filterIsInstanceLoadable.LoadedEtaResult() .map { it.value } val showLoading: StateFlowBoolean = screenState.map { it == ScreenState.LOADING } .stateIn( scope = viewModelScope, started = SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MILLIS), initialValue = true, ) val showFullScreenError = screenState.map { it == ScreenState.FULL_SCREEN_ERROR } .stateIn( scope = viewModelScope, started = SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MILLIS), initialValue = false, ) val showErrorBanner = screenState.map { it == ScreenState.ETA_WITH_ERROR_BANNER } .stateIn( scope = viewModelScope, started = SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MILLIS), initialValue = false, ) val showEtaList = screenState .map { it == ScreenState.ETA || it == ScreenState.ETA_WITH_ERROR_BANNER } .stateIn( scope = viewModelScope, started = SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MILLIS), initialValue = false, ) val etaList = etaResult .map { it.lastSuccessResult?.schedule.orEmpty() } .combine(sortedBy) { schedule, sortedBy - // 略  } .stateIn( scope = viewModelScope, started = SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MILLIS), initialValue = emptyList(), ) fun startAutoRefresh() { autoRefreshScope.launch { // 略  } } fun viewIncidentDetail() { val result = etaResult.value.currentResult.value if (result !is Loadable.Loaded) return if (result.value !is EtaResult.Incident) return // 略 } 小結 這樣我們就完成了顯示錯誤 banner 功能了。本篇主要是示範了用 scan operator 把當前和以前的值整合成一個 Flow 內，另外亦用 enum 表達目前整頁的狀態。其實我們不知不覺間已經將整頁的狀態由一個 StateFlow 表達出來（就是 etaResult），只不過我們另外衍生一堆零碎 StateFlow 供 data binding 用。其實我們可以將 etaResult 和 screenState 兩個 Flow 二合為一，屆時 ScreenState 不會是 enum 而是 sealed interface，原先的 LOADING、ETA、FULL_SCREEN_ERROR、ETA_WITH_ERROR_BANNER 就會變成一個個 object expression 和 data class。這樣就做到了 MVI (Model-View-Intent) 的 state reducer 風味的東西，而且又有類似 unidirectional data flow 的機制。現在那些 showLoading、showFullScreenError、showEtaList 之類的 StateFlow 都是為了避免在 layout XML 寫太複雜的邏輯（因為不方便做 unit testing 和它本身是 XML 所以某些字符要 escape）而造出來的。日後改用 Jetpack Compose 寫 UI 的話相信可以減省到只外露 ScreenState sealed interface 的 Flow 就足夠了。\n完整的 code 可以到 GitHub repo 查閱，下一篇我們會寫 ViewModel 的 unit test case。\n","wordCount":"1856","inLanguage":"en","datePublished":"2021-10-10T00:00:00+08:00","dateModified":"2021-10-10T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2021/10/2021-ithome-ironman-25-eta-screen-4/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
-</head>
-<body id=top>
-<script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
-<noscript>
-<style type=text/css>#theme-toggle,.top-link{display:none}</style>
-<style>@media(prefers-color-scheme:dark){:root{--theme:#1d1e20;--entry:#2e2e33;--primary:rgba(255, 255, 255, 0.84);--secondary:rgba(255, 255, 255, 0.56);--tertiary:rgba(255, 255, 255, 0.16);--content:rgba(255, 255, 255, 0.74);--hljs-bg:#2e2e33;--code-bg:#37383e;--border:#333}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
-</noscript>
-<header class=header>
-<nav class=nav>
-<div class=logo>
-<a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
-<span class=logo-switches>
-<button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-</button>
-</span>
-</div>
-<ul id=menu onscroll=menu_on_scroll()>
-<li>
-<a href=https://eric.swiftzer.net/fonts/ title=Fonts>
-<span>Fonts</span>
-</a>
-</li>
-<li>
-<a href=https://eric.swiftzer.net/archives/ title=Archives>
-<span>Archives</span>
-</a>
-</li>
-<li>
-<a href=https://eric.swiftzer.net/tags/ title=Tags>
-<span>Tags</span>
-</a>
-</li>
-<li>
-<a href=https://eric.swiftzer.net/about/ title=About>
-<span>About</span>
-</a>
-</li></ul>
-</nav>
-</header>
-<main class=main>
-<article class=post-single>
-<header class=post-header>
-<div class=breadcrumbs>
-<a href=https://eric.swiftzer.net/>Home</a>&nbsp;»&nbsp;<a href=https://eric.swiftzer.net/posts/>Posts</a>
-</div>
-<h1 class=post-title>
-2021 iThome 鐵人賽 Day 25：ETA screen (4)
-</h1>
-<div class=post-meta>October 10, 2021
-</div>
-</header>
-<div class=post-content>
-<blockquote>
-<p>本篇文章是 <a href=https://ithelp.ithome.com.tw/2021ironman>2021 iThome 鐵人賽</a>參賽題目「<a href=https://ithelp.ithome.com.tw/users/20139666/ironman/4661>寫一個列車抵站時間 Android App</a>」的第 25 篇，你可到 iThome <a href=https://ithelp.ithome.com.tw/articles/10279995>查看原文</a>。</p>
-<p><a href=https://eric.swiftzer.net/2021-ithome-ironman/>文章目錄</a></p>
-</blockquote>
-<p>現在來到整個 app 最後一個功能：錯誤 banner。這個 banner 出現的目的是因為鐵路隧道沿綫的電話上網訊號都接收得不太好（因為太多人同時在用），很容易出現錯誤。如果自動更新時有不能上網的錯誤會彈出全頁錯誤畫面的話效果就不太好。所以就設計了 banner 形式的顯示錯誤方式。</p>
-<h2 id=layout-xml>Layout XML<a hidden class=anchor aria-hidden=true href=#layout-xml>#</a></h2>
-<p>現在先看看 <code>EtaFragment</code> layout XML 的改動：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=cp>&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
-<span class=nt>&lt;layout</span> <span class=na>xmlns:android=</span><span class=s>&#34;http://schemas.android.com/apk/res/android&#34;</span>
-    <span class=na>xmlns:app=</span><span class=s>&#34;http://schemas.android.com/apk/res-auto&#34;</span>
-    <span class=na>xmlns:tools=</span><span class=s>&#34;http://schemas.android.com/tools&#34;</span><span class=nt>&gt;</span>
-
-    <span class=c>&lt;!-- 略 --&gt;</span>
-
-    <span class=nt>&lt;androidx.coordinatorlayout.widget.CoordinatorLayout</span>
-        <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
-        <span class=na>android:layout_height=</span><span class=s>&#34;match_parent&#34;</span><span class=nt>&gt;</span>
-
-        <span class=nt>&lt;com.google.android.material.appbar.AppBarLayout</span>
-            <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
-            <span class=na>android:layout_height=</span><span class=s>&#34;wrap_content&#34;</span><span class=nt>&gt;</span>
-
-            <span class=c>&lt;!-- 略 --&gt;</span>
-        <span class=nt>&lt;/com.google.android.material.appbar.AppBarLayout&gt;</span>
-
-        <span class=nt>&lt;LinearLayout</span>
-            <span class=na>isVisible=</span><span class=s>&#34;@{viewModel.showEtaList}&#34;</span>
-            <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
-            <span class=na>android:layout_height=</span><span class=s>&#34;match_parent&#34;</span>
-            <span class=na>android:divider=</span><span class=s>&#34;?android:listDivider&#34;</span>
-            <span class=na>android:orientation=</span><span class=s>&#34;vertical&#34;</span>
-            <span class=na>android:showDividers=</span><span class=s>&#34;middle&#34;</span>
-            <span class=na>app:layout_behavior=</span><span class=s>&#34;@string/appbar_scrolling_view_behavior&#34;</span><span class=nt>&gt;</span>
-
-            <span class=c>&lt;!-- banner 部分 --&gt;</span>
-            <span class=nt>&lt;LinearLayout</span>
-                <span class=na>isVisible=</span><span class=s>&#34;@{viewModel.showErrorBanner}&#34;</span>
-                <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
-                <span class=na>android:layout_height=</span><span class=s>&#34;wrap_content&#34;</span>
-                <span class=na>android:gravity=</span><span class=s>&#34;center_vertical&#34;</span>
-                <span class=na>android:orientation=</span><span class=s>&#34;horizontal&#34;</span>
-                <span class=na>android:paddingStart=</span><span class=s>&#34;16dp&#34;</span>
-                <span class=na>android:paddingTop=</span><span class=s>&#34;8dp&#34;</span>
-                <span class=na>android:paddingEnd=</span><span class=s>&#34;16dp&#34;</span>
-                <span class=na>android:paddingBottom=</span><span class=s>&#34;8dp&#34;</span>
-                <span class=na>tools:visibility=</span><span class=s>&#34;visible&#34;</span><span class=nt>&gt;</span>
-
-                <span class=nt>&lt;com.google.android.material.textview.MaterialTextView</span>
-                    <span class=na>android:layout_width=</span><span class=s>&#34;0dp&#34;</span>
-                    <span class=na>android:layout_height=</span><span class=s>&#34;wrap_content&#34;</span>
-                    <span class=na>android:layout_marginEnd=</span><span class=s>&#34;16dp&#34;</span>
-                    <span class=na>android:layout_weight=</span><span class=s>&#34;1&#34;</span>
-                    <span class=na>android:text=</span><span class=s>&#34;@{etaPresenter.mapErrorMessage(viewModel.errorResult)}&#34;</span>
-                    <span class=na>android:textAlignment=</span><span class=s>&#34;viewStart&#34;</span>
-                    <span class=na>android:textAppearance=</span><span class=s>&#34;?textAppearanceBody1&#34;</span>
-                    <span class=na>android:textColor=</span><span class=s>&#34;@color/design_default_color_error&#34;</span>
-                    <span class=na>tools:text=</span><span class=s>&#34;@string/error&#34;</span> <span class=nt>/&gt;</span>
-
-                <span class=nt>&lt;com.google.android.material.button.MaterialButton</span>
-                    <span class=na>style=</span><span class=s>&#34;@style/Widget.MaterialComponents.Button.TextButton&#34;</span>
-                    <span class=na>android:layout_width=</span><span class=s>&#34;wrap_content&#34;</span>
-                    <span class=na>android:layout_height=</span><span class=s>&#34;wrap_content&#34;</span>
-                    <span class=na>android:onClick=</span><span class=s>&#34;@{() -&gt; viewModel.refresh()}&#34;</span>
-                    <span class=na>android:text=</span><span class=s>&#34;@string/try_again&#34;</span> <span class=nt>/&gt;</span>
-            <span class=nt>&lt;/LinearLayout&gt;</span>
-
-            <span class=c>&lt;!-- 原先的 RecyclerView --&gt;</span>
-            <span class=nt>&lt;androidx.recyclerview.widget.RecyclerView</span>
-                <span class=na>android:id=</span><span class=s>&#34;@+id/recyclerView&#34;</span>
-                <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
-                <span class=na>android:layout_height=</span><span class=s>&#34;0dp&#34;</span>
-                <span class=na>android:layout_weight=</span><span class=s>&#34;1&#34;</span>
-                <span class=na>tools:listitem=</span><span class=s>&#34;@layout/eta_list_eta_item&#34;</span> <span class=nt>/&gt;</span>
-        <span class=nt>&lt;/LinearLayout&gt;</span>
-
-        <span class=c>&lt;!-- 原先的全頁錯誤顯示 --&gt;</span>
-        <span class=nt>&lt;androidx.core.widget.NestedScrollView</span>
-            <span class=na>isVisible=</span><span class=s>&#34;@{viewModel.showFullScreenError}&#34;</span>
-            <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
-            <span class=na>android:layout_height=</span><span class=s>&#34;match_parent&#34;</span>
-            <span class=na>android:fillViewport=</span><span class=s>&#34;true&#34;</span>
-            <span class=na>app:layout_behavior=</span><span class=s>&#34;@string/appbar_scrolling_view_behavior&#34;</span><span class=nt>&gt;</span>
-
-            <span class=c>&lt;!-- 略 --&gt;</span>
-        <span class=nt>&lt;/androidx.core.widget.NestedScrollView&gt;</span>
-
-        <span class=c>&lt;!-- 略 --&gt;</span>
-    <span class=nt>&lt;/androidx.coordinatorlayout.widget.CoordinatorLayout&gt;</span>
-<span class=nt>&lt;/layout&gt;</span>
-</code></pre></div><p>主要是多了一個 <code>LinearLayout</code> 來放 banner 及原有的 <code>RecyclerView</code>。另外就是把 <code>viewModel.showError</code> 改名為更明顯的 <code>viewModel.showFullScreenError</code>。</p>
-<h2 id=etaviewmodel><code>EtaViewModel</code><a hidden class=anchor aria-hidden=true href=#etaviewmodel>#</a></h2>
-<p>由於 banner 顯示的同時亦都要顯示上一次成功載入的班次，所以原先 <code>etaResult</code> 所提供的 <code>TimedValue&lt;Loadable&lt;EtaResult>></code> 並不能同時提供現在的錯誤和上一次成功載入的結果。我們的目標是要把這兩樣資訊都由 <code>etaResult</code> 一併提供，因為這樣做的話比起分兩個 <code>StateFlow</code> 存放這兩樣東西更易控制。</p>
-<p>由於要用一個 <code>StateFlow</code> 表達兩樣東西，我們需要造一個專門的 data class <code>CachedResult</code> 表達它。雖然 Kotlin Standard Library 有 <code>Pair</code> 可以用，但過幾個月再看這段 code 的話應該都忘了是甚麼意思。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>private</span> <span class=k>data</span> <span class=k>class</span> <span class=nc>CachedResult</span><span class=p>(</span>
-    <span class=k>val</span> <span class=py>lastSuccessResult</span><span class=p>:</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>?</span> <span class=p>=</span> <span class=k>null</span><span class=p>,</span>
-    <span class=k>val</span> <span class=py>lastFailResult</span><span class=p>:</span> <span class=n>EtaFailResult</span><span class=p>?</span> <span class=p>=</span> <span class=k>null</span><span class=p>,</span>
-    <span class=k>val</span> <span class=py>currentResult</span><span class=p>:</span> <span class=n>TimedValue</span><span class=p>&lt;</span><span class=n>Loadable</span><span class=p>&lt;</span><span class=n>EtaResult</span><span class=p>&gt;&gt;</span> <span class=p>=</span> <span class=n>TimedValue</span><span class=p>(</span>
-        <span class=n>value</span> <span class=p>=</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loading</span><span class=p>,</span>
-        <span class=n>updatedAt</span> <span class=p>=</span> <span class=n>Instant</span><span class=p>.</span><span class=n>EPOCH</span>
-    <span class=p>),</span>
-<span class=p>)</span>
-</code></pre></div><p>而 <code>etaResult</code> 的 type 亦都改為 <code>StateFlow&lt;CachedResult></code>。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>private</span> <span class=k>val</span> <span class=py>etaResult</span><span class=p>:</span> <span class=n>StateFlow</span><span class=p>&lt;</span><span class=n>CachedResult</span><span class=p>&gt;</span> <span class=p>=</span> <span class=n>triggerRefresh</span>
-    <span class=p>.</span><span class=n>consumeAsFlow</span><span class=p>()</span>
-    <span class=p>.</span><span class=n>flatMapLatest</span> <span class=p>{</span>
-        <span class=n>flowOf</span><span class=p>(</span>
-            <span class=n>flowOf</span><span class=p>(</span><span class=n>TimedValue</span><span class=p>(</span><span class=n>value</span> <span class=p>=</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loading</span><span class=p>,</span> <span class=n>updatedAt</span> <span class=p>=</span> <span class=n>clock</span><span class=p>.</span><span class=n>instant</span><span class=p>())),</span>
-            <span class=n>combine</span><span class=p>(</span>
-                <span class=n>language</span><span class=p>,</span>
-                <span class=n>line</span><span class=p>,</span>
-                <span class=n>station</span><span class=p>,</span>
-                <span class=n>sortedBy</span><span class=p>,</span>
-            <span class=p>)</span> <span class=p>{</span> <span class=n>language</span><span class=p>,</span> <span class=n>line</span><span class=p>,</span> <span class=n>station</span><span class=p>,</span> <span class=n>sortedBy</span> <span class=o>-&gt;</span>
-                <span class=n>TimedValue</span><span class=p>(</span>
-                    <span class=n>value</span> <span class=p>=</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loaded</span><span class=p>(</span><span class=n>getEta</span><span class=p>(</span><span class=n>language</span><span class=p>,</span> <span class=n>line</span><span class=p>,</span> <span class=n>station</span><span class=p>,</span> <span class=n>sortedBy</span><span class=p>)),</span>
-                    <span class=n>updatedAt</span> <span class=p>=</span> <span class=n>clock</span><span class=p>.</span><span class=n>instant</span><span class=p>(),</span>
-                <span class=p>)</span>
-            <span class=p>}.</span><span class=n>onEach</span> <span class=p>{</span>
-                <span class=c1>// schedule the next refresh after loading
-</span><span class=c1></span>                <span class=n>autoRefreshScope</span><span class=p>.</span><span class=n>launch</span> <span class=p>{</span>
-                    <span class=n>delay</span><span class=p>(</span><span class=n>AUTO_REFRESH_INTERVAL</span><span class=p>)</span>
-                    <span class=n>triggerRefresh</span><span class=p>.</span><span class=n>send</span><span class=p>(</span><span class=n>Unit</span><span class=p>)</span>
-                <span class=p>}</span>
-            <span class=p>},</span>
-        <span class=p>).</span><span class=n>flattenConcat</span><span class=p>()</span>
-    <span class=p>}</span>
-    <span class=p>.</span><span class=n>scan</span><span class=p>(</span><span class=n>CachedResult</span><span class=p>())</span> <span class=p>{</span> <span class=n>acc</span><span class=p>,</span> <span class=n>currentValue</span> <span class=o>-&gt;</span>
-        <span class=k>if</span> <span class=p>(</span><span class=n>currentValue</span><span class=p>.</span><span class=n>value</span> <span class=k>is</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loaded</span><span class=p>)</span> <span class=p>{</span>
-            <span class=k>val</span> <span class=py>currentResult</span> <span class=p>=</span> <span class=n>currentValue</span><span class=p>.</span><span class=n>value</span><span class=p>.</span><span class=n>value</span>
-            <span class=n>CachedResult</span><span class=p>(</span>
-                <span class=n>lastSuccessResult</span> <span class=p>=</span> <span class=k>if</span> <span class=p>(</span><span class=n>currentResult</span> <span class=k>is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>)</span> <span class=n>currentResult</span> <span class=k>else</span> <span class=n>acc</span><span class=p>.</span><span class=n>lastSuccessResult</span><span class=p>,</span>
-                <span class=n>lastFailResult</span> <span class=p>=</span> <span class=k>if</span> <span class=p>(</span><span class=n>currentResult</span> <span class=k>is</span> <span class=n>EtaFailResult</span><span class=p>)</span> <span class=n>currentResult</span> <span class=k>else</span> <span class=k>null</span><span class=p>,</span>
-                <span class=n>currentResult</span> <span class=p>=</span> <span class=n>currentValue</span><span class=p>,</span>
-            <span class=p>)</span>
-        <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
-            <span class=n>acc</span><span class=p>.</span><span class=n>copy</span><span class=p>(</span><span class=n>currentResult</span> <span class=p>=</span> <span class=n>currentValue</span><span class=p>)</span>
-        <span class=p>}</span>
-    <span class=p>}</span>
-    <span class=p>.</span><span class=n>stateIn</span><span class=p>(</span>
-        <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
-        <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
-        <span class=n>initialValue</span> <span class=p>=</span> <span class=n>CachedResult</span><span class=p>(),</span>
-    <span class=p>)</span>
-</code></pre></div><p>前段的載入中和 call API 的部分是和上一篇沒分別，分別在於之後多了 <code>scan</code> 和 <code>stateIn</code> 的 <code>initialValue</code> 轉做 <code>CachedResult()</code>。</p>
-<p><code>scan</code> 就是本篇的關鍵所在。如果翻查 <a href=https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/scan.html>KDoc</a> 的話，會看到以下示例：</p>
-<blockquote>
-<p><code>flowOf(1, 2, 3).scan(emptyList&lt;Int>()) { acc, value -> acc + value }.toList()</code>
-will produce <code>[], [1], [1, 2], [1, 2, 3]]</code></p>
-</blockquote>
-<p>這個 operator 有另一個別名叫 <code>runningFold</code>，看到 <a href=https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/fold.html><code>fold</code></a> 就知道它是 <a href=https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/reduce.html><code>reduce</code></a> 的意思。<code>reduce</code> 就是把一連串的元素壓成一個元素，Kotlin collection 的 <code>fold</code> 跟 <code>reduce</code> 差別就是 <code>fold</code> 可以提供 lambda 內 <code>accumulator</code> 的初始值，而 <code>reduce</code> lambda 在第一次 call 的時候 <code>accumulator</code> 和 <code>value</code> 參數會提供 collection 的第一二項元素。回到 <code>scan</code> 的部分，從上面的例子看到它的初始值是 empty list，每次都把 <code>acc</code>（上一次的結果）駁長，最終生成了一個包含所有元素的 list。我們可以借助這個 operator 把先前成功載入的結果和目前最新的結果整合成一個值交到下游。所以 <code>scan</code> 那個 lambda 如果現在是載入中的話那就用 data class 的 <code>copy</code> 保留 <code>CachedResult</code> 的 <code>lastSuccessResult</code> 和 <code>lastFailResult</code>。但當載入完成後就把 <code>CachedResult</code> 的所有內容換走。</p>
-<p>由於我們這次改了 <code>etaResult</code> 的 type，所以又會像上一篇一樣把所有用到 <code>etaResult</code> 的地方修改一遍。但直接用 <code>etaResult</code> 會比較麻煩，故此引入了另一個中途 <code>StateFlow</code> 和 enum 來表達現在要顯示的畫面：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>private</span> <span class=k>enum</span> <span class=k>class</span> <span class=nc>ScreenState</span> <span class=p>{</span>
-    <span class=n>LOADING</span><span class=p>,</span>
-    <span class=n>ETA</span><span class=p>,</span>
-    <span class=n>FULL_SCREEN_ERROR</span><span class=p>,</span>
-    <span class=n>ETA_WITH_ERROR_BANNER</span><span class=p>,</span>
-<span class=p>}</span>
-
-<span class=k>private</span> <span class=k>val</span> <span class=py>screenState</span> <span class=p>=</span> <span class=n>etaResult</span><span class=p>.</span><span class=n>map</span> <span class=p>{</span>
-    <span class=k>when</span> <span class=p>(</span><span class=k>it</span><span class=p>.</span><span class=n>currentResult</span><span class=p>.</span><span class=n>value</span><span class=p>)</span> <span class=p>{</span>
-        <span class=k>is</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loaded</span> <span class=o>-&gt;</span> <span class=p>{</span>
-            <span class=k>when</span> <span class=p>(</span><span class=k>it</span><span class=p>.</span><span class=n>currentResult</span><span class=p>.</span><span class=n>value</span><span class=p>.</span><span class=n>value</span><span class=p>)</span> <span class=p>{</span>
-                <span class=n>EtaResult</span><span class=p>.</span><span class=n>Delay</span><span class=p>,</span>
-                <span class=k>is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Incident</span> <span class=o>-&gt;</span> <span class=n>ScreenState</span><span class=p>.</span><span class=n>FULL_SCREEN_ERROR</span>
-                <span class=k>is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Error</span><span class=p>,</span>
-                <span class=n>EtaResult</span><span class=p>.</span><span class=n>InternalServerError</span><span class=p>,</span>
-                <span class=n>EtaResult</span><span class=p>.</span><span class=n>TooManyRequests</span> <span class=o>-&gt;</span> <span class=k>if</span> <span class=p>(</span><span class=k>it</span><span class=p>.</span><span class=n>lastSuccessResult</span> <span class=o>!=</span> <span class=k>null</span><span class=p>)</span> <span class=p>{</span>
-                    <span class=n>ScreenState</span><span class=p>.</span><span class=n>ETA_WITH_ERROR_BANNER</span>
-                <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
-                    <span class=n>ScreenState</span><span class=p>.</span><span class=n>FULL_SCREEN_ERROR</span>
-                <span class=p>}</span>
-                <span class=k>is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span> <span class=o>-&gt;</span> <span class=n>ScreenState</span><span class=p>.</span><span class=n>ETA</span>
-            <span class=p>}</span>
-        <span class=p>}</span>
-        <span class=n>Loadable</span><span class=p>.</span><span class=n>Loading</span> <span class=o>-&gt;</span> <span class=k>when</span> <span class=p>(</span><span class=k>it</span><span class=p>.</span><span class=n>lastFailResult</span><span class=p>)</span> <span class=p>{</span>
-            <span class=n>EtaResult</span><span class=p>.</span><span class=n>Delay</span><span class=p>,</span>
-            <span class=k>is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Incident</span> <span class=o>-&gt;</span> <span class=n>ScreenState</span><span class=p>.</span><span class=n>FULL_SCREEN_ERROR</span>
-            <span class=k>is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Error</span><span class=p>,</span>
-            <span class=n>EtaResult</span><span class=p>.</span><span class=n>InternalServerError</span><span class=p>,</span>
-            <span class=n>EtaResult</span><span class=p>.</span><span class=n>TooManyRequests</span> <span class=o>-&gt;</span> <span class=k>if</span> <span class=p>(</span><span class=k>it</span><span class=p>.</span><span class=n>lastSuccessResult</span> <span class=o>!=</span> <span class=k>null</span><span class=p>)</span> <span class=p>{</span>
-                <span class=n>ScreenState</span><span class=p>.</span><span class=n>ETA_WITH_ERROR_BANNER</span>
-            <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
-                <span class=n>ScreenState</span><span class=p>.</span><span class=n>FULL_SCREEN_ERROR</span>
-            <span class=p>}</span>
-            <span class=k>null</span> <span class=o>-&gt;</span> <span class=k>if</span> <span class=p>(</span><span class=k>it</span><span class=p>.</span><span class=n>lastSuccessResult</span> <span class=o>!=</span> <span class=k>null</span><span class=p>)</span> <span class=p>{</span>
-                <span class=n>ScreenState</span><span class=p>.</span><span class=n>ETA</span>
-            <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
-                <span class=n>ScreenState</span><span class=p>.</span><span class=n>LOADING</span>
-            <span class=p>}</span>
-        <span class=p>}</span>
-    <span class=p>}</span>
-<span class=p>}</span>
-</code></pre></div><p>有了這個 <code>screenState</code> 判斷何時要顯示那種畫面我們就容易修改其餘的地方。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>private</span> <span class=k>val</span> <span class=py>loadedEtaResult</span> <span class=p>=</span> <span class=n>etaResult</span>
-    <span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span><span class=p>.</span><span class=n>currentResult</span><span class=p>.</span><span class=n>value</span> <span class=p>}</span>
-    <span class=p>.</span><span class=n>filterIsInstance</span><span class=p>&lt;</span><span class=n>Loadable</span><span class=p>.</span><span class=n>Loaded</span><span class=p>&lt;</span><span class=n>EtaResult</span><span class=p>&gt;&gt;()</span>
-    <span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span><span class=p>.</span><span class=n>value</span> <span class=p>}</span>
-<span class=k>val</span> <span class=py>showLoading</span><span class=p>:</span> <span class=n>StateFlow</span><span class=p>&lt;</span><span class=n>Boolean</span><span class=p>&gt;</span> <span class=p>=</span> <span class=n>screenState</span><span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span> <span class=o>==</span> <span class=n>ScreenState</span><span class=p>.</span><span class=n>LOADING</span> <span class=p>}</span>
-    <span class=p>.</span><span class=n>stateIn</span><span class=p>(</span>
-        <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
-        <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
-        <span class=n>initialValue</span> <span class=p>=</span> <span class=k>true</span><span class=p>,</span>
-    <span class=p>)</span>
-<span class=k>val</span> <span class=py>showFullScreenError</span> <span class=p>=</span> <span class=n>screenState</span><span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span> <span class=o>==</span> <span class=n>ScreenState</span><span class=p>.</span><span class=n>FULL_SCREEN_ERROR</span> <span class=p>}</span>
-    <span class=p>.</span><span class=n>stateIn</span><span class=p>(</span>
-        <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
-        <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
-        <span class=n>initialValue</span> <span class=p>=</span> <span class=k>false</span><span class=p>,</span>
-    <span class=p>)</span>
-<span class=k>val</span> <span class=py>showErrorBanner</span> <span class=p>=</span> <span class=n>screenState</span><span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span> <span class=o>==</span> <span class=n>ScreenState</span><span class=p>.</span><span class=n>ETA_WITH_ERROR_BANNER</span> <span class=p>}</span>
-    <span class=p>.</span><span class=n>stateIn</span><span class=p>(</span>
-        <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
-        <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
-        <span class=n>initialValue</span> <span class=p>=</span> <span class=k>false</span><span class=p>,</span>
-    <span class=p>)</span>
-<span class=k>val</span> <span class=py>showEtaList</span> <span class=p>=</span> <span class=n>screenState</span>
-    <span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span> <span class=o>==</span> <span class=n>ScreenState</span><span class=p>.</span><span class=n>ETA</span> <span class=o>||</span> <span class=k>it</span> <span class=o>==</span> <span class=n>ScreenState</span><span class=p>.</span><span class=n>ETA_WITH_ERROR_BANNER</span> <span class=p>}</span>
-    <span class=p>.</span><span class=n>stateIn</span><span class=p>(</span>
-        <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
-        <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
-        <span class=n>initialValue</span> <span class=p>=</span> <span class=k>false</span><span class=p>,</span>
-    <span class=p>)</span>
-<span class=k>val</span> <span class=py>etaList</span> <span class=p>=</span> <span class=n>etaResult</span>
-    <span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span><span class=p>.</span><span class=n>lastSuccessResult</span><span class=o>?.</span><span class=n>schedule</span><span class=p>.</span><span class=n>orEmpty</span><span class=p>()</span> <span class=p>}</span>
-    <span class=p>.</span><span class=n>combine</span><span class=p>(</span><span class=n>sortedBy</span><span class=p>)</span> <span class=p>{</span> <span class=n>schedule</span><span class=p>,</span> <span class=n>sortedBy</span> <span class=o>-&gt;</span>
-        <span class=c1>// 略
-</span><span class=c1></span>    <span class=p>}</span>
-    <span class=p>.</span><span class=n>stateIn</span><span class=p>(</span>
-        <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
-        <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
-        <span class=n>initialValue</span> <span class=p>=</span> <span class=n>emptyList</span><span class=p>(),</span>
-    <span class=p>)</span>
-
-<span class=k>fun</span> <span class=nf>startAutoRefresh</span><span class=p>()</span> <span class=p>{</span>
-    <span class=n>autoRefreshScope</span><span class=p>.</span><span class=n>launch</span> <span class=p>{</span>
-        <span class=c1>// 略
-</span><span class=c1></span>    <span class=p>}</span>
-<span class=p>}</span>
-<span class=k>fun</span> <span class=nf>viewIncidentDetail</span><span class=p>()</span> <span class=p>{</span>
-    <span class=k>val</span> <span class=py>result</span> <span class=p>=</span> <span class=n>etaResult</span><span class=p>.</span><span class=n>value</span><span class=p>.</span><span class=n>currentResult</span><span class=p>.</span><span class=n>value</span>
-    <span class=k>if</span> <span class=p>(</span><span class=n>result</span> <span class=o>!is</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loaded</span><span class=p>)</span> <span class=k>return</span>
-    <span class=k>if</span> <span class=p>(</span><span class=n>result</span><span class=p>.</span><span class=n>value</span> <span class=o>!is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Incident</span><span class=p>)</span> <span class=k>return</span>
-    <span class=c1>// 略
-</span><span class=c1></span><span class=p>}</span>
-</code></pre></div><h2 id=小結>小結<a hidden class=anchor aria-hidden=true href=#小結>#</a></h2>
-<p>這樣我們就完成了顯示錯誤 banner 功能了。本篇主要是示範了用 <code>scan</code> operator 把當前和以前的值整合成一個 <code>Flow</code> 內，另外亦用 enum 表達目前整頁的狀態。其實我們不知不覺間已經將整頁的狀態由一個 <code>StateFlow</code> 表達出來（就是 <code>etaResult</code>），只不過我們另外衍生一堆零碎 <code>StateFlow</code> 供 data binding 用。其實我們可以將 <code>etaResult</code> 和 <code>screenState</code> 兩個 <code>Flow</code> 二合為一，屆時 <code>ScreenState</code> 不會是 enum 而是 sealed interface，原先的 <code>LOADING</code>、<code>ETA</code>、<code>FULL_SCREEN_ERROR</code>、<code>ETA_WITH_ERROR_BANNER</code> 就會變成一個個 object expression 和 data class。這樣就做到了 MVI (Model-View-Intent) 的 state reducer 風味的東西，而且又有類似 unidirectional data flow 的機制。現在那些 <code>showLoading</code>、<code>showFullScreenError</code>、<code>showEtaList</code> 之類的 <code>StateFlow</code> 都是為了避免在 layout XML 寫太複雜的邏輯（因為不方便做 unit testing 和它本身是 XML 所以某些字符要 escape）而造出來的。日後改用 Jetpack Compose 寫 UI 的話相信可以減省到只外露 <code>ScreenState</code> sealed interface 的 <code>Flow</code> 就足夠了。</p>
-<p>完整的 code 可以到 <a href=https://github.com/ericksli/eta-demo/tree/main/app/src/main/java/net/swiftzer/etademo/presentation/eta>GitHub repo</a> 查閱，下一篇我們會寫 <code>ViewModel</code> 的 unit test case。</p>
-</div>
-<footer class=post-footer>
-<ul class=post-tags>
-<li><a href=https://eric.swiftzer.net/tags/2021-ithome-%E9%90%B5%E4%BA%BA%E8%B3%BD/>2021 iThome 鐵人賽</a></li>
-<li><a href=https://eric.swiftzer.net/tags/android/>Android</a></li>
-</ul>
-<nav class=paginav>
-<a class=prev href=https://eric.swiftzer.net/2021/10/2021-ithome-ironman-26-station-list-screen-testing/>
-<span class=title>« Prev Page</span>
-<br>
-<span>2021 iThome 鐵人賽 Day 26：Station list screen testing</span>
-</a>
-<a class=next href=https://eric.swiftzer.net/2021/10/2021-ithome-ironman-24-eta-screen-3/>
-<span class=title>Next Page »</span>
-<br>
-<span>2021 iThome 鐵人賽 Day 24：ETA screen (3)</span>
-</a>
-</nav>
-</footer><div id=disqus_thread></div>
-<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//efilm.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
-<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
-<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
-</article>
-</main><footer class=footer>
-<span>&copy; 2022 <a href=https://eric.swiftzer.net/>EricLog</a></span>
-<span>&#183;</span>
-<span>Powered by <a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a></span>
-<span>&#183;</span>
-<span>Theme <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span>
-</footer>
-<a href=#top aria-label="go to top" title="Go to Top (Alt + G)">
-<button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
-</button>
-</a>
-<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
-<script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script>
-<script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
-</body>
-</html>
+<!doctype html><html lang=zh-tw dir=auto><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>2021 iThome 鐵人賽 Day 25：ETA screen (4) | EricLog</title><meta name=keywords content="2021 iThome 鐵人賽,Android"><meta name=description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 25 篇，你可到 iThome 查看原文。 文章目錄 現在來到整個 app 最後一個功能：錯誤 banner。"><meta name=author content><link rel=canonical href=https://ithelp.ithome.com.tw/articles/10279995><link crossorigin=anonymous href=/assets/css/stylesheet.min.249b1770ac429c01ffa746cc012a310192d174c913b1527f312e3294a0766d1c.css integrity="sha256-JJsXcKxCnAH/p0bMASoxAZLRdMkTsVJ/MS4ylKB2bRw=" rel="preload stylesheet" as=style><link rel=icon href=https://eric.swiftzer.net/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png><link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png><link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><meta name=generator content="Hugo 0.101.0"><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--hljs-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><link rel=preconnect href=https://fonts.gstatic.com><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet><script async src="https://www.googletagmanager.com/gtag/js?id=G-D93F946T73"></script>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-D93F946T73",{anonymize_ip:!1})}</script><meta property="og:title" content="2021 iThome 鐵人賽 Day 25：ETA screen (4)"><meta property="og:description" content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 25 篇，你可到 iThome 查看原文。 文章目錄 現在來到整個 app 最後一個功能：錯誤 banner。"><meta property="og:type" content="article"><meta property="og:url" content="https://eric.swiftzer.net/2021/10/2021-ithome-ironman-25-eta-screen-4/"><meta property="article:section" content="posts"><meta property="article:published_time" content="2021-10-10T00:00:00+08:00"><meta property="article:modified_time" content="2021-10-10T00:00:00+08:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="2021 iThome 鐵人賽 Day 25：ETA screen (4)"><meta name=twitter:description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 25 篇，你可到 iThome 查看原文。 文章目錄 現在來到整個 app 最後一個功能：錯誤 banner。"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"2021 iThome 鐵人賽 Day 25：ETA screen (4)","item":"https://eric.swiftzer.net/2021/10/2021-ithome-ironman-25-eta-screen-4/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"2021 iThome 鐵人賽 Day 25：ETA screen (4)","name":"2021 iThome 鐵人賽 Day 25：ETA screen (4)","description":"本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 25 篇，你可到 iThome 查看原文。 文章目錄 現在來到整個 app 最後一個功能：錯誤 banner。","keywords":["2021 iThome 鐵人賽","Android"],"articleBody":" 本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 25 篇，你可到 iThome 查看原文。\n文章目錄\n現在來到整個 app 最後一個功能：錯誤 banner。這個 banner 出現的目的是因為鐵路隧道沿綫的電話上網訊號都接收得不太好（因為太多人同時在用），很容易出現錯誤。如果自動更新時有不能上網的錯誤會彈出全頁錯誤畫面的話效果就不太好。所以就設計了 banner 形式的顯示錯誤方式。\nLayout XML 現在先看看 EtaFragment layout XML 的改動：\n\u003c?xml version=\"1.0\" encoding=\"utf-8\"?\u003e ","wordCount":"1856","inLanguage":"zh-tw","datePublished":"2021-10-10T00:00:00+08:00","dateModified":"2021-10-10T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2021/10/2021-ithome-ironman-25-eta-screen-4/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
+<span class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></span></div><ul id=menu><li><a href=https://eric.swiftzer.net/fonts/ title=Fonts><span>Fonts</span></a></li><li><a href=https://eric.swiftzer.net/archives/ title=Archives><span>Archives</span></a></li><li><a href=https://eric.swiftzer.net/tags/ title=Tags><span>Tags</span></a></li><li><a href=https://eric.swiftzer.net/about/ title=About><span>About</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><div class=breadcrumbs><a href=https://eric.swiftzer.net/>首頁</a>&nbsp;»&nbsp;<a href=https://eric.swiftzer.net/posts/>Posts</a></div><h1 class=post-title>2021 iThome 鐵人賽 Day 25：ETA screen (4)</h1><div class=post-meta>October 10, 2021</div></header><div class=post-content><blockquote><p>本篇文章是 <a href=https://ithelp.ithome.com.tw/2021ironman>2021 iThome 鐵人賽</a>參賽題目「<a href=https://ithelp.ithome.com.tw/users/20139666/ironman/4661>寫一個列車抵站時間 Android App</a>」的第 25 篇，你可到 iThome <a href=https://ithelp.ithome.com.tw/articles/10279995>查看原文</a>。</p><p><a href=https://eric.swiftzer.net/2021-ithome-ironman/>文章目錄</a></p></blockquote><p>現在來到整個 app 最後一個功能：錯誤 banner。這個 banner 出現的目的是因為鐵路隧道沿綫的電話上網訊號都接收得不太好（因為太多人同時在用），很容易出現錯誤。如果自動更新時有不能上網的錯誤會彈出全頁錯誤畫面的話效果就不太好。所以就設計了 banner 形式的顯示錯誤方式。</p><h2 id=layout-xml>Layout XML<a hidden class=anchor aria-hidden=true href=#layout-xml>#</a></h2><p>現在先看看 <code>EtaFragment</code> layout XML 的改動：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=line><span class=cl><span class=cp>&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;layout</span> <span class=na>xmlns:android=</span><span class=s>&#34;http://schemas.android.com/apk/res/android&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=na>xmlns:app=</span><span class=s>&#34;http://schemas.android.com/apk/res-auto&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=na>xmlns:tools=</span><span class=s>&#34;http://schemas.android.com/tools&#34;</span><span class=nt>&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c>&lt;!-- 略 --&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;androidx.coordinatorlayout.widget.CoordinatorLayout</span>
+</span></span><span class=line><span class=cl>        <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=na>android:layout_height=</span><span class=s>&#34;match_parent&#34;</span><span class=nt>&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;com.google.android.material.appbar.AppBarLayout</span>
+</span></span><span class=line><span class=cl>            <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=na>android:layout_height=</span><span class=s>&#34;wrap_content&#34;</span><span class=nt>&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>            <span class=c>&lt;!-- 略 --&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;/com.google.android.material.appbar.AppBarLayout&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;LinearLayout</span>
+</span></span><span class=line><span class=cl>            <span class=na>isVisible=</span><span class=s>&#34;@{viewModel.showEtaList}&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=na>android:layout_height=</span><span class=s>&#34;match_parent&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=na>android:divider=</span><span class=s>&#34;?android:listDivider&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=na>android:orientation=</span><span class=s>&#34;vertical&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=na>android:showDividers=</span><span class=s>&#34;middle&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=na>app:layout_behavior=</span><span class=s>&#34;@string/appbar_scrolling_view_behavior&#34;</span><span class=nt>&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>            <span class=c>&lt;!-- banner 部分 --&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;LinearLayout</span>
+</span></span><span class=line><span class=cl>                <span class=na>isVisible=</span><span class=s>&#34;@{viewModel.showErrorBanner}&#34;</span>
+</span></span><span class=line><span class=cl>                <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
+</span></span><span class=line><span class=cl>                <span class=na>android:layout_height=</span><span class=s>&#34;wrap_content&#34;</span>
+</span></span><span class=line><span class=cl>                <span class=na>android:gravity=</span><span class=s>&#34;center_vertical&#34;</span>
+</span></span><span class=line><span class=cl>                <span class=na>android:orientation=</span><span class=s>&#34;horizontal&#34;</span>
+</span></span><span class=line><span class=cl>                <span class=na>android:paddingStart=</span><span class=s>&#34;16dp&#34;</span>
+</span></span><span class=line><span class=cl>                <span class=na>android:paddingTop=</span><span class=s>&#34;8dp&#34;</span>
+</span></span><span class=line><span class=cl>                <span class=na>android:paddingEnd=</span><span class=s>&#34;16dp&#34;</span>
+</span></span><span class=line><span class=cl>                <span class=na>android:paddingBottom=</span><span class=s>&#34;8dp&#34;</span>
+</span></span><span class=line><span class=cl>                <span class=na>tools:visibility=</span><span class=s>&#34;visible&#34;</span><span class=nt>&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>                <span class=nt>&lt;com.google.android.material.textview.MaterialTextView</span>
+</span></span><span class=line><span class=cl>                    <span class=na>android:layout_width=</span><span class=s>&#34;0dp&#34;</span>
+</span></span><span class=line><span class=cl>                    <span class=na>android:layout_height=</span><span class=s>&#34;wrap_content&#34;</span>
+</span></span><span class=line><span class=cl>                    <span class=na>android:layout_marginEnd=</span><span class=s>&#34;16dp&#34;</span>
+</span></span><span class=line><span class=cl>                    <span class=na>android:layout_weight=</span><span class=s>&#34;1&#34;</span>
+</span></span><span class=line><span class=cl>                    <span class=na>android:text=</span><span class=s>&#34;@{etaPresenter.mapErrorMessage(viewModel.errorResult)}&#34;</span>
+</span></span><span class=line><span class=cl>                    <span class=na>android:textAlignment=</span><span class=s>&#34;viewStart&#34;</span>
+</span></span><span class=line><span class=cl>                    <span class=na>android:textAppearance=</span><span class=s>&#34;?textAppearanceBody1&#34;</span>
+</span></span><span class=line><span class=cl>                    <span class=na>android:textColor=</span><span class=s>&#34;@color/design_default_color_error&#34;</span>
+</span></span><span class=line><span class=cl>                    <span class=na>tools:text=</span><span class=s>&#34;@string/error&#34;</span> <span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>                <span class=nt>&lt;com.google.android.material.button.MaterialButton</span>
+</span></span><span class=line><span class=cl>                    <span class=na>style=</span><span class=s>&#34;@style/Widget.MaterialComponents.Button.TextButton&#34;</span>
+</span></span><span class=line><span class=cl>                    <span class=na>android:layout_width=</span><span class=s>&#34;wrap_content&#34;</span>
+</span></span><span class=line><span class=cl>                    <span class=na>android:layout_height=</span><span class=s>&#34;wrap_content&#34;</span>
+</span></span><span class=line><span class=cl>                    <span class=na>android:onClick=</span><span class=s>&#34;@{() -&gt; viewModel.refresh()}&#34;</span>
+</span></span><span class=line><span class=cl>                    <span class=na>android:text=</span><span class=s>&#34;@string/try_again&#34;</span> <span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;/LinearLayout&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>            <span class=c>&lt;!-- 原先的 RecyclerView --&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;androidx.recyclerview.widget.RecyclerView</span>
+</span></span><span class=line><span class=cl>                <span class=na>android:id=</span><span class=s>&#34;@+id/recyclerView&#34;</span>
+</span></span><span class=line><span class=cl>                <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
+</span></span><span class=line><span class=cl>                <span class=na>android:layout_height=</span><span class=s>&#34;0dp&#34;</span>
+</span></span><span class=line><span class=cl>                <span class=na>android:layout_weight=</span><span class=s>&#34;1&#34;</span>
+</span></span><span class=line><span class=cl>                <span class=na>tools:listitem=</span><span class=s>&#34;@layout/eta_list_eta_item&#34;</span> <span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;/LinearLayout&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c>&lt;!-- 原先的全頁錯誤顯示 --&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;androidx.core.widget.NestedScrollView</span>
+</span></span><span class=line><span class=cl>            <span class=na>isVisible=</span><span class=s>&#34;@{viewModel.showFullScreenError}&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=na>android:layout_width=</span><span class=s>&#34;match_parent&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=na>android:layout_height=</span><span class=s>&#34;match_parent&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=na>android:fillViewport=</span><span class=s>&#34;true&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=na>app:layout_behavior=</span><span class=s>&#34;@string/appbar_scrolling_view_behavior&#34;</span><span class=nt>&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>            <span class=c>&lt;!-- 略 --&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;/androidx.core.widget.NestedScrollView&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c>&lt;!-- 略 --&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;/androidx.coordinatorlayout.widget.CoordinatorLayout&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;/layout&gt;</span>
+</span></span></code></pre></div><p>主要是多了一個 <code>LinearLayout</code> 來放 banner 及原有的 <code>RecyclerView</code>。另外就是把 <code>viewModel.showError</code> 改名為更明顯的 <code>viewModel.showFullScreenError</code>。</p><h2 id=etaviewmodel><code>EtaViewModel</code><a hidden class=anchor aria-hidden=true href=#etaviewmodel>#</a></h2><p>由於 banner 顯示的同時亦都要顯示上一次成功載入的班次，所以原先 <code>etaResult</code> 所提供的 <code>TimedValue&lt;Loadable&lt;EtaResult>></code> 並不能同時提供現在的錯誤和上一次成功載入的結果。我們的目標是要把這兩樣資訊都由 <code>etaResult</code> 一併提供，因為這樣做的話比起分兩個 <code>StateFlow</code> 存放這兩樣東西更易控制。</p><p>由於要用一個 <code>StateFlow</code> 表達兩樣東西，我們需要造一個專門的 data class <code>CachedResult</code> 表達它。雖然 Kotlin Standard Library 有 <code>Pair</code> 可以用，但過幾個月再看這段 code 的話應該都忘了是甚麼意思。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>private</span> <span class=k>data</span> <span class=k>class</span> <span class=nc>CachedResult</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=k>val</span> <span class=py>lastSuccessResult</span><span class=p>:</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>?</span> <span class=p>=</span> <span class=k>null</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=k>val</span> <span class=py>lastFailResult</span><span class=p>:</span> <span class=n>EtaFailResult</span><span class=p>?</span> <span class=p>=</span> <span class=k>null</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=k>val</span> <span class=py>currentResult</span><span class=p>:</span> <span class=n>TimedValue</span><span class=p>&lt;</span><span class=n>Loadable</span><span class=p>&lt;</span><span class=n>EtaResult</span><span class=p>&gt;&gt;</span> <span class=p>=</span> <span class=n>TimedValue</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=k>value</span> <span class=p>=</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loading</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=n>updatedAt</span> <span class=p>=</span> <span class=n>Instant</span><span class=p>.</span><span class=n>EPOCH</span>
+</span></span><span class=line><span class=cl>    <span class=p>),</span>
+</span></span><span class=line><span class=cl><span class=p>)</span>
+</span></span></code></pre></div><p>而 <code>etaResult</code> 的 type 亦都改為 <code>StateFlow&lt;CachedResult></code>。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>private</span> <span class=k>val</span> <span class=py>etaResult</span><span class=p>:</span> <span class=n>StateFlow</span><span class=p>&lt;</span><span class=n>CachedResult</span><span class=p>&gt;</span> <span class=p>=</span> <span class=n>triggerRefresh</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>consumeAsFlow</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>flatMapLatest</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>flowOf</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>            <span class=n>flowOf</span><span class=p>(</span><span class=n>TimedValue</span><span class=p>(</span><span class=k>value</span> <span class=p>=</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loading</span><span class=p>,</span> <span class=n>updatedAt</span> <span class=p>=</span> <span class=n>clock</span><span class=p>.</span><span class=n>instant</span><span class=p>())),</span>
+</span></span><span class=line><span class=cl>            <span class=n>combine</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                <span class=n>language</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=n>line</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=n>station</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=n>sortedBy</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=p>)</span> <span class=p>{</span> <span class=n>language</span><span class=p>,</span> <span class=n>line</span><span class=p>,</span> <span class=n>station</span><span class=p>,</span> <span class=n>sortedBy</span> <span class=o>-&gt;</span>
+</span></span><span class=line><span class=cl>                <span class=n>TimedValue</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                    <span class=k>value</span> <span class=p>=</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loaded</span><span class=p>(</span><span class=n>getEta</span><span class=p>(</span><span class=n>language</span><span class=p>,</span> <span class=n>line</span><span class=p>,</span> <span class=n>station</span><span class=p>,</span> <span class=n>sortedBy</span><span class=p>)),</span>
+</span></span><span class=line><span class=cl>                    <span class=n>updatedAt</span> <span class=p>=</span> <span class=n>clock</span><span class=p>.</span><span class=n>instant</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>                <span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=p>}.</span><span class=n>onEach</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=c1>// schedule the next refresh after loading
+</span></span></span><span class=line><span class=cl><span class=c1></span>                <span class=n>autoRefreshScope</span><span class=p>.</span><span class=n>launch</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                    <span class=n>delay</span><span class=p>(</span><span class=n>AUTO_REFRESH_INTERVAL</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                    <span class=n>triggerRefresh</span><span class=p>.</span><span class=n>send</span><span class=p>(</span><span class=n>Unit</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                <span class=p>}</span>
+</span></span><span class=line><span class=cl>            <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=p>).</span><span class=n>flattenConcat</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>scan</span><span class=p>(</span><span class=n>CachedResult</span><span class=p>())</span> <span class=p>{</span> <span class=n>acc</span><span class=p>,</span> <span class=n>currentValue</span> <span class=o>-&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=n>currentValue</span><span class=p>.</span><span class=k>value</span> <span class=k>is</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loaded</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>val</span> <span class=py>currentResult</span> <span class=p>=</span> <span class=n>currentValue</span><span class=p>.</span><span class=k>value</span><span class=p>.</span><span class=k>value</span>
+</span></span><span class=line><span class=cl>            <span class=n>CachedResult</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                <span class=n>lastSuccessResult</span> <span class=p>=</span> <span class=k>if</span> <span class=p>(</span><span class=n>currentResult</span> <span class=k>is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span><span class=p>)</span> <span class=n>currentResult</span> <span class=k>else</span> <span class=n>acc</span><span class=p>.</span><span class=n>lastSuccessResult</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=n>lastFailResult</span> <span class=p>=</span> <span class=k>if</span> <span class=p>(</span><span class=n>currentResult</span> <span class=k>is</span> <span class=n>EtaFailResult</span><span class=p>)</span> <span class=n>currentResult</span> <span class=k>else</span> <span class=k>null</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=n>currentResult</span> <span class=p>=</span> <span class=n>currentValue</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>acc</span><span class=p>.</span><span class=n>copy</span><span class=p>(</span><span class=n>currentResult</span> <span class=p>=</span> <span class=n>currentValue</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>stateIn</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>        <span class=n>initialValue</span> <span class=p>=</span> <span class=n>CachedResult</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>    <span class=p>)</span>
+</span></span></code></pre></div><p>前段的載入中和 call API 的部分是和上一篇沒分別，分別在於之後多了 <code>scan</code> 和 <code>stateIn</code> 的 <code>initialValue</code> 轉做 <code>CachedResult()</code>。</p><p><code>scan</code> 就是本篇的關鍵所在。如果翻查 <a href=https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/scan.html>KDoc</a> 的話，會看到以下示例：</p><blockquote><p><code>flowOf(1, 2, 3).scan(emptyList&lt;Int>()) { acc, value -> acc + value }.toList()</code>
+will produce <code>[], [1], [1, 2], [1, 2, 3]]</code></p></blockquote><p>這個 operator 有另一個別名叫 <code>runningFold</code>，看到 <a href=https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/fold.html><code>fold</code></a> 就知道它是 <a href=https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/reduce.html><code>reduce</code></a> 的意思。<code>reduce</code> 就是把一連串的元素壓成一個元素，Kotlin collection 的 <code>fold</code> 跟 <code>reduce</code> 差別就是 <code>fold</code> 可以提供 lambda 內 <code>accumulator</code> 的初始值，而 <code>reduce</code> lambda 在第一次 call 的時候 <code>accumulator</code> 和 <code>value</code> 參數會提供 collection 的第一二項元素。回到 <code>scan</code> 的部分，從上面的例子看到它的初始值是 empty list，每次都把 <code>acc</code>（上一次的結果）駁長，最終生成了一個包含所有元素的 list。我們可以借助這個 operator 把先前成功載入的結果和目前最新的結果整合成一個值交到下游。所以 <code>scan</code> 那個 lambda 如果現在是載入中的話那就用 data class 的 <code>copy</code> 保留 <code>CachedResult</code> 的 <code>lastSuccessResult</code> 和 <code>lastFailResult</code>。但當載入完成後就把 <code>CachedResult</code> 的所有內容換走。</p><p>由於我們這次改了 <code>etaResult</code> 的 type，所以又會像上一篇一樣把所有用到 <code>etaResult</code> 的地方修改一遍。但直接用 <code>etaResult</code> 會比較麻煩，故此引入了另一個中途 <code>StateFlow</code> 和 enum 來表達現在要顯示的畫面：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>private</span> <span class=k>enum</span> <span class=k>class</span> <span class=nc>ScreenState</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>LOADING</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=n>ETA</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=n>FULL_SCREEN_ERROR</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=n>ETA_WITH_ERROR_BANNER</span><span class=p>,</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>private</span> <span class=k>val</span> <span class=py>screenState</span> <span class=p>=</span> <span class=n>etaResult</span><span class=p>.</span><span class=n>map</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>when</span> <span class=p>(</span><span class=k>it</span><span class=p>.</span><span class=n>currentResult</span><span class=p>.</span><span class=k>value</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>is</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loaded</span> <span class=o>-&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>when</span> <span class=p>(</span><span class=k>it</span><span class=p>.</span><span class=n>currentResult</span><span class=p>.</span><span class=k>value</span><span class=p>.</span><span class=k>value</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=n>EtaResult</span><span class=p>.</span><span class=n>Delay</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=k>is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Incident</span> <span class=o>-&gt;</span> <span class=n>ScreenState</span><span class=p>.</span><span class=n>FULL_SCREEN_ERROR</span>
+</span></span><span class=line><span class=cl>                <span class=k>is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Error</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=n>EtaResult</span><span class=p>.</span><span class=n>InternalServerError</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=n>EtaResult</span><span class=p>.</span><span class=n>TooManyRequests</span> <span class=o>-&gt;</span> <span class=k>if</span> <span class=p>(</span><span class=k>it</span><span class=p>.</span><span class=n>lastSuccessResult</span> <span class=o>!=</span> <span class=k>null</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                    <span class=n>ScreenState</span><span class=p>.</span><span class=n>ETA_WITH_ERROR_BANNER</span>
+</span></span><span class=line><span class=cl>                <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                    <span class=n>ScreenState</span><span class=p>.</span><span class=n>FULL_SCREEN_ERROR</span>
+</span></span><span class=line><span class=cl>                <span class=p>}</span>
+</span></span><span class=line><span class=cl>                <span class=k>is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span> <span class=o>-&gt;</span> <span class=n>ScreenState</span><span class=p>.</span><span class=n>ETA</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=n>Loadable</span><span class=p>.</span><span class=n>Loading</span> <span class=o>-&gt;</span> <span class=k>when</span> <span class=p>(</span><span class=k>it</span><span class=p>.</span><span class=n>lastFailResult</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>EtaResult</span><span class=p>.</span><span class=n>Delay</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=k>is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Incident</span> <span class=o>-&gt;</span> <span class=n>ScreenState</span><span class=p>.</span><span class=n>FULL_SCREEN_ERROR</span>
+</span></span><span class=line><span class=cl>            <span class=k>is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Error</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=n>EtaResult</span><span class=p>.</span><span class=n>InternalServerError</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=n>EtaResult</span><span class=p>.</span><span class=n>TooManyRequests</span> <span class=o>-&gt;</span> <span class=k>if</span> <span class=p>(</span><span class=k>it</span><span class=p>.</span><span class=n>lastSuccessResult</span> <span class=o>!=</span> <span class=k>null</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=n>ScreenState</span><span class=p>.</span><span class=n>ETA_WITH_ERROR_BANNER</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=n>ScreenState</span><span class=p>.</span><span class=n>FULL_SCREEN_ERROR</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>            <span class=k>null</span> <span class=o>-&gt;</span> <span class=k>if</span> <span class=p>(</span><span class=k>it</span><span class=p>.</span><span class=n>lastSuccessResult</span> <span class=o>!=</span> <span class=k>null</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=n>ScreenState</span><span class=p>.</span><span class=n>ETA</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=n>ScreenState</span><span class=p>.</span><span class=n>LOADING</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>有了這個 <code>screenState</code> 判斷何時要顯示那種畫面我們就容易修改其餘的地方。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>private</span> <span class=k>val</span> <span class=py>loadedEtaResult</span> <span class=p>=</span> <span class=n>etaResult</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span><span class=p>.</span><span class=n>currentResult</span><span class=p>.</span><span class=k>value</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>filterIsInstance</span><span class=p>&lt;</span><span class=n>Loadable</span><span class=p>.</span><span class=n>Loaded</span><span class=p>&lt;</span><span class=n>EtaResult</span><span class=p>&gt;&gt;()</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span><span class=p>.</span><span class=k>value</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=k>val</span> <span class=py>showLoading</span><span class=p>:</span> <span class=n>StateFlow</span><span class=p>&lt;</span><span class=n>Boolean</span><span class=p>&gt;</span> <span class=p>=</span> <span class=n>screenState</span><span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span> <span class=o>==</span> <span class=n>ScreenState</span><span class=p>.</span><span class=n>LOADING</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>stateIn</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>        <span class=n>initialValue</span> <span class=p>=</span> <span class=k>true</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>val</span> <span class=py>showFullScreenError</span> <span class=p>=</span> <span class=n>screenState</span><span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span> <span class=o>==</span> <span class=n>ScreenState</span><span class=p>.</span><span class=n>FULL_SCREEN_ERROR</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>stateIn</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>        <span class=n>initialValue</span> <span class=p>=</span> <span class=k>false</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>val</span> <span class=py>showErrorBanner</span> <span class=p>=</span> <span class=n>screenState</span><span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span> <span class=o>==</span> <span class=n>ScreenState</span><span class=p>.</span><span class=n>ETA_WITH_ERROR_BANNER</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>stateIn</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>        <span class=n>initialValue</span> <span class=p>=</span> <span class=k>false</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>val</span> <span class=py>showEtaList</span> <span class=p>=</span> <span class=n>screenState</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span> <span class=o>==</span> <span class=n>ScreenState</span><span class=p>.</span><span class=n>ETA</span> <span class=o>||</span> <span class=k>it</span> <span class=o>==</span> <span class=n>ScreenState</span><span class=p>.</span><span class=n>ETA_WITH_ERROR_BANNER</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>stateIn</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>        <span class=n>initialValue</span> <span class=p>=</span> <span class=k>false</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>val</span> <span class=py>etaList</span> <span class=p>=</span> <span class=n>etaResult</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span><span class=p>.</span><span class=n>lastSuccessResult</span><span class=o>?.</span><span class=n>schedule</span><span class=p>.</span><span class=n>orEmpty</span><span class=p>()</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>combine</span><span class=p>(</span><span class=n>sortedBy</span><span class=p>)</span> <span class=p>{</span> <span class=n>schedule</span><span class=p>,</span> <span class=n>sortedBy</span> <span class=o>-&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// 略
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>stateIn</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>        <span class=n>initialValue</span> <span class=p>=</span> <span class=n>emptyList</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>    <span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>fun</span> <span class=nf>startAutoRefresh</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>autoRefreshScope</span><span class=p>.</span><span class=n>launch</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// 略
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=k>fun</span> <span class=nf>viewIncidentDetail</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>val</span> <span class=py>result</span> <span class=p>=</span> <span class=n>etaResult</span><span class=p>.</span><span class=k>value</span><span class=p>.</span><span class=n>currentResult</span><span class=p>.</span><span class=k>value</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=n>result</span> <span class=o>!is</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loaded</span><span class=p>)</span> <span class=k>return</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=n>result</span><span class=p>.</span><span class=k>value</span> <span class=o>!is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Incident</span><span class=p>)</span> <span class=k>return</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// 略
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
+</span></span></code></pre></div><h2 id=小結>小結<a hidden class=anchor aria-hidden=true href=#小結>#</a></h2><p>這樣我們就完成了顯示錯誤 banner 功能了。本篇主要是示範了用 <code>scan</code> operator 把當前和以前的值整合成一個 <code>Flow</code> 內，另外亦用 enum 表達目前整頁的狀態。其實我們不知不覺間已經將整頁的狀態由一個 <code>StateFlow</code> 表達出來（就是 <code>etaResult</code>），只不過我們另外衍生一堆零碎 <code>StateFlow</code> 供 data binding 用。其實我們可以將 <code>etaResult</code> 和 <code>screenState</code> 兩個 <code>Flow</code> 二合為一，屆時 <code>ScreenState</code> 不會是 enum 而是 sealed interface，原先的 <code>LOADING</code>、<code>ETA</code>、<code>FULL_SCREEN_ERROR</code>、<code>ETA_WITH_ERROR_BANNER</code> 就會變成一個個 object expression 和 data class。這樣就做到了 MVI (Model-View-Intent) 的 state reducer 風味的東西，而且又有類似 unidirectional data flow 的機制。現在那些 <code>showLoading</code>、<code>showFullScreenError</code>、<code>showEtaList</code> 之類的 <code>StateFlow</code> 都是為了避免在 layout XML 寫太複雜的邏輯（因為不方便做 unit testing 和它本身是 XML 所以某些字符要 escape）而造出來的。日後改用 Jetpack Compose 寫 UI 的話相信可以減省到只外露 <code>ScreenState</code> sealed interface 的 <code>Flow</code> 就足夠了。</p><p>完整的 code 可以到 <a href=https://github.com/ericksli/eta-demo/tree/main/app/src/main/java/net/swiftzer/etademo/presentation/eta>GitHub repo</a> 查閱，下一篇我們會寫 <code>ViewModel</code> 的 unit test case。</p></div><footer class=post-footer><ul class=post-tags><li><a href=https://eric.swiftzer.net/tags/2021-ithome-%E9%90%B5%E4%BA%BA%E8%B3%BD/>2021 iThome 鐵人賽</a></li><li><a href=https://eric.swiftzer.net/tags/android/>Android</a></li></ul><nav class=paginav><a class=prev href=https://eric.swiftzer.net/2021/10/2021-ithome-ironman-26-station-list-screen-testing/><span class=title>« 上一篇</span><br><span>2021 iThome 鐵人賽 Day 26：Station list screen testing</span></a>
+<a class=next href=https://eric.swiftzer.net/2021/10/2021-ithome-ironman-24-eta-screen-3/><span class=title>下一篇 »</span><br><span>2021 iThome 鐵人賽 Day 24：ETA screen (3)</span></a></nav></footer><div id=disqus_thread></div><script type=application/javascript>window.disqus_config=function(){},function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById("disqus_thread").innerHTML="Disqus comments not available by default when the website is previewed locally.";return}var t=document,e=t.createElement("script");e.async=!0,e.src="//efilm.disqus.com/embed.js",e.setAttribute("data-timestamp",+new Date),(t.head||t.body).appendChild(e)}()</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></article></main><footer class=footer><span>&copy; 2022 <a href=https://eric.swiftzer.net/>EricLog</a></span>
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg></a><script>let menu=document.getElementById("menu");menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)},document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script></body></html>

@@ -1,171 +1,32 @@
-<!doctype html><html lang=zh-hant-hk dir=auto>
-<head><meta charset=utf-8>
-<meta http-equiv=x-ua-compatible content="IE=edge">
-<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta name=robots content="index, follow">
-<title>2021 iThome 鐵人賽 Day 5：Dependency injection | EricLog</title>
-<meta name=keywords content="2021 iThome 鐵人賽,Android">
-<meta name=description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 5 篇，你可到 iThome 查看原文。 文章目錄 談到 Android 的 dependency injection (DI)，大家一定會想到 Dagger 這個 DI l">
-<meta name=author content>
-<link rel=canonical href=https://ithelp.ithome.com.tw/articles/10268173>
-<link href=/assets/css/stylesheet.min.d1fc837a267f77f6ede89d1a89c4880a90c381d9e6673ad4a76a3ad1900b65f9.css integrity="sha256-0fyDeiZ/d/bt6J0aicSICpDDgdnmZzrUp2o60ZALZfk=" rel="preload stylesheet" as=style>
-<link rel=icon href=https://eric.swiftzer.net/favicon.ico>
-<link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png>
-<link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png>
-<link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png>
-<link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg>
-<meta name=theme-color content="#2e2e33">
-<meta name=msapplication-TileColor content="#2e2e33">
-<meta name=generator content="Hugo 0.88.1">
-<link rel=preconnect href=https://fonts.gstatic.com>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-1268728-8','auto'),ga('send','pageview'))</script>
-<script async src=https://www.google-analytics.com/analytics.js></script>
-<meta property="og:title" content="2021 iThome 鐵人賽 Day 5：Dependency injection">
-<meta property="og:description" content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 5 篇，你可到 iThome 查看原文。 文章目錄 談到 Android 的 dependency injection (DI)，大家一定會想到 Dagger 這個 DI l">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://eric.swiftzer.net/2021/09/2021-ithome-ironman-05-dependency-injection/"><meta property="article:section" content="posts">
-<meta property="article:published_time" content="2021-09-20T00:00:00+08:00">
-<meta property="article:modified_time" content="2021-09-20T00:00:00+08:00">
-<meta name=twitter:card content="summary">
-<meta name=twitter:title content="2021 iThome 鐵人賽 Day 5：Dependency injection">
-<meta name=twitter:description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 5 篇，你可到 iThome 查看原文。 文章目錄 談到 Android 的 dependency injection (DI)，大家一定會想到 Dagger 這個 DI l">
-<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"2021 iThome 鐵人賽 Day 5：Dependency injection","item":"https://eric.swiftzer.net/2021/09/2021-ithome-ironman-05-dependency-injection/"}]}</script>
-<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"2021 iThome 鐵人賽 Day 5：Dependency injection","name":"2021 iThome 鐵人賽 Day 5：Dependency injection","description":"本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 5 篇，你可到 iThome 查看原文。 文章目錄 談到 Android 的 dependency injection (DI)，大家一定會想到 Dagger 這個 DI l","keywords":["2021 iThome 鐵人賽","Android"],"articleBody":" 本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 5 篇，你可到 iThome 查看原文。\n文章目錄\n 談到 Android 的 dependency injection (DI)，大家一定會想到 Dagger 這個 DI library。因為 Dagger 2 是由 Google 開發，加上在 Android Developers 網站有對應的教學文章，所以成為不二之選。不過 Dagger 向來都有難學的印象，尤其是在以前 Dagger 2 網站那個惡名昭彰的咖啡機教學。本來用咖啡機來說明 DI 的概念就沒有甚麼大問題，問題在於看完那個咖啡機類比是不會知道如何在 Android app 上套用那些概念和 Dagger 提供的功能。或許大家讀電腦科學／計算機科學／資訊工程之類的課程時都有學過 DI 但還是不能順利地用 Dagger，這是因為 Android 那些組件的 constructor 不是由我們去 call，結果要在 onCreate 之類的 callback 加上 DI library 要我們寫的 code 才能拿到我們要用的 dependency。\nGoogle 曾經推出過 Dagger Android 的 library，就是方便在 Android 開發時使用 Dagger。留意 Dagger 本身並不是只為 Android 設計，它本來是一個通用的 DI library。但推出後有些人發覺它甚至比原裝 Dagger 更難用。所以他們做了一個替代品：Dagger Hilt。其實 Dagger Hilt 就是把 Dagger 在 Android 的用法標準化，本來在 Dagger 一些由我們去定義的東西在 Dagger Hilt 變成由 Hilt 提供，我們要按照 Hilt 規定的方式做 DI。其中一個例子是 component 改為由 Hilt 按 Android 各部件的 lifecycle 預先安排好的 component。再加上 Hilt 的 Gradle plugin 和 Android Jetpack library 的配合，這樣就可以將平時用 Dagger 要寫的一大堆 boilerplate code 大大減少，而且在進入新的開發團隊時不用再浪費時間理解那些 AppComponent、@Singleton 的實際意義。\n現在討論 Dagger Hilt 沒有實際 code 做示範，感覺比較虛無，我們會在之後用到 Dagger Hilt 時再作講解。在結束本篇之前，相信大家心入面都會問一個問題：為甚麼要用 DI library。或許有不少人都是為用而用，或者是因為面試會問到所以要學習這些 library。我覺得最易理解為甚麼要用 DI 就是試試找一個沒有寫過單元測試 (unit test) 的項目把一些現有的 class 為它們寫單元測試，當你發現困難重重時（例如用了太多 singleton、很多地方寫死了在 unit test 很難換走導致很多情景無法製造出來）就會開始明白為甚麼要用 DI library。不過不用擔心，這次的示範 app 本身就有考慮到 unit testing 來寫的，我們會在下一篇開始用 Dagger Hilt。\n準備工作 在最頂層的 build.gradle 和 app module 的 build.gradle 加上 Dagger Hilt 的 Gradle plugin 和 Dagger Hilt 相關的 dependency。\n// root level build.gradle buildscript { ext.daggerVersion = '2.38.1' repositories { google() mavenCentral() } dependencies { // ...  classpath \"com.google.dagger:hilt-android-gradle-plugin:$daggerVersion\" } } // app module build.gradle implementation \"com.google.dagger:hilt-android:$daggerVersion\" kapt \"com.google.dagger:hilt-compiler:$daggerVersion\" testImplementation \"com.google.dagger:hilt-android-testing:$daggerVersion\" testAnnotationProcessor \"com.google.dagger:hilt-compiler:$daggerVersion\" androidTestImplementation \"com.google.dagger:hilt-android-testing:$daggerVersion\" androidTestAnnotationProcessor \"com.google.dagger:hilt-compiler:$daggerVersion\" 然後為自行 extend 出來的 Application 加上 Dagger Hilt 的 annotation。不要忘記在 manifest 的 application tag 加上 name attribute。\n@HiltAndroidApp class EtaDemoApp : Application() { override fun onCreate() { super.onCreate() } } 小結  Dagger Hilt 是建基於 Dagger 的 library，它就是為 Android 開發時用 Dagger 提供了一個固定的範式 Dagger Hilt 有 Gradle plugin 能減少平常用 Dagger 時所寫的 boilerplate code，加上其他 Jetpack library 的配套令我們用 Dagger 更自然（令人感覺上更似 dependency injection 而不是 service locator） 用 DI library 很大部分的原因是為了方便寫 unit test 時能把依賴的組件換成其他東西，這樣就能測試到不同的場景  補充資料  Dependency Injection: Comparing Dagger, Koin and Hilt - Maia Grotepass Understanding the difference between DI and SL  ","wordCount":"1188","inLanguage":"en","datePublished":"2021-09-20T00:00:00+08:00","dateModified":"2021-09-20T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2021/09/2021-ithome-ironman-05-dependency-injection/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
-</head>
-<body id=top>
-<script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
-<noscript>
-<style type=text/css>#theme-toggle,.top-link{display:none}</style>
-<style>@media(prefers-color-scheme:dark){:root{--theme:#1d1e20;--entry:#2e2e33;--primary:rgba(255, 255, 255, 0.84);--secondary:rgba(255, 255, 255, 0.56);--tertiary:rgba(255, 255, 255, 0.16);--content:rgba(255, 255, 255, 0.74);--hljs-bg:#2e2e33;--code-bg:#37383e;--border:#333}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
-</noscript>
-<header class=header>
-<nav class=nav>
-<div class=logo>
-<a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
-<span class=logo-switches>
-<button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-</button>
-</span>
-</div>
-<ul id=menu onscroll=menu_on_scroll()>
-<li>
-<a href=https://eric.swiftzer.net/fonts/ title=Fonts>
-<span>Fonts</span>
-</a>
-</li>
-<li>
-<a href=https://eric.swiftzer.net/archives/ title=Archives>
-<span>Archives</span>
-</a>
-</li>
-<li>
-<a href=https://eric.swiftzer.net/tags/ title=Tags>
-<span>Tags</span>
-</a>
-</li>
-<li>
-<a href=https://eric.swiftzer.net/about/ title=About>
-<span>About</span>
-</a>
-</li></ul>
-</nav>
-</header>
-<main class=main>
-<article class=post-single>
-<header class=post-header>
-<div class=breadcrumbs>
-<a href=https://eric.swiftzer.net/>Home</a>&nbsp;»&nbsp;<a href=https://eric.swiftzer.net/posts/>Posts</a>
-</div>
-<h1 class=post-title>
-2021 iThome 鐵人賽 Day 5：Dependency injection
-</h1>
-<div class=post-meta>September 20, 2021
-</div>
-</header>
-<div class=post-content>
-<blockquote>
-<p>本篇文章是 <a href=https://ithelp.ithome.com.tw/2021ironman>2021 iThome 鐵人賽</a>參賽題目「<a href=https://ithelp.ithome.com.tw/users/20139666/ironman/4661>寫一個列車抵站時間 Android App</a>」的第 5 篇，你可到 iThome <a href=https://ithelp.ithome.com.tw/articles/10268173>查看原文</a>。</p>
-<p><a href=https://eric.swiftzer.net/2021-ithome-ironman/>文章目錄</a></p>
-</blockquote>
-<p>談到 Android 的 dependency injection (DI)，大家一定會想到 Dagger 這個 DI library。因為 Dagger 2 是由 Google 開發，加上在 Android Developers 網站有對應的教學文章，所以成為不二之選。不過 Dagger 向來都有難學的印象，尤其是在以前 Dagger 2 網站那個惡名昭彰的<a href=https://dagger.dev/dev-guide/>咖啡機教學</a>。本來用咖啡機來說明 DI 的概念就沒有甚麼大問題，問題在於看完那個咖啡機類比是不會知道如何在 Android app 上套用那些概念和 Dagger 提供的功能。或許大家讀電腦科學／計算機科學／資訊工程之類的課程時都有學過 DI 但還是不能順利地用 Dagger，這是因為 Android 那些組件的 constructor 不是由我們去 call，結果要在 <code>onCreate</code> 之類的 callback 加上 DI library 要我們寫的 code 才能拿到我們要用的 dependency。</p>
-<p>Google 曾經推出過 Dagger Android 的 library，就是方便在 Android 開發時使用 Dagger。留意 Dagger 本身並不是只為 Android 設計，它本來是一個通用的 DI library。但推出後<a href=https://www.reddit.com/r/androiddev/comments/dp93j3/daggerandroid_is_dead_long_live_dagger_in_android/>有些人發覺它甚至比原裝 Dagger 更難用</a>。所以他們做了一個替代品：Dagger Hilt。其實 Dagger Hilt 就是把 Dagger 在 Android 的用法標準化，本來在 Dagger 一些由我們去定義的東西在 Dagger Hilt 變成由 Hilt 提供，我們要按照 Hilt 規定的方式做 DI。其中一個例子是 component 改為由 Hilt 按 Android 各部件的 lifecycle 預先安排好的 component。再加上 Hilt 的 Gradle plugin 和 Android Jetpack library 的配合，這樣就可以將平時用 Dagger 要寫的一大堆 boilerplate code 大大減少，而且在進入新的開發團隊時不用再浪費時間理解那些 <code>AppComponent</code>、<code>@Singleton</code> 的實際意義。</p>
-<p>現在討論 Dagger Hilt 沒有實際 code 做示範，感覺比較虛無，我們會在之後用到 Dagger Hilt 時再作講解。在結束本篇之前，相信大家心入面都會問一個問題：為甚麼要用 DI library。或許有不少人都是為用而用，或者是因為面試會問到所以要學習這些 library。我覺得最易理解為甚麼要用 DI 就是試試找一個沒有寫過單元測試 (unit test) 的項目把一些現有的 class 為它們寫單元測試，當你發現困難重重時（例如用了太多 singleton、很多地方寫死了在 unit test 很難換走導致很多情景無法製造出來）就會開始明白為甚麼要用 DI library。不過不用擔心，這次的示範 app 本身就有考慮到 unit testing 來寫的，我們會在下一篇開始用 Dagger Hilt。</p>
-<h2 id=準備工作>準備工作<a hidden class=anchor aria-hidden=true href=#準備工作>#</a></h2>
-<p>在最頂層的 <em>build.gradle</em> 和 app module 的 <em>build.gradle</em> 加上 Dagger Hilt 的 Gradle plugin 和 Dagger Hilt 相關的 dependency。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-groovy data-lang=groovy><span class=c1>// root level build.gradle
-</span><span class=c1></span><span class=n>buildscript</span> <span class=o>{</span>
-    <span class=n>ext</span><span class=o>.</span><span class=na>daggerVersion</span> <span class=o>=</span> <span class=s1>&#39;2.38.1&#39;</span>
-    <span class=n>repositories</span> <span class=o>{</span>
-        <span class=n>google</span><span class=o>()</span>
-        <span class=n>mavenCentral</span><span class=o>()</span>
-    <span class=o>}</span>
-    <span class=n>dependencies</span> <span class=o>{</span>
-        <span class=c1>// ...
-</span><span class=c1></span>        <span class=n>classpath</span> <span class=s2>&#34;com.google.dagger:hilt-android-gradle-plugin:$daggerVersion&#34;</span>
-    <span class=o>}</span>
-<span class=o>}</span>
-</code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-groovy data-lang=groovy><span class=c1>// app module build.gradle
-</span><span class=c1></span><span class=n>implementation</span> <span class=s2>&#34;com.google.dagger:hilt-android:$daggerVersion&#34;</span>
-<span class=n>kapt</span> <span class=s2>&#34;com.google.dagger:hilt-compiler:$daggerVersion&#34;</span>
-<span class=n>testImplementation</span> <span class=s2>&#34;com.google.dagger:hilt-android-testing:$daggerVersion&#34;</span>
-<span class=n>testAnnotationProcessor</span> <span class=s2>&#34;com.google.dagger:hilt-compiler:$daggerVersion&#34;</span>
-<span class=n>androidTestImplementation</span> <span class=s2>&#34;com.google.dagger:hilt-android-testing:$daggerVersion&#34;</span>
-<span class=n>androidTestAnnotationProcessor</span> <span class=s2>&#34;com.google.dagger:hilt-compiler:$daggerVersion&#34;</span>
-</code></pre></div><p>然後為自行 extend 出來的 <code>Application</code> 加上 Dagger Hilt 的 annotation。不要忘記在 manifest 的 <code>application</code> tag 加上 <code>name</code> attribute。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=nd>@HiltAndroidApp</span>
-<span class=k>class</span> <span class=nc>EtaDemoApp</span> <span class=p>:</span> <span class=n>Application</span><span class=p>()</span> <span class=p>{</span>
-    <span class=k>override</span> <span class=k>fun</span> <span class=nf>onCreate</span><span class=p>()</span> <span class=p>{</span>
-        <span class=k>super</span><span class=p>.</span><span class=n>onCreate</span><span class=p>()</span>
-    <span class=p>}</span>
-<span class=p>}</span>
-</code></pre></div><h2 id=小結>小結<a hidden class=anchor aria-hidden=true href=#小結>#</a></h2>
-<ul>
-<li>Dagger Hilt 是建基於 Dagger 的 library，它就是為 Android 開發時用 Dagger 提供了一個固定的範式</li>
-<li>Dagger Hilt 有 Gradle plugin 能減少平常用 Dagger 時所寫的 boilerplate code，加上其他 Jetpack library 的配套令我們用 Dagger 更自然（令人感覺上更似 dependency injection 而不是 <a href=https://www.reddit.com/r/androiddev/comments/d1b4i1/understanding_the_difference_between_di_and_sl/>service locator</a>）</li>
-<li>用 DI library 很大部分的原因是為了方便寫 unit test 時能把依賴的組件換成其他東西，這樣就能測試到不同的場景</li>
-</ul>
-<h2 id=補充資料>補充資料<a hidden class=anchor aria-hidden=true href=#補充資料>#</a></h2>
-<ul>
-<li><a href="https://www.youtube.com/watch?v=-MJm4UGoh5I">Dependency Injection: Comparing Dagger, Koin and Hilt - Maia Grotepass</a></li>
-<li><a href=https://www.reddit.com/r/androiddev/comments/d1b4i1/understanding_the_difference_between_di_and_sl/>Understanding the difference between DI and SL</a></li>
-</ul>
-</div>
-<footer class=post-footer>
-<ul class=post-tags>
-<li><a href=https://eric.swiftzer.net/tags/2021-ithome-%E9%90%B5%E4%BA%BA%E8%B3%BD/>2021 iThome 鐵人賽</a></li>
-<li><a href=https://eric.swiftzer.net/tags/android/>Android</a></li>
-</ul>
-<nav class=paginav>
-<a class=prev href=https://eric.swiftzer.net/2021/09/2021-ithome-ironman-06-http-client/>
-<span class=title>« Prev Page</span>
-<br>
-<span>2021 iThome 鐵人賽 Day 6：HTTP Client</span>
-</a>
-<a class=next href=https://eric.swiftzer.net/2021/09/2021-ithome-ironman-04-deserialization/>
-<span class=title>Next Page »</span>
-<br>
-<span>2021 iThome 鐵人賽 Day 4：Deserialization</span>
-</a>
-</nav>
-</footer><div id=disqus_thread></div>
-<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//efilm.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
-<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
-<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
-</article>
-</main><footer class=footer>
-<span>&copy; 2022 <a href=https://eric.swiftzer.net/>EricLog</a></span>
-<span>&#183;</span>
-<span>Powered by <a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a></span>
-<span>&#183;</span>
-<span>Theme <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span>
-</footer>
-<a href=#top aria-label="go to top" title="Go to Top (Alt + G)">
-<button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
-</button>
-</a>
-<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
-<script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script>
-<script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
-</body>
-</html>
+<!doctype html><html lang=zh-tw dir=auto><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>2021 iThome 鐵人賽 Day 5：Dependency injection | EricLog</title><meta name=keywords content="2021 iThome 鐵人賽,Android"><meta name=description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 5 篇，你可到 iThome 查看原文。 文章目錄 談到 Android 的 dependency injection (DI)，大家一定會想到 Dagger 這個 DI l"><meta name=author content><link rel=canonical href=https://ithelp.ithome.com.tw/articles/10268173><link crossorigin=anonymous href=/assets/css/stylesheet.min.249b1770ac429c01ffa746cc012a310192d174c913b1527f312e3294a0766d1c.css integrity="sha256-JJsXcKxCnAH/p0bMASoxAZLRdMkTsVJ/MS4ylKB2bRw=" rel="preload stylesheet" as=style><link rel=icon href=https://eric.swiftzer.net/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png><link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png><link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><meta name=generator content="Hugo 0.101.0"><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--hljs-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><link rel=preconnect href=https://fonts.gstatic.com><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet><script async src="https://www.googletagmanager.com/gtag/js?id=G-D93F946T73"></script>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-D93F946T73",{anonymize_ip:!1})}</script><meta property="og:title" content="2021 iThome 鐵人賽 Day 5：Dependency injection"><meta property="og:description" content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 5 篇，你可到 iThome 查看原文。 文章目錄 談到 Android 的 dependency injection (DI)，大家一定會想到 Dagger 這個 DI l"><meta property="og:type" content="article"><meta property="og:url" content="https://eric.swiftzer.net/2021/09/2021-ithome-ironman-05-dependency-injection/"><meta property="article:section" content="posts"><meta property="article:published_time" content="2021-09-20T00:00:00+08:00"><meta property="article:modified_time" content="2021-09-20T00:00:00+08:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="2021 iThome 鐵人賽 Day 5：Dependency injection"><meta name=twitter:description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 5 篇，你可到 iThome 查看原文。 文章目錄 談到 Android 的 dependency injection (DI)，大家一定會想到 Dagger 這個 DI l"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"2021 iThome 鐵人賽 Day 5：Dependency injection","item":"https://eric.swiftzer.net/2021/09/2021-ithome-ironman-05-dependency-injection/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"2021 iThome 鐵人賽 Day 5：Dependency injection","name":"2021 iThome 鐵人賽 Day 5：Dependency injection","description":"本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 5 篇，你可到 iThome 查看原文。 文章目錄 談到 Android 的 dependency injection (DI)，大家一定會想到 Dagger 這個 DI l","keywords":["2021 iThome 鐵人賽","Android"],"articleBody":" 本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 5 篇，你可到 iThome 查看原文。\n文章目錄\n談到 Android 的 dependency injection (DI)，大家一定會想到 Dagger 這個 DI library。因為 Dagger 2 是由 Google 開發，加上在 Android Developers 網站有對應的教學文章，所以成為不二之選。不過 Dagger 向來都有難學的印象，尤其是在以前 Dagger 2 網站那個惡名昭彰的咖啡機教學。本來用咖啡機來說明 DI 的概念就沒有甚麼大問題，問題在於看完那個咖啡機類比是不會知道如何在 Android app 上套用那些概念和 Dagger 提供的功能。或許大家讀電腦科學／計算機科學／資訊工程之類的課程時都有學過 DI 但還是不能順利地用 Dagger，這是因為 Android 那些組件的 constructor 不是由我們去 call，結果要在 onCreate 之類的 callback 加上 DI library 要我們寫的 code 才能拿到我們要用的 dependency。\nGoogle 曾經推出過 Dagger Android 的 library，就是方便在 Android 開發時使用 Dagger。留意 Dagger 本身並不是只為 Android 設計，它本來是一個通用的 DI library。但推出後有些人發覺它甚至比原裝 Dagger 更難用。所以他們做了一個替代品：Dagger Hilt。其實 Dagger Hilt 就是把 Dagger 在 Android 的用法標準化，本來在 Dagger 一些由我們去定義的東西在 Dagger Hilt 變成由 Hilt 提供，我們要按照 Hilt 規定的方式做 DI。其中一個例子是 component 改為由 Hilt 按 Android 各部件的 lifecycle 預先安排好的 component。再加上 Hilt 的 Gradle plugin 和 Android Jetpack library 的配合，這樣就可以將平時用 Dagger 要寫的一大堆 boilerplate code 大大減少，而且在進入新的開發團隊時不用再浪費時間理解那些 AppComponent、@Singleton 的實際意義。\n現在討論 Dagger Hilt 沒有實際 code 做示範，感覺比較虛無，我們會在之後用到 Dagger Hilt 時再作講解。在結束本篇之前，相信大家心入面都會問一個問題：為甚麼要用 DI library。或許有不少人都是為用而用，或者是因為面試會問到所以要學習這些 library。我覺得最易理解為甚麼要用 DI 就是試試找一個沒有寫過單元測試 (unit test) 的項目把一些現有的 class 為它們寫單元測試，當你發現困難重重時（例如用了太多 singleton、很多地方寫死了在 unit test 很難換走導致很多情景無法製造出來）就會開始明白為甚麼要用 DI library。不過不用擔心，這次的示範 app 本身就有考慮到 unit testing 來寫的，我們會在下一篇開始用 Dagger Hilt。\n準備工作 在最頂層的 build.gradle 和 app module 的 build.gradle 加上 Dagger Hilt 的 Gradle plugin 和 Dagger Hilt 相關的 dependency。\n// root level build.gradle buildscript { ext.daggerVersion = '2.38.1' repositories { google() mavenCentral() } dependencies { // ... classpath \"com.google.dagger:hilt-android-gradle-plugin:$daggerVersion\" } } // app module build.gradle implementation \"com.google.dagger:hilt-android:$daggerVersion\" kapt \"com.google.dagger:hilt-compiler:$daggerVersion\" testImplementation \"com.google.dagger:hilt-android-testing:$daggerVersion\" testAnnotationProcessor \"com.google.dagger:hilt-compiler:$daggerVersion\" androidTestImplementation \"com.google.dagger:hilt-android-testing:$daggerVersion\" androidTestAnnotationProcessor \"com.google.dagger:hilt-compiler:$daggerVersion\" 然後為自行 extend 出來的 Application 加上 Dagger Hilt 的 annotation。不要忘記在 manifest 的 application tag 加上 name attribute。\n@HiltAndroidApp class EtaDemoApp : Application() { override fun onCreate() { super.onCreate() } } 小結 Dagger Hilt 是建基於 Dagger 的 library，它就是為 Android 開發時用 Dagger 提供了一個固定的範式 Dagger Hilt 有 Gradle plugin 能減少平常用 Dagger 時所寫的 boilerplate code，加上其他 Jetpack library 的配套令我們用 Dagger 更自然（令人感覺上更似 dependency injection 而不是 service locator） 用 DI library 很大部分的原因是為了方便寫 unit test 時能把依賴的組件換成其他東西，這樣就能測試到不同的場景 補充資料 Dependency Injection: Comparing Dagger, Koin and Hilt - Maia Grotepass Understanding the difference between DI and SL ","wordCount":"1188","inLanguage":"zh-tw","datePublished":"2021-09-20T00:00:00+08:00","dateModified":"2021-09-20T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2021/09/2021-ithome-ironman-05-dependency-injection/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
+<span class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></span></div><ul id=menu><li><a href=https://eric.swiftzer.net/fonts/ title=Fonts><span>Fonts</span></a></li><li><a href=https://eric.swiftzer.net/archives/ title=Archives><span>Archives</span></a></li><li><a href=https://eric.swiftzer.net/tags/ title=Tags><span>Tags</span></a></li><li><a href=https://eric.swiftzer.net/about/ title=About><span>About</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><div class=breadcrumbs><a href=https://eric.swiftzer.net/>首頁</a>&nbsp;»&nbsp;<a href=https://eric.swiftzer.net/posts/>Posts</a></div><h1 class=post-title>2021 iThome 鐵人賽 Day 5：Dependency injection</h1><div class=post-meta>September 20, 2021</div></header><div class=post-content><blockquote><p>本篇文章是 <a href=https://ithelp.ithome.com.tw/2021ironman>2021 iThome 鐵人賽</a>參賽題目「<a href=https://ithelp.ithome.com.tw/users/20139666/ironman/4661>寫一個列車抵站時間 Android App</a>」的第 5 篇，你可到 iThome <a href=https://ithelp.ithome.com.tw/articles/10268173>查看原文</a>。</p><p><a href=https://eric.swiftzer.net/2021-ithome-ironman/>文章目錄</a></p></blockquote><p>談到 Android 的 dependency injection (DI)，大家一定會想到 Dagger 這個 DI library。因為 Dagger 2 是由 Google 開發，加上在 Android Developers 網站有對應的教學文章，所以成為不二之選。不過 Dagger 向來都有難學的印象，尤其是在以前 Dagger 2 網站那個惡名昭彰的<a href=https://dagger.dev/dev-guide/>咖啡機教學</a>。本來用咖啡機來說明 DI 的概念就沒有甚麼大問題，問題在於看完那個咖啡機類比是不會知道如何在 Android app 上套用那些概念和 Dagger 提供的功能。或許大家讀電腦科學／計算機科學／資訊工程之類的課程時都有學過 DI 但還是不能順利地用 Dagger，這是因為 Android 那些組件的 constructor 不是由我們去 call，結果要在 <code>onCreate</code> 之類的 callback 加上 DI library 要我們寫的 code 才能拿到我們要用的 dependency。</p><p>Google 曾經推出過 Dagger Android 的 library，就是方便在 Android 開發時使用 Dagger。留意 Dagger 本身並不是只為 Android 設計，它本來是一個通用的 DI library。但推出後<a href=https://www.reddit.com/r/androiddev/comments/dp93j3/daggerandroid_is_dead_long_live_dagger_in_android/>有些人發覺它甚至比原裝 Dagger 更難用</a>。所以他們做了一個替代品：Dagger Hilt。其實 Dagger Hilt 就是把 Dagger 在 Android 的用法標準化，本來在 Dagger 一些由我們去定義的東西在 Dagger Hilt 變成由 Hilt 提供，我們要按照 Hilt 規定的方式做 DI。其中一個例子是 component 改為由 Hilt 按 Android 各部件的 lifecycle 預先安排好的 component。再加上 Hilt 的 Gradle plugin 和 Android Jetpack library 的配合，這樣就可以將平時用 Dagger 要寫的一大堆 boilerplate code 大大減少，而且在進入新的開發團隊時不用再浪費時間理解那些 <code>AppComponent</code>、<code>@Singleton</code> 的實際意義。</p><p>現在討論 Dagger Hilt 沒有實際 code 做示範，感覺比較虛無，我們會在之後用到 Dagger Hilt 時再作講解。在結束本篇之前，相信大家心入面都會問一個問題：為甚麼要用 DI library。或許有不少人都是為用而用，或者是因為面試會問到所以要學習這些 library。我覺得最易理解為甚麼要用 DI 就是試試找一個沒有寫過單元測試 (unit test) 的項目把一些現有的 class 為它們寫單元測試，當你發現困難重重時（例如用了太多 singleton、很多地方寫死了在 unit test 很難換走導致很多情景無法製造出來）就會開始明白為甚麼要用 DI library。不過不用擔心，這次的示範 app 本身就有考慮到 unit testing 來寫的，我們會在下一篇開始用 Dagger Hilt。</p><h2 id=準備工作>準備工作<a hidden class=anchor aria-hidden=true href=#準備工作>#</a></h2><p>在最頂層的 <em>build.gradle</em> 和 app module 的 <em>build.gradle</em> 加上 Dagger Hilt 的 Gradle plugin 和 Dagger Hilt 相關的 dependency。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-groovy data-lang=groovy><span class=line><span class=cl><span class=c1>// root level build.gradle
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=n>buildscript</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>ext</span><span class=o>.</span><span class=na>daggerVersion</span> <span class=o>=</span> <span class=s1>&#39;2.38.1&#39;</span>
+</span></span><span class=line><span class=cl>    <span class=n>repositories</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>google</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>        <span class=n>mavenCentral</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>    <span class=n>dependencies</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// ...
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=n>classpath</span> <span class=s2>&#34;com.google.dagger:hilt-android-gradle-plugin:$daggerVersion&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-groovy data-lang=groovy><span class=line><span class=cl><span class=c1>// app module build.gradle
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=n>implementation</span> <span class=s2>&#34;com.google.dagger:hilt-android:$daggerVersion&#34;</span>
+</span></span><span class=line><span class=cl><span class=n>kapt</span> <span class=s2>&#34;com.google.dagger:hilt-compiler:$daggerVersion&#34;</span>
+</span></span><span class=line><span class=cl><span class=n>testImplementation</span> <span class=s2>&#34;com.google.dagger:hilt-android-testing:$daggerVersion&#34;</span>
+</span></span><span class=line><span class=cl><span class=n>testAnnotationProcessor</span> <span class=s2>&#34;com.google.dagger:hilt-compiler:$daggerVersion&#34;</span>
+</span></span><span class=line><span class=cl><span class=n>androidTestImplementation</span> <span class=s2>&#34;com.google.dagger:hilt-android-testing:$daggerVersion&#34;</span>
+</span></span><span class=line><span class=cl><span class=n>androidTestAnnotationProcessor</span> <span class=s2>&#34;com.google.dagger:hilt-compiler:$daggerVersion&#34;</span>
+</span></span></code></pre></div><p>然後為自行 extend 出來的 <code>Application</code> 加上 Dagger Hilt 的 annotation。不要忘記在 manifest 的 <code>application</code> tag 加上 <code>name</code> attribute。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=nd>@HiltAndroidApp</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>EtaDemoApp</span> <span class=p>:</span> <span class=n>Application</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>override</span> <span class=k>fun</span> <span class=nf>onCreate</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>super</span><span class=p>.</span><span class=n>onCreate</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h2 id=小結>小結<a hidden class=anchor aria-hidden=true href=#小結>#</a></h2><ul><li>Dagger Hilt 是建基於 Dagger 的 library，它就是為 Android 開發時用 Dagger 提供了一個固定的範式</li><li>Dagger Hilt 有 Gradle plugin 能減少平常用 Dagger 時所寫的 boilerplate code，加上其他 Jetpack library 的配套令我們用 Dagger 更自然（令人感覺上更似 dependency injection 而不是 <a href=https://www.reddit.com/r/androiddev/comments/d1b4i1/understanding_the_difference_between_di_and_sl/>service locator</a>）</li><li>用 DI library 很大部分的原因是為了方便寫 unit test 時能把依賴的組件換成其他東西，這樣就能測試到不同的場景</li></ul><h2 id=補充資料>補充資料<a hidden class=anchor aria-hidden=true href=#補充資料>#</a></h2><ul><li><a href="https://www.youtube.com/watch?v=-MJm4UGoh5I">Dependency Injection: Comparing Dagger, Koin and Hilt - Maia Grotepass</a></li><li><a href=https://www.reddit.com/r/androiddev/comments/d1b4i1/understanding_the_difference_between_di_and_sl/>Understanding the difference between DI and SL</a></li></ul></div><footer class=post-footer><ul class=post-tags><li><a href=https://eric.swiftzer.net/tags/2021-ithome-%E9%90%B5%E4%BA%BA%E8%B3%BD/>2021 iThome 鐵人賽</a></li><li><a href=https://eric.swiftzer.net/tags/android/>Android</a></li></ul><nav class=paginav><a class=prev href=https://eric.swiftzer.net/2021/09/2021-ithome-ironman-06-http-client/><span class=title>« 上一篇</span><br><span>2021 iThome 鐵人賽 Day 6：HTTP Client</span></a>
+<a class=next href=https://eric.swiftzer.net/2021/09/2021-ithome-ironman-04-deserialization/><span class=title>下一篇 »</span><br><span>2021 iThome 鐵人賽 Day 4：Deserialization</span></a></nav></footer><div id=disqus_thread></div><script type=application/javascript>window.disqus_config=function(){},function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById("disqus_thread").innerHTML="Disqus comments not available by default when the website is previewed locally.";return}var t=document,e=t.createElement("script");e.async=!0,e.src="//efilm.disqus.com/embed.js",e.setAttribute("data-timestamp",+new Date),(t.head||t.body).appendChild(e)}()</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></article></main><footer class=footer><span>&copy; 2022 <a href=https://eric.swiftzer.net/>EricLog</a></span>
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg></a><script>let menu=document.getElementById("menu");menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)},document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script></body></html>

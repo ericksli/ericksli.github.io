@@ -1,243 +1,99 @@
-<!doctype html><html lang=zh-hant-hk dir=auto>
-<head><meta charset=utf-8>
-<meta http-equiv=x-ua-compatible content="IE=edge">
-<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta name=robots content="index, follow">
-<title>Parse + Android 收 Push Notification | EricLog</title>
-<meta name=keywords content="Android,Parse">
-<meta name=description content="Parse 的免費 plan 包含了一百萬個接收者的 push 配額，應該足夠一般 app 使用，而且比起自設 server 發送 push notification 更加方便（不用去 Google Developers Console 開 project）。但 Parse 網站所提供的 Android 的教學有點不清楚，而且都過時。在此分享一下 Android 版的基本 setup。">
-<meta name=author content>
-<link rel=canonical href=https://eric.swiftzer.net/2015/08/parse-android-push-notification/>
-<link href=/assets/css/stylesheet.min.d1fc837a267f77f6ede89d1a89c4880a90c381d9e6673ad4a76a3ad1900b65f9.css integrity="sha256-0fyDeiZ/d/bt6J0aicSICpDDgdnmZzrUp2o60ZALZfk=" rel="preload stylesheet" as=style>
-<link rel=icon href=https://eric.swiftzer.net/favicon.ico>
-<link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png>
-<link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png>
-<link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png>
-<link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg>
-<meta name=theme-color content="#2e2e33">
-<meta name=msapplication-TileColor content="#2e2e33">
-<meta name=generator content="Hugo 0.88.1">
-<link rel=preconnect href=https://fonts.gstatic.com>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-1268728-8','auto'),ga('send','pageview'))</script>
-<script async src=https://www.google-analytics.com/analytics.js></script>
-<meta property="og:title" content="Parse + Android 收 Push Notification">
-<meta property="og:description" content="Parse 的免費 plan 包含了一百萬個接收者的 push 配額，應該足夠一般 app 使用，而且比起自設 server 發送 push notification 更加方便（不用去 Google Developers Console 開 project）。但 Parse 網站所提供的 Android 的教學有點不清楚，而且都過時。在此分享一下 Android 版的基本 setup。">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://eric.swiftzer.net/2015/08/parse-android-push-notification/"><meta property="article:section" content="posts">
-<meta property="article:published_time" content="2015-08-30T17:13:46+08:00">
-<meta property="article:modified_time" content="2015-08-30T17:13:46+08:00">
-<meta name=twitter:card content="summary">
-<meta name=twitter:title content="Parse + Android 收 Push Notification">
-<meta name=twitter:description content="Parse 的免費 plan 包含了一百萬個接收者的 push 配額，應該足夠一般 app 使用，而且比起自設 server 發送 push notification 更加方便（不用去 Google Developers Console 開 project）。但 Parse 網站所提供的 Android 的教學有點不清楚，而且都過時。在此分享一下 Android 版的基本 setup。">
-<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"Parse + Android 收 Push Notification","item":"https://eric.swiftzer.net/2015/08/parse-android-push-notification/"}]}</script>
-<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Parse + Android 收 Push Notification","name":"Parse \u002b Android 收 Push Notification","description":"Parse 的免費 plan 包含了一百萬個接收者的 push 配額，應該足夠一般 app 使用，而且比起自設 server 發送 push notification 更加方便（不用去 Google Developers Console 開 project）。但 Parse 網站所提供的 Android 的教學有點不清楚，而且都過時。在此分享一下 Android 版的基本 setup。\n","keywords":["Android","Parse"],"articleBody":"Parse 的免費 plan 包含了一百萬個接收者的 push 配額，應該足夠一般 app 使用，而且比起自設 server 發送 push notification 更加方便（不用去 Google Developers Console 開 project）。但 Parse 網站所提供的 Android 的教學有點不清楚，而且都過時。在此分享一下 Android 版的基本 setup。\n第一步： 在 Android Studio 按照平時開新 project 的方法來建立一個新的 project。\n第二步： 在 module 的 build.gradle 加入 Parse 的 dependency。\ndependencies { compile fileTree(dir: 'libs', include: ['*.jar']) compile 'com.android.support:appcompat-v7:23.0.0' compile 'com.parse.bolts:bolts-android:1.2.1' compile 'com.parse:parse-android:1.10.1' } Parse 的教學是下載 JAR 到自己的 project，但其實也可以用 Gradle 來安裝。\n不加入 Bolts framework 和 Google Play services 也是可以的，Parse 會檢查設備是否有 Google Play service，如果有的話就會用 Google Cloud Messaging (GCM)，沒有的話可以 fallback 到 Parse 自己的 socket connection。\n第三步： 建立一個 Application 的 sub-class。在 onCreate 的時候就向 Parse 註冊接收 push notification。\npublic class MyApplication extends Application { private static final String TAG = MyApplication.class.getSimpleName(); @Override public void onCreate() { super.onCreate(); // Enable Local Datastore.  Parse.enableLocalDatastore(this); // Add your initialization code here  Parse.initialize(this); // Subscribe to a channel  ParsePush.subscribeInBackground(\"MyChannel\", new SaveCallback() { @Override public void done(ParseException e) { if (e == null) { Log.d(TAG, \"Successfully subscribed to Parse channel\"); } else { Log.d(TAG, \"Failed to subscribe to Parse channel\"); } } }); ParseUser.enableAutomaticUser(); ParseACL defaultACL = new ParseACL(); // Optionally enable public read access.  // defaultACL.setPublicReadAccess(true);  ParseACL.setDefaultACL(defaultACL, true); } } 第四步： 在 strings.xml 加入兩個 ，入面的 xxx 是用來放 Parse app 的 App ID 和 Client key。這些 key 可以在 Parse app 的 Settings  Keys 找到。\n name=\"parse_app_id\"xxxxx  name=\"parse_client_key\"xxxxx 第五步： 修改 AndroidMenifest.xml，令 Android app 能接收 Push notification。\n在  之前，加入權限相關的 tag：\n android:name=\"android.permission.INTERNET\"/  android:name=\"android.permission.ACCESS_NETWORK_STATE\"/  android:name=\"android.permission.WAKE_LOCK\"/  android:name=\"android.permission.VIBRATE\"/  android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\"/  android:name=\"android.permission.GET_ACCOUNTS\"/  android:name=\"com.google.android.c2dm.permission.RECEIVE\"/  android:name=\"your.package.name.permission.C2D_MESSAGE\" android:protectionLevel=\"signature\"/  android:name=\"your.package.name.permission.C2D_MESSAGE\"/ 將 your.package.name 改成 app 的 package name。如果你的 app 只支援有 Google Play service 的設備的話，可以不加 RECfEIVE_BOOT_COMPLETED。\n在  內使用剛才的 Application sub-class：\n android:name=\".MyApplication\" android:allowBackup=\"true\" android:icon=\"@mipmap/ic_launcher\" android:label=\"@string/app_name\" android:theme=\"@style/AppTheme\" 在  內加入 Parse 的 meta data tag：\n android:name=\"com.parse.APPLICATION_ID\" android:value=\"@string/parse_app_id\"/  android:name=\"com.parse.CLIENT_KEY\" android:value=\"@string/parse_client_key\"/  android:name=\"com.parse.push.notification_icon\" android:resource=\"@mipmap/ic_launcher\"/ Notification icon 暫時設成 app icon，你可以再改成其他 icon。\n同樣在  內，加入處理 push notification 的 service 和 receiver：\n android:name=\"com.parse.PushService\"/  android:name=\"com.parse.ParseBroadcastReceiver\"   android:name=\"android.intent.action.BOOT_COMPLETED\"/  android:name=\"android.intent.action.USER_PRESENT\"/    android:name=\"com.parse.ParsePushBroadcastReceiver\" android:exported=\"false\"   android:name=\"com.parse.push.intent.RECEIVE\"/  android:name=\"com.parse.push.intent.DELETE\"/  android:name=\"com.parse.push.intent.OPEN\"/    android:name=\"com.parse.GcmBroadcastReceiver\" android:permission=\"com.google.android.c2dm.permission.SEND\"   android:name=\"com.google.android.c2dm.intent.RECEIVE\"/  android:name=\"com.google.android.c2dm.intent.REGISTRATION\"/  android:name=\"your.package.name\"/   將 your.package.name 改成 app 的 package name。如果你的 app 只支援有 Google Play service 的設備的話，可以移除帶有 BOOT_COMPLETED 及 USER_PRESENT 的  tag。\n當收到 push notification 的時候，Parse SDK 預設會彈出一個 notification，按一下 notification 會開啟 main activity。如果需要自訂的話可以 override ParsePushBroadcastReceiver 的 onPushReceived、onPushOpen、onPushDismiss 和 getNotification。\n第六步： 在 main activity 的 onCreate 加入 Parse tracker。\n@Override protected void onCreate(Bundle savedInstanceState) { super.onCreate(savedInstanceState); setContentView(R.layout.activity_main); ParseAnalytics.trackAppOpenedInBackground(getIntent()); } 第七步： 現在已經完成設定，在設備 run 一次 app，讓它向 Parse 註冊 push notification。然後到 Parse 網站發送一個 push，你的設備應該會收到 push。而且 database 的 Installation class 會有一筆新記錄。\n","wordCount":"1032","inLanguage":"en","datePublished":"2015-08-30T17:13:46+08:00","dateModified":"2015-08-30T17:13:46+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2015/08/parse-android-push-notification/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
-</head>
-<body id=top>
-<script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
-<noscript>
-<style type=text/css>#theme-toggle,.top-link{display:none}</style>
-<style>@media(prefers-color-scheme:dark){:root{--theme:#1d1e20;--entry:#2e2e33;--primary:rgba(255, 255, 255, 0.84);--secondary:rgba(255, 255, 255, 0.56);--tertiary:rgba(255, 255, 255, 0.16);--content:rgba(255, 255, 255, 0.74);--hljs-bg:#2e2e33;--code-bg:#37383e;--border:#333}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
-</noscript>
-<header class=header>
-<nav class=nav>
-<div class=logo>
-<a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
-<span class=logo-switches>
-<button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-</button>
-</span>
-</div>
-<ul id=menu onscroll=menu_on_scroll()>
-<li>
-<a href=https://eric.swiftzer.net/fonts/ title=Fonts>
-<span>Fonts</span>
-</a>
-</li>
-<li>
-<a href=https://eric.swiftzer.net/archives/ title=Archives>
-<span>Archives</span>
-</a>
-</li>
-<li>
-<a href=https://eric.swiftzer.net/tags/ title=Tags>
-<span>Tags</span>
-</a>
-</li>
-<li>
-<a href=https://eric.swiftzer.net/about/ title=About>
-<span>About</span>
-</a>
-</li></ul>
-</nav>
-</header>
-<main class=main>
-<article class=post-single>
-<header class=post-header>
-<div class=breadcrumbs>
-<a href=https://eric.swiftzer.net/>Home</a>&nbsp;»&nbsp;<a href=https://eric.swiftzer.net/posts/>Posts</a>
-</div>
-<h1 class=post-title>
-Parse + Android 收 Push Notification
-</h1>
-<div class=post-meta>August 30, 2015
-</div>
-</header>
-<div class=post-content>
-<p><a href=https://www.parse.com>Parse</a> 的免費 plan 包含了一百萬個接收者的 push 配額，應該足夠一般 app 使用，而且比起自設 server 發送 push notification 更加方便（不用去 Google Developers Console 開 project）。但 Parse 網站所提供的 Android 的教學有點不清楚，而且都過時。在此分享一下 Android 版的基本 setup。</p>
-<p><strong>第一步：</strong> 在 Android Studio 按照平時開新 project 的方法來建立一個新的 project。</p>
-<p><strong>第二步：</strong> 在 module 的 <em>build.gradle</em> 加入 Parse 的 dependency。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-groovy data-lang=groovy><span class=n>dependencies</span> <span class=o>{</span>
-    <span class=n>compile</span> <span class=nf>fileTree</span><span class=o>(</span><span class=nl>dir:</span> <span class=s1>&#39;libs&#39;</span><span class=o>,</span> <span class=nl>include:</span> <span class=o>[</span><span class=s1>&#39;*.jar&#39;</span><span class=o>])</span>
-    <span class=n>compile</span> <span class=s1>&#39;com.android.support:appcompat-v7:23.0.0&#39;</span>
-    <span class=n>compile</span> <span class=s1>&#39;com.parse.bolts:bolts-android:1.2.1&#39;</span>
-    <span class=n>compile</span> <span class=s1>&#39;com.parse:parse-android:1.10.1&#39;</span>
-<span class=o>}</span></code></pre></div>
-<p>Parse 的教學是下載 JAR 到自己的 project，但其實也可以用 Gradle 來安裝。</p>
-<p>不加入 <a href=https://github.com/BoltsFramework/Bolts-Android>Bolts framework</a> 和 Google Play services 也是可以的，Parse 會檢查設備是否有 Google Play service，如果有的話就會用 Google Cloud Messaging (GCM)，沒有的話可以 fallback 到 Parse 自己的 socket connection。</p>
-<p><strong>第三步：</strong> 建立一個 <code>Application</code> 的 sub-class。在 <code>onCreate</code> 的時候就向 Parse 註冊接收 push notification。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=kd>public</span> <span class=kd>class</span> <span class=nc>MyApplication</span> <span class=kd>extends</span> <span class=n>Application</span> <span class=o>{</span>
-    <span class=kd>private</span> <span class=kd>static</span> <span class=kd>final</span> <span class=n>String</span> <span class=n>TAG</span> <span class=o>=</span> <span class=n>MyApplication</span><span class=o>.</span><span class=na>class</span><span class=o>.</span><span class=na>getSimpleName</span><span class=o>();</span>
-
-    <span class=nd>@Override</span>
-    <span class=kd>public</span> <span class=kt>void</span> <span class=nf>onCreate</span><span class=o>()</span> <span class=o>{</span>
-        <span class=kd>super</span><span class=o>.</span><span class=na>onCreate</span><span class=o>();</span>
-
-        <span class=c1>// Enable Local Datastore.
-</span><span class=c1></span>        <span class=n>Parse</span><span class=o>.</span><span class=na>enableLocalDatastore</span><span class=o>(</span><span class=k>this</span><span class=o>);</span>
-
-        <span class=c1>// Add your initialization code here
-</span><span class=c1></span>        <span class=n>Parse</span><span class=o>.</span><span class=na>initialize</span><span class=o>(</span><span class=k>this</span><span class=o>);</span>
-
-        <span class=c1>// Subscribe to a channel
-</span><span class=c1></span>        <span class=n>ParsePush</span><span class=o>.</span><span class=na>subscribeInBackground</span><span class=o>(</span><span class=s>&#34;MyChannel&#34;</span><span class=o>,</span> <span class=k>new</span> <span class=n>SaveCallback</span><span class=o>()</span> <span class=o>{</span>
-            <span class=nd>@Override</span>
-            <span class=kd>public</span> <span class=kt>void</span> <span class=nf>done</span><span class=o>(</span><span class=n>ParseException</span> <span class=n>e</span><span class=o>)</span> <span class=o>{</span>
-                <span class=k>if</span> <span class=o>(</span><span class=n>e</span> <span class=o>==</span> <span class=kc>null</span><span class=o>)</span> <span class=o>{</span>
-                    <span class=n>Log</span><span class=o>.</span><span class=na>d</span><span class=o>(</span><span class=n>TAG</span><span class=o>,</span> <span class=s>&#34;Successfully subscribed to Parse channel&#34;</span><span class=o>);</span>
-                <span class=o>}</span> <span class=k>else</span> <span class=o>{</span>
-                    <span class=n>Log</span><span class=o>.</span><span class=na>d</span><span class=o>(</span><span class=n>TAG</span><span class=o>,</span> <span class=s>&#34;Failed to subscribe to Parse channel&#34;</span><span class=o>);</span>
-                <span class=o>}</span>
-            <span class=o>}</span>
-        <span class=o>});</span>
-
-        <span class=n>ParseUser</span><span class=o>.</span><span class=na>enableAutomaticUser</span><span class=o>();</span>
-        <span class=n>ParseACL</span> <span class=n>defaultACL</span> <span class=o>=</span> <span class=k>new</span> <span class=n>ParseACL</span><span class=o>();</span>
-        <span class=c1>// Optionally enable public read access.
-</span><span class=c1></span>        <span class=c1>// defaultACL.setPublicReadAccess(true);
-</span><span class=c1></span>        <span class=n>ParseACL</span><span class=o>.</span><span class=na>setDefaultACL</span><span class=o>(</span><span class=n>defaultACL</span><span class=o>,</span> <span class=kc>true</span><span class=o>);</span>
-    <span class=o>}</span>
-<span class=o>}</span></code></pre></div>
-<p><strong>第四步：</strong> 在 <em>strings.xml</em> 加入兩個 <code>&lt;string></code>，入面的 xxx 是用來放 Parse app 的 App ID 和 Client key。這些 key 可以在 Parse app 的 Settings > Keys 找到。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;string</span> <span class=na>name=</span><span class=s>&#34;parse_app_id&#34;</span><span class=nt>&gt;</span>xxxxx<span class=nt>&lt;/string&gt;</span>
-<span class=nt>&lt;string</span> <span class=na>name=</span><span class=s>&#34;parse_client_key&#34;</span><span class=nt>&gt;</span>xxxxx<span class=nt>&lt;/string&gt;</span></code></pre></div>
-<p><strong>第五步：</strong> 修改 <em>AndroidMenifest.xml</em>，令 Android app 能接收 Push notification。</p>
-<p>在 <code>&lt;application></code> 之前，加入權限相關的 tag：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;uses-permission</span> <span class=na>android:name=</span><span class=s>&#34;android.permission.INTERNET&#34;</span><span class=nt>/&gt;</span>
-<span class=nt>&lt;uses-permission</span> <span class=na>android:name=</span><span class=s>&#34;android.permission.ACCESS_NETWORK_STATE&#34;</span><span class=nt>/&gt;</span>
-<span class=nt>&lt;uses-permission</span> <span class=na>android:name=</span><span class=s>&#34;android.permission.WAKE_LOCK&#34;</span><span class=nt>/&gt;</span>
-<span class=nt>&lt;uses-permission</span> <span class=na>android:name=</span><span class=s>&#34;android.permission.VIBRATE&#34;</span><span class=nt>/&gt;</span>
-<span class=nt>&lt;uses-permission</span> <span class=na>android:name=</span><span class=s>&#34;android.permission.RECEIVE_BOOT_COMPLETED&#34;</span><span class=nt>/&gt;</span>
-<span class=nt>&lt;uses-permission</span> <span class=na>android:name=</span><span class=s>&#34;android.permission.GET_ACCOUNTS&#34;</span><span class=nt>/&gt;</span>
-<span class=nt>&lt;uses-permission</span> <span class=na>android:name=</span><span class=s>&#34;com.google.android.c2dm.permission.RECEIVE&#34;</span><span class=nt>/&gt;</span>
-
-<span class=nt>&lt;permission</span>
-    <span class=na>android:name=</span><span class=s>&#34;your.package.name.permission.C2D_MESSAGE&#34;</span>
-    <span class=na>android:protectionLevel=</span><span class=s>&#34;signature&#34;</span><span class=nt>/&gt;</span>
-<span class=nt>&lt;uses-permission</span> <span class=na>android:name=</span><span class=s>&#34;your.package.name.permission.C2D_MESSAGE&#34;</span><span class=nt>/&gt;</span></code></pre></div>
-<p>將 <code>your.package.name</code> 改成 app 的 package name。如果你的 app 只支援有 Google Play service 的設備的話，可以不加 <code>RECfEIVE_BOOT_COMPLETED</code>。</p>
-<p>在 <code>&lt;application></code> 內使用剛才的 Application sub-class：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;application</span>
-    <span class=na>android:name=</span><span class=s>&#34;.MyApplication&#34;</span>
-    <span class=na>android:allowBackup=</span><span class=s>&#34;true&#34;</span>
-    <span class=na>android:icon=</span><span class=s>&#34;@mipmap/ic_launcher&#34;</span>
-    <span class=na>android:label=</span><span class=s>&#34;@string/app_name&#34;</span>
-    <span class=na>android:theme=</span><span class=s>&#34;@style/AppTheme&#34;</span><span class=nt>&gt;</span></code></pre></div>
-<p>在 <code>&lt;application></code> 內加入 Parse 的 meta data tag：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;meta-data</span>
-    <span class=na>android:name=</span><span class=s>&#34;com.parse.APPLICATION_ID&#34;</span>
-    <span class=na>android:value=</span><span class=s>&#34;@string/parse_app_id&#34;</span><span class=nt>/&gt;</span>
-<span class=nt>&lt;meta-data</span>
-    <span class=na>android:name=</span><span class=s>&#34;com.parse.CLIENT_KEY&#34;</span>
-    <span class=na>android:value=</span><span class=s>&#34;@string/parse_client_key&#34;</span><span class=nt>/&gt;</span>
-<span class=nt>&lt;meta-data</span>
-    <span class=na>android:name=</span><span class=s>&#34;com.parse.push.notification_icon&#34;</span>
-    <span class=na>android:resource=</span><span class=s>&#34;@mipmap/ic_launcher&#34;</span><span class=nt>/&gt;</span></code></pre></div>
-<p>Notification icon 暫時設成 app icon，你可以再改成其他 icon。</p>
-<p>同樣在 <code>&lt;application></code> 內，加入處理 push notification 的 service 和 receiver：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=nt>&lt;service</span> <span class=na>android:name=</span><span class=s>&#34;com.parse.PushService&#34;</span><span class=nt>/&gt;</span>
-
-<span class=nt>&lt;receiver</span> <span class=na>android:name=</span><span class=s>&#34;com.parse.ParseBroadcastReceiver&#34;</span><span class=nt>&gt;</span>
-    <span class=nt>&lt;intent-filter&gt;</span>
-        <span class=nt>&lt;action</span> <span class=na>android:name=</span><span class=s>&#34;android.intent.action.BOOT_COMPLETED&#34;</span><span class=nt>/&gt;</span>
-        <span class=nt>&lt;action</span> <span class=na>android:name=</span><span class=s>&#34;android.intent.action.USER_PRESENT&#34;</span><span class=nt>/&gt;</span>
-    <span class=nt>&lt;/intent-filter&gt;</span>
-<span class=nt>&lt;/receiver&gt;</span>
-<span class=nt>&lt;receiver</span>
-    <span class=na>android:name=</span><span class=s>&#34;com.parse.ParsePushBroadcastReceiver&#34;</span>
-    <span class=na>android:exported=</span><span class=s>&#34;false&#34;</span><span class=nt>&gt;</span>
-    <span class=nt>&lt;intent-filter&gt;</span>
-        <span class=nt>&lt;action</span> <span class=na>android:name=</span><span class=s>&#34;com.parse.push.intent.RECEIVE&#34;</span><span class=nt>/&gt;</span>
-        <span class=nt>&lt;action</span> <span class=na>android:name=</span><span class=s>&#34;com.parse.push.intent.DELETE&#34;</span><span class=nt>/&gt;</span>
-        <span class=nt>&lt;action</span> <span class=na>android:name=</span><span class=s>&#34;com.parse.push.intent.OPEN&#34;</span><span class=nt>/&gt;</span>
-    <span class=nt>&lt;/intent-filter&gt;</span>
-<span class=nt>&lt;/receiver&gt;</span>
-<span class=nt>&lt;receiver</span>
-    <span class=na>android:name=</span><span class=s>&#34;com.parse.GcmBroadcastReceiver&#34;</span>
-    <span class=na>android:permission=</span><span class=s>&#34;com.google.android.c2dm.permission.SEND&#34;</span><span class=nt>&gt;</span>
-    <span class=nt>&lt;intent-filter&gt;</span>
-        <span class=nt>&lt;action</span> <span class=na>android:name=</span><span class=s>&#34;com.google.android.c2dm.intent.RECEIVE&#34;</span><span class=nt>/&gt;</span>
-        <span class=nt>&lt;action</span> <span class=na>android:name=</span><span class=s>&#34;com.google.android.c2dm.intent.REGISTRATION&#34;</span><span class=nt>/&gt;</span>
-        <span class=nt>&lt;category</span> <span class=na>android:name=</span><span class=s>&#34;your.package.name&#34;</span><span class=nt>/&gt;</span>
-    <span class=nt>&lt;/intent-filter&gt;</span>
-<span class=nt>&lt;/receiver&gt;</span></code></pre></div>
-<p>將 <code>your.package.name</code> 改成 app 的 package name。如果你的 app 只支援有 Google Play service 的設備的話，可以移除帶有 <code>BOOT_COMPLETED</code> 及 <code>USER_PRESENT</code> 的 <code>&lt;receiver></code> tag。</p>
-<p>當收到 push notification 的時候，Parse SDK 預設會彈出一個 notification，按一下 notification 會開啟 main activity。如果需要自訂的話可以 override <code>ParsePushBroadcastReceiver</code> 的 <code>onPushReceived</code>、<code>onPushOpen</code>、<code>onPushDismiss</code> 和 <code>getNotification</code>。</p>
-<p><strong>第六步：</strong> 在 main activity 的 <code>onCreate</code> 加入 Parse tracker。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=nd>@Override</span>
-<span class=kd>protected</span> <span class=kt>void</span> <span class=nf>onCreate</span><span class=o>(</span><span class=n>Bundle</span> <span class=n>savedInstanceState</span><span class=o>)</span> <span class=o>{</span>
-    <span class=kd>super</span><span class=o>.</span><span class=na>onCreate</span><span class=o>(</span><span class=n>savedInstanceState</span><span class=o>);</span>
-    <span class=n>setContentView</span><span class=o>(</span><span class=n>R</span><span class=o>.</span><span class=na>layout</span><span class=o>.</span><span class=na>activity_main</span><span class=o>);</span>
-
-    <span class=n>ParseAnalytics</span><span class=o>.</span><span class=na>trackAppOpenedInBackground</span><span class=o>(</span><span class=n>getIntent</span><span class=o>());</span>
-<span class=o>}</span></code></pre></div>
-<p><strong>第七步：</strong> 現在已經完成設定，在設備 run 一次 app，讓它向 Parse 註冊 push notification。然後到 Parse 網站發送一個 push，你的設備應該會收到 push。而且 database 的 Installation class 會有一筆新記錄。</p>
-</div>
-<footer class=post-footer>
-<ul class=post-tags>
-<li><a href=https://eric.swiftzer.net/tags/android/>Android</a></li>
-<li><a href=https://eric.swiftzer.net/tags/parse/>Parse</a></li>
-</ul>
-<nav class=paginav>
-<a class=prev href=https://eric.swiftzer.net/2015/09/delete-long-path-in-windows/>
-<span class=title>« Prev Page</span>
-<br>
-<span>在 Windows 刪除路徑名太長的檔案</span>
-</a>
-<a class=next href=https://eric.swiftzer.net/2015/05/managing-mp3-id3-tag/>
-<span class=title>Next Page »</span>
-<br>
-<span>整理 MP3 ID3 tag</span>
-</a>
-</nav>
-</footer><div id=disqus_thread></div>
-<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//efilm.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
-<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
-<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
-</article>
-</main><footer class=footer>
-<span>&copy; 2022 <a href=https://eric.swiftzer.net/>EricLog</a></span>
-<span>&#183;</span>
-<span>Powered by <a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a></span>
-<span>&#183;</span>
-<span>Theme <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span>
-</footer>
-<a href=#top aria-label="go to top" title="Go to Top (Alt + G)">
-<button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
-</button>
-</a>
-<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
-<script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script>
-<script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
-</body>
-</html>
+<!doctype html><html lang=zh-tw dir=auto><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Parse + Android 收 Push Notification | EricLog</title><meta name=keywords content="Android,Parse"><meta name=description content="Parse 的免費 plan 包含了一百萬個接收者的 push 配額，應該足夠一般 app 使用，而且比起自設 server 發送 push notification 更加方便（不用去 Google Developers Console 開 project）。但 Parse 網站所提供的 Android 的教學有點不清楚，而且都過時。在此分享一下 Android 版的基本 setup。"><meta name=author content><link rel=canonical href=https://eric.swiftzer.net/2015/08/parse-android-push-notification/><link crossorigin=anonymous href=/assets/css/stylesheet.min.249b1770ac429c01ffa746cc012a310192d174c913b1527f312e3294a0766d1c.css integrity="sha256-JJsXcKxCnAH/p0bMASoxAZLRdMkTsVJ/MS4ylKB2bRw=" rel="preload stylesheet" as=style><link rel=icon href=https://eric.swiftzer.net/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png><link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png><link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><meta name=generator content="Hugo 0.101.0"><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--hljs-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><link rel=preconnect href=https://fonts.gstatic.com><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet><script async src="https://www.googletagmanager.com/gtag/js?id=G-D93F946T73"></script>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-D93F946T73",{anonymize_ip:!1})}</script><meta property="og:title" content="Parse + Android 收 Push Notification"><meta property="og:description" content="Parse 的免費 plan 包含了一百萬個接收者的 push 配額，應該足夠一般 app 使用，而且比起自設 server 發送 push notification 更加方便（不用去 Google Developers Console 開 project）。但 Parse 網站所提供的 Android 的教學有點不清楚，而且都過時。在此分享一下 Android 版的基本 setup。"><meta property="og:type" content="article"><meta property="og:url" content="https://eric.swiftzer.net/2015/08/parse-android-push-notification/"><meta property="article:section" content="posts"><meta property="article:published_time" content="2015-08-30T17:13:46+08:00"><meta property="article:modified_time" content="2015-08-30T17:13:46+08:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Parse + Android 收 Push Notification"><meta name=twitter:description content="Parse 的免費 plan 包含了一百萬個接收者的 push 配額，應該足夠一般 app 使用，而且比起自設 server 發送 push notification 更加方便（不用去 Google Developers Console 開 project）。但 Parse 網站所提供的 Android 的教學有點不清楚，而且都過時。在此分享一下 Android 版的基本 setup。"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"Parse + Android 收 Push Notification","item":"https://eric.swiftzer.net/2015/08/parse-android-push-notification/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Parse + Android 收 Push Notification","name":"Parse \u002b Android 收 Push Notification","description":"Parse 的免費 plan 包含了一百萬個接收者的 push 配額，應該足夠一般 app 使用，而且比起自設 server 發送 push notification 更加方便（不用去 Google Developers Console 開 project）。但 Parse 網站所提供的 Android 的教學有點不清楚，而且都過時。在此分享一下 Android 版的基本 setup。\n","keywords":["Android","Parse"],"articleBody":"Parse 的免費 plan 包含了一百萬個接收者的 push 配額，應該足夠一般 app 使用，而且比起自設 server 發送 push notification 更加方便（不用去 Google Developers Console 開 project）。但 Parse 網站所提供的 Android 的教學有點不清楚，而且都過時。在此分享一下 Android 版的基本 setup。\n第一步： 在 Android Studio 按照平時開新 project 的方法來建立一個新的 project。\n第二步： 在 module 的 build.gradle 加入 Parse 的 dependency。\ndependencies { compile fileTree(dir: 'libs', include: ['*.jar']) compile 'com.android.support:appcompat-v7:23.0.0' compile 'com.parse.bolts:bolts-android:1.2.1' compile 'com.parse:parse-android:1.10.1' } Parse 的教學是下載 JAR 到自己的 project，但其實也可以用 Gradle 來安裝。\n不加入 Bolts framework 和 Google Play services 也是可以的，Parse 會檢查設備是否有 Google Play service，如果有的話就會用 Google Cloud Messaging (GCM)，沒有的話可以 fallback 到 Parse 自己的 socket connection。\n第三步： 建立一個 Application 的 sub-class。在 onCreate 的時候就向 Parse 註冊接收 push notification。\npublic class MyApplication extends Application { private static final String TAG = MyApplication.class.getSimpleName(); @Override public void onCreate() { super.onCreate(); // Enable Local Datastore. Parse.enableLocalDatastore(this); // Add your initialization code here Parse.initialize(this); // Subscribe to a channel ParsePush.subscribeInBackground(\"MyChannel\", new SaveCallback() { @Override public void done(ParseException e) { if (e == null) { Log.d(TAG, \"Successfully subscribed to Parse channel\"); } else { Log.d(TAG, \"Failed to subscribe to Parse channel\"); } } }); ParseUser.enableAutomaticUser(); ParseACL defaultACL = new ParseACL(); // Optionally enable public read access. // defaultACL.setPublicReadAccess(true); ParseACL.setDefaultACL(defaultACL, true); } } 第四步： 在 strings.xml 加入兩個 ，入面的 xxx 是用來放 Parse app 的 App ID 和 Client key。這些 key 可以在 Parse app 的 Settings \u003e Keys 找到。\n","wordCount":"1032","inLanguage":"zh-tw","datePublished":"2015-08-30T17:13:46+08:00","dateModified":"2015-08-30T17:13:46+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2015/08/parse-android-push-notification/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
+<span class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></span></div><ul id=menu><li><a href=https://eric.swiftzer.net/fonts/ title=Fonts><span>Fonts</span></a></li><li><a href=https://eric.swiftzer.net/archives/ title=Archives><span>Archives</span></a></li><li><a href=https://eric.swiftzer.net/tags/ title=Tags><span>Tags</span></a></li><li><a href=https://eric.swiftzer.net/about/ title=About><span>About</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><div class=breadcrumbs><a href=https://eric.swiftzer.net/>首頁</a>&nbsp;»&nbsp;<a href=https://eric.swiftzer.net/posts/>Posts</a></div><h1 class=post-title>Parse + Android 收 Push Notification</h1><div class=post-meta>August 30, 2015</div></header><div class=post-content><p><a href=https://www.parse.com>Parse</a> 的免費 plan 包含了一百萬個接收者的 push 配額，應該足夠一般 app 使用，而且比起自設 server 發送 push notification 更加方便（不用去 Google Developers Console 開 project）。但 Parse 網站所提供的 Android 的教學有點不清楚，而且都過時。在此分享一下 Android 版的基本 setup。</p><p><strong>第一步：</strong> 在 Android Studio 按照平時開新 project 的方法來建立一個新的 project。</p><p><strong>第二步：</strong> 在 module 的 <em>build.gradle</em> 加入 Parse 的 dependency。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-groovy data-lang=groovy><span class=line><span class=cl><span class=n>dependencies</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>compile</span> <span class=nf>fileTree</span><span class=o>(</span><span class=nl>dir:</span> <span class=s1>&#39;libs&#39;</span><span class=o>,</span> <span class=nl>include:</span> <span class=o>[</span><span class=s1>&#39;*.jar&#39;</span><span class=o>])</span>
+</span></span><span class=line><span class=cl>    <span class=n>compile</span> <span class=s1>&#39;com.android.support:appcompat-v7:23.0.0&#39;</span>
+</span></span><span class=line><span class=cl>    <span class=n>compile</span> <span class=s1>&#39;com.parse.bolts:bolts-android:1.2.1&#39;</span>
+</span></span><span class=line><span class=cl>    <span class=n>compile</span> <span class=s1>&#39;com.parse:parse-android:1.10.1&#39;</span>
+</span></span><span class=line><span class=cl><span class=o>}</span></span></span></code></pre></div><p>Parse 的教學是下載 JAR 到自己的 project，但其實也可以用 Gradle 來安裝。</p><p>不加入 <a href=https://github.com/BoltsFramework/Bolts-Android>Bolts framework</a> 和 Google Play services 也是可以的，Parse 會檢查設備是否有 Google Play service，如果有的話就會用 Google Cloud Messaging (GCM)，沒有的話可以 fallback 到 Parse 自己的 socket connection。</p><p><strong>第三步：</strong> 建立一個 <code>Application</code> 的 sub-class。在 <code>onCreate</code> 的時候就向 Parse 註冊接收 push notification。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>public</span> <span class=kd>class</span> <span class=nc>MyApplication</span> <span class=kd>extends</span> <span class=n>Application</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=kd>private</span> <span class=kd>static</span> <span class=kd>final</span> <span class=n>String</span> <span class=n>TAG</span> <span class=o>=</span> <span class=n>MyApplication</span><span class=o>.</span><span class=na>class</span><span class=o>.</span><span class=na>getSimpleName</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>    <span class=kd>public</span> <span class=kt>void</span> <span class=nf>onCreate</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=kd>super</span><span class=o>.</span><span class=na>onCreate</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1>// Enable Local Datastore.
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=n>Parse</span><span class=o>.</span><span class=na>enableLocalDatastore</span><span class=o>(</span><span class=k>this</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1>// Add your initialization code here
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=n>Parse</span><span class=o>.</span><span class=na>initialize</span><span class=o>(</span><span class=k>this</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1>// Subscribe to a channel
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=n>ParsePush</span><span class=o>.</span><span class=na>subscribeInBackground</span><span class=o>(</span><span class=s>&#34;MyChannel&#34;</span><span class=o>,</span> <span class=k>new</span> <span class=n>SaveCallback</span><span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=nd>@Override</span>
+</span></span><span class=line><span class=cl>            <span class=kd>public</span> <span class=kt>void</span> <span class=nf>done</span><span class=o>(</span><span class=n>ParseException</span> <span class=n>e</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>                <span class=k>if</span> <span class=o>(</span><span class=n>e</span> <span class=o>==</span> <span class=kc>null</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>                    <span class=n>Log</span><span class=o>.</span><span class=na>d</span><span class=o>(</span><span class=n>TAG</span><span class=o>,</span> <span class=s>&#34;Successfully subscribed to Parse channel&#34;</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>                <span class=o>}</span> <span class=k>else</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>                    <span class=n>Log</span><span class=o>.</span><span class=na>d</span><span class=o>(</span><span class=n>TAG</span><span class=o>,</span> <span class=s>&#34;Failed to subscribe to Parse channel&#34;</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>                <span class=o>}</span>
+</span></span><span class=line><span class=cl>            <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=o>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>ParseUser</span><span class=o>.</span><span class=na>enableAutomaticUser</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>        <span class=n>ParseACL</span> <span class=n>defaultACL</span> <span class=o>=</span> <span class=k>new</span> <span class=n>ParseACL</span><span class=o>();</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// Optionally enable public read access.
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=c1>// defaultACL.setPublicReadAccess(true);
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=n>ParseACL</span><span class=o>.</span><span class=na>setDefaultACL</span><span class=o>(</span><span class=n>defaultACL</span><span class=o>,</span> <span class=kc>true</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span></span></span></code></pre></div><p><strong>第四步：</strong> 在 <em>strings.xml</em> 加入兩個 <code>&lt;string></code>，入面的 xxx 是用來放 Parse app 的 App ID 和 Client key。這些 key 可以在 Parse app 的 Settings > Keys 找到。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=line><span class=cl><span class=nt>&lt;string</span> <span class=na>name=</span><span class=s>&#34;parse_app_id&#34;</span><span class=nt>&gt;</span>xxxxx<span class=nt>&lt;/string&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;string</span> <span class=na>name=</span><span class=s>&#34;parse_client_key&#34;</span><span class=nt>&gt;</span>xxxxx<span class=nt>&lt;/string&gt;</span></span></span></code></pre></div><p><strong>第五步：</strong> 修改 <em>AndroidMenifest.xml</em>，令 Android app 能接收 Push notification。</p><p>在 <code>&lt;application></code> 之前，加入權限相關的 tag：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=line><span class=cl><span class=nt>&lt;uses-permission</span> <span class=na>android:name=</span><span class=s>&#34;android.permission.INTERNET&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;uses-permission</span> <span class=na>android:name=</span><span class=s>&#34;android.permission.ACCESS_NETWORK_STATE&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;uses-permission</span> <span class=na>android:name=</span><span class=s>&#34;android.permission.WAKE_LOCK&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;uses-permission</span> <span class=na>android:name=</span><span class=s>&#34;android.permission.VIBRATE&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;uses-permission</span> <span class=na>android:name=</span><span class=s>&#34;android.permission.RECEIVE_BOOT_COMPLETED&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;uses-permission</span> <span class=na>android:name=</span><span class=s>&#34;android.permission.GET_ACCOUNTS&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;uses-permission</span> <span class=na>android:name=</span><span class=s>&#34;com.google.android.c2dm.permission.RECEIVE&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nt>&lt;permission</span>
+</span></span><span class=line><span class=cl>    <span class=na>android:name=</span><span class=s>&#34;your.package.name.permission.C2D_MESSAGE&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=na>android:protectionLevel=</span><span class=s>&#34;signature&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;uses-permission</span> <span class=na>android:name=</span><span class=s>&#34;your.package.name.permission.C2D_MESSAGE&#34;</span><span class=nt>/&gt;</span></span></span></code></pre></div><p>將 <code>your.package.name</code> 改成 app 的 package name。如果你的 app 只支援有 Google Play service 的設備的話，可以不加 <code>RECfEIVE_BOOT_COMPLETED</code>。</p><p>在 <code>&lt;application></code> 內使用剛才的 Application sub-class：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=line><span class=cl><span class=nt>&lt;application</span>
+</span></span><span class=line><span class=cl>    <span class=na>android:name=</span><span class=s>&#34;.MyApplication&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=na>android:allowBackup=</span><span class=s>&#34;true&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=na>android:icon=</span><span class=s>&#34;@mipmap/ic_launcher&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=na>android:label=</span><span class=s>&#34;@string/app_name&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=na>android:theme=</span><span class=s>&#34;@style/AppTheme&#34;</span><span class=nt>&gt;</span></span></span></code></pre></div><p>在 <code>&lt;application></code> 內加入 Parse 的 meta data tag：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=line><span class=cl><span class=nt>&lt;meta-data</span>
+</span></span><span class=line><span class=cl>    <span class=na>android:name=</span><span class=s>&#34;com.parse.APPLICATION_ID&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=na>android:value=</span><span class=s>&#34;@string/parse_app_id&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;meta-data</span>
+</span></span><span class=line><span class=cl>    <span class=na>android:name=</span><span class=s>&#34;com.parse.CLIENT_KEY&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=na>android:value=</span><span class=s>&#34;@string/parse_client_key&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;meta-data</span>
+</span></span><span class=line><span class=cl>    <span class=na>android:name=</span><span class=s>&#34;com.parse.push.notification_icon&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=na>android:resource=</span><span class=s>&#34;@mipmap/ic_launcher&#34;</span><span class=nt>/&gt;</span></span></span></code></pre></div><p>Notification icon 暫時設成 app icon，你可以再改成其他 icon。</p><p>同樣在 <code>&lt;application></code> 內，加入處理 push notification 的 service 和 receiver：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=line><span class=cl><span class=nt>&lt;service</span> <span class=na>android:name=</span><span class=s>&#34;com.parse.PushService&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nt>&lt;receiver</span> <span class=na>android:name=</span><span class=s>&#34;com.parse.ParseBroadcastReceiver&#34;</span><span class=nt>&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;intent-filter&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;action</span> <span class=na>android:name=</span><span class=s>&#34;android.intent.action.BOOT_COMPLETED&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;action</span> <span class=na>android:name=</span><span class=s>&#34;android.intent.action.USER_PRESENT&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;/intent-filter&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;/receiver&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;receiver</span>
+</span></span><span class=line><span class=cl>    <span class=na>android:name=</span><span class=s>&#34;com.parse.ParsePushBroadcastReceiver&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=na>android:exported=</span><span class=s>&#34;false&#34;</span><span class=nt>&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;intent-filter&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;action</span> <span class=na>android:name=</span><span class=s>&#34;com.parse.push.intent.RECEIVE&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;action</span> <span class=na>android:name=</span><span class=s>&#34;com.parse.push.intent.DELETE&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;action</span> <span class=na>android:name=</span><span class=s>&#34;com.parse.push.intent.OPEN&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;/intent-filter&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;/receiver&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;receiver</span>
+</span></span><span class=line><span class=cl>    <span class=na>android:name=</span><span class=s>&#34;com.parse.GcmBroadcastReceiver&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=na>android:permission=</span><span class=s>&#34;com.google.android.c2dm.permission.SEND&#34;</span><span class=nt>&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;intent-filter&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;action</span> <span class=na>android:name=</span><span class=s>&#34;com.google.android.c2dm.intent.RECEIVE&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;action</span> <span class=na>android:name=</span><span class=s>&#34;com.google.android.c2dm.intent.REGISTRATION&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;category</span> <span class=na>android:name=</span><span class=s>&#34;your.package.name&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;/intent-filter&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;/receiver&gt;</span></span></span></code></pre></div><p>將 <code>your.package.name</code> 改成 app 的 package name。如果你的 app 只支援有 Google Play service 的設備的話，可以移除帶有 <code>BOOT_COMPLETED</code> 及 <code>USER_PRESENT</code> 的 <code>&lt;receiver></code> tag。</p><p>當收到 push notification 的時候，Parse SDK 預設會彈出一個 notification，按一下 notification 會開啟 main activity。如果需要自訂的話可以 override <code>ParsePushBroadcastReceiver</code> 的 <code>onPushReceived</code>、<code>onPushOpen</code>、<code>onPushDismiss</code> 和 <code>getNotification</code>。</p><p><strong>第六步：</strong> 在 main activity 的 <code>onCreate</code> 加入 Parse tracker。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=nd>@Override</span>
+</span></span><span class=line><span class=cl><span class=kd>protected</span> <span class=kt>void</span> <span class=nf>onCreate</span><span class=o>(</span><span class=n>Bundle</span> <span class=n>savedInstanceState</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=kd>super</span><span class=o>.</span><span class=na>onCreate</span><span class=o>(</span><span class=n>savedInstanceState</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>    <span class=n>setContentView</span><span class=o>(</span><span class=n>R</span><span class=o>.</span><span class=na>layout</span><span class=o>.</span><span class=na>activity_main</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>ParseAnalytics</span><span class=o>.</span><span class=na>trackAppOpenedInBackground</span><span class=o>(</span><span class=n>getIntent</span><span class=o>());</span>
+</span></span><span class=line><span class=cl><span class=o>}</span></span></span></code></pre></div><p><strong>第七步：</strong> 現在已經完成設定，在設備 run 一次 app，讓它向 Parse 註冊 push notification。然後到 Parse 網站發送一個 push，你的設備應該會收到 push。而且 database 的 Installation class 會有一筆新記錄。</p></div><footer class=post-footer><ul class=post-tags><li><a href=https://eric.swiftzer.net/tags/android/>Android</a></li><li><a href=https://eric.swiftzer.net/tags/parse/>Parse</a></li></ul><nav class=paginav><a class=prev href=https://eric.swiftzer.net/2015/09/delete-long-path-in-windows/><span class=title>« 上一篇</span><br><span>在 Windows 刪除路徑名太長的檔案</span></a>
+<a class=next href=https://eric.swiftzer.net/2015/05/managing-mp3-id3-tag/><span class=title>下一篇 »</span><br><span>整理 MP3 ID3 tag</span></a></nav></footer><div id=disqus_thread></div><script type=application/javascript>window.disqus_config=function(){},function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById("disqus_thread").innerHTML="Disqus comments not available by default when the website is previewed locally.";return}var t=document,e=t.createElement("script");e.async=!0,e.src="//efilm.disqus.com/embed.js",e.setAttribute("data-timestamp",+new Date),(t.head||t.body).appendChild(e)}()</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></article></main><footer class=footer><span>&copy; 2022 <a href=https://eric.swiftzer.net/>EricLog</a></span>
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg></a><script>let menu=document.getElementById("menu");menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)},document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script></body></html>

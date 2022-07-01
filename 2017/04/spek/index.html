@@ -1,221 +1,55 @@
-<!doctype html><html lang=zh-hant-hk dir=auto>
-<head><meta charset=utf-8>
-<meta http-equiv=x-ua-compatible content="IE=edge">
-<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta name=robots content="index, follow">
-<title>Spek | EricLog</title>
-<meta name=keywords content="Spek,Kotlin">
-<meta name=description content="之前一直都有留意 Kotlin 這個程式語言在 Android app 開發的應用。最近試用 Spek 來做 Android project 的 local test。Spek 是一個用 Kotlin 寫的 testing framework，用法和 Ruby 的 RSpec 差不多。對比 Android project 預設用的 JUnit 4，Spek 的寫法會比較清楚。因為 JUnit 4 只靠 class 和method 來為 test 分類，不能 nested（JUnit 5 才支援）。Spek 就用 nested 的方式來把 test 分類，還有就是用 string 來定義 test 名，比起 JUnit 4 用 method 名較易閱讀。
-Spek 有提供 IntelliJ IDEA/Android Studio plugin，而且還有 JUnit platform engine。所以在 Android project 上面使用都沒有太大問題。">
-<meta name=author content>
-<link rel=canonical href=https://eric.swiftzer.net/2017/04/spek/>
-<link href=/assets/css/stylesheet.min.d1fc837a267f77f6ede89d1a89c4880a90c381d9e6673ad4a76a3ad1900b65f9.css integrity="sha256-0fyDeiZ/d/bt6J0aicSICpDDgdnmZzrUp2o60ZALZfk=" rel="preload stylesheet" as=style>
-<link rel=icon href=https://eric.swiftzer.net/favicon.ico>
-<link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png>
-<link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png>
-<link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png>
-<link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg>
-<meta name=theme-color content="#2e2e33">
-<meta name=msapplication-TileColor content="#2e2e33">
-<meta name=generator content="Hugo 0.88.1">
-<link rel=preconnect href=https://fonts.gstatic.com>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-1268728-8','auto'),ga('send','pageview'))</script>
-<script async src=https://www.google-analytics.com/analytics.js></script>
-<meta property="og:title" content="Spek">
-<meta property="og:description" content="之前一直都有留意 Kotlin 這個程式語言在 Android app 開發的應用。最近試用 Spek 來做 Android project 的 local test。Spek 是一個用 Kotlin 寫的 testing framework，用法和 Ruby 的 RSpec 差不多。對比 Android project 預設用的 JUnit 4，Spek 的寫法會比較清楚。因為 JUnit 4 只靠 class 和method 來為 test 分類，不能 nested（JUnit 5 才支援）。Spek 就用 nested 的方式來把 test 分類，還有就是用 string 來定義 test 名，比起 JUnit 4 用 method 名較易閱讀。
-Spek 有提供 IntelliJ IDEA/Android Studio plugin，而且還有 JUnit platform engine。所以在 Android project 上面使用都沒有太大問題。">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://eric.swiftzer.net/2017/04/spek/"><meta property="article:section" content="posts">
-<meta property="article:published_time" content="2017-04-22T23:25:52+08:00">
-<meta property="article:modified_time" content="2017-04-22T23:25:52+08:00">
-<meta name=twitter:card content="summary">
-<meta name=twitter:title content="Spek">
-<meta name=twitter:description content="之前一直都有留意 Kotlin 這個程式語言在 Android app 開發的應用。最近試用 Spek 來做 Android project 的 local test。Spek 是一個用 Kotlin 寫的 testing framework，用法和 Ruby 的 RSpec 差不多。對比 Android project 預設用的 JUnit 4，Spek 的寫法會比較清楚。因為 JUnit 4 只靠 class 和method 來為 test 分類，不能 nested（JUnit 5 才支援）。Spek 就用 nested 的方式來把 test 分類，還有就是用 string 來定義 test 名，比起 JUnit 4 用 method 名較易閱讀。
-Spek 有提供 IntelliJ IDEA/Android Studio plugin，而且還有 JUnit platform engine。所以在 Android project 上面使用都沒有太大問題。">
-<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"Spek","item":"https://eric.swiftzer.net/2017/04/spek/"}]}</script>
-<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Spek","name":"Spek","description":"之前一直都有留意 Kotlin 這個程式語言在 Android app 開發的應用。最近試用 Spek 來做 Android project 的 local test。Spek 是一個用 Kotlin 寫的 testing framework，用法和 Ruby 的 RSpec 差不多。對比 Android project 預設用的 JUnit 4，Spek 的寫法會比較清楚。因為 JUnit 4 只靠 class 和method 來為 test 分類，不能 nested（JUnit 5 才支援）。Spek 就用 nested 的方式來把 test 分類，還有就是用 string 來定義 test 名，比起 JUnit 4 用 method 名較易閱讀。\nSpek 有提供 IntelliJ IDEA/Android Studio plugin，而且還有 JUnit platform engine。所以在 Android project 上面使用都沒有太大問題。\n","keywords":["Spek","Kotlin"],"articleBody":"之前一直都有留意 Kotlin 這個程式語言在 Android app 開發的應用。最近試用 Spek 來做 Android project 的 local test。Spek 是一個用 Kotlin 寫的 testing framework，用法和 Ruby 的 RSpec 差不多。對比 Android project 預設用的 JUnit 4，Spek 的寫法會比較清楚。因為 JUnit 4 只靠 class 和method 來為 test 分類，不能 nested（JUnit 5 才支援）。Spek 就用 nested 的方式來把 test 分類，還有就是用 string 來定義 test 名，比起 JUnit 4 用 method 名較易閱讀。\nSpek 有提供 IntelliJ IDEA/Android Studio plugin，而且還有 JUnit platform engine。所以在 Android project 上面使用都沒有太大問題。\n安裝方法 其實 Spek 的網站有介紹過安裝方法，不過在 Android project 上使用要有些改變。\n首先你的 Android project 要加入 Kotlin。這個部分 IDE 可以自動為你完成。之後就是加入 Spek。在 app 的 build.gradle 的 dependencies 加入以下部分：\ndependencies { testCompile \"org.jetbrains.kotlin:kotlin-reflect:$kotlin_version\" testCompile(\"org.jetbrains.spek:spek-api:$spek_version\") { exclude group: 'org.jetbrains.kotlin' } testCompile \"org.jetbrains.spek:spek-subject-extension:$spek_version\" testCompile(\"org.jetbrains.spek:spek-junit-platform-engine:$spek_version\") { exclude group: 'org.junit.platform' exclude group: 'org.jetbrains.kotlin' } testCompile 'org.junit.platform:junit-platform-runner:1.0.0-M3' testCompile \"org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version\" } 留意 spek_version 是一個自訂變數，可以參考 kotlin_version 變數的定義方法。Spek 的最新版本請留意官方網站。\n之後你的 test class 要加上 @RunWith(JUnitPlatform::class)：\nimport net.swiftzer.metroride.checkfare.Station import org.jetbrains.spek.api.Spek import org.jetbrains.spek.api.dsl.describe import org.jetbrains.spek.api.dsl.it import org.junit.platform.runner.JUnitPlatform import org.junit.runner.RunWith import java.math.BigDecimal import kotlin.test.* @RunWith(JUnitPlatform::class) object FareTripLegSpec : Spek({ describe(\"a fare trip leg node\") { it(\"should have copy all other properties when from is given\") { val originalNode = FareTripLeg(Station.CEN, Station.KOT, BigDecimal(\"10.0\")) val newNode = originalNode.copy(from = Station.SYP) assertEquals(Station.SYP, newNode.from) assertEquals(Station.KOT, newNode.to) assertEquals(BigDecimal(\"10.0\"), newNode.fare) assertNull(newNode.fareHandler) } } }) Spek 官方網站的例子有時用 class 有時用 object class，其實都是一樣的。Assertion framework 可以用 org.jetbrains.kotlin:kotlin-test-junit，即使你是用 Kotlin 寫 JUnit unit test 都可以用。\n小問題 Spek 在一般使用（在 IDE 和 Gradle）都沒有太大問題，但仍有一些小問題。\n Spek IntelliJ IDEA plugin 功能未有 JUnit 般完善。例如 double click test case 名稱本應可以自動跳到 test 的 source code 對應位置，但 Spek 的 test 就不能。 在 Structure 面版看不到 Spek test 的結構，只可以看到 Kotlin class 的基本 method（即是 equals、hashCode、toString 那些），如果 test 寫得長會難跳到想去的位置。 Gradle report 顯示會有些怪，可能是因為用 JUnit 4。（下面會再介紹） 在 IntelliJ IDEA/Android Studio 執行 Spek test 時需要特別設定 Run/Debug Configuration，否則可能會報錯或者 run 過一次 test 之後改 Spek test source code 再 run 時會用了舊 code 來測試。（下面會再介紹）  Gradle HTML Report 如果你會查閱 Gradle 生成的 HTML test report 的話，會發現自己寫的 Spek test class 是空白的：\n  空白的 Spek test class   但其實 test class 的內容會被放到 default-package 內：\n  實際的結果是放在 default-package 內   不過在 BuddyBuild 看又會是正常，可能是他們特別處理過。\n  過在 BuddyBuild 看又會是正常   IntelliJ IDEA/Android Studio 的 Run/Debug Configuration 如果你的 Run/Debug Configuration 是 Spek 的話，緊記要在 Before launch 加入 assembleDebugUnitTest。（資訊由 Ranie Jade Ramiso 提供）\n  Run/Debug Configuration   如果是 Android JUnit 的話就不用特別設定。\n小結 最後，要留意 Spek 並不是 Kotlin 指定的 testing framework（雖然 GitHub repo 是放在 JetBrains 名下），你可以使用其他的 framework（例如 JUnit）。還有 Kotlin 本身是支援 method 名中間有空白字符（Android Studio 會有 linter 警告，但是仍可以 compile 到的）。所以你仍可以使用 JUnit 來做 unit testing。下面是一個例子：\n@file:Suppress(\"IllegalIdentifier\") class FareTripTest { @Test @Throws(Exception::class) fun `test get from one child node`() { val fareTrip = FareTrip() val fareTripLeg = FareTripLeg(Station.SHM, Station.KOT, BigDecimal(\"12.0\")) fareTrip.addChildNode(fareTripLeg) assertEquals(Station.SHM.toLong(), fareTrip.from.toLong()) } }","wordCount":"1162","inLanguage":"en","datePublished":"2017-04-22T23:25:52+08:00","dateModified":"2017-04-22T23:25:52+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2017/04/spek/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
-</head>
-<body id=top>
-<script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
-<noscript>
-<style type=text/css>#theme-toggle,.top-link{display:none}</style>
-<style>@media(prefers-color-scheme:dark){:root{--theme:#1d1e20;--entry:#2e2e33;--primary:rgba(255, 255, 255, 0.84);--secondary:rgba(255, 255, 255, 0.56);--tertiary:rgba(255, 255, 255, 0.16);--content:rgba(255, 255, 255, 0.74);--hljs-bg:#2e2e33;--code-bg:#37383e;--border:#333}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
-</noscript>
-<header class=header>
-<nav class=nav>
-<div class=logo>
-<a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
-<span class=logo-switches>
-<button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-</button>
-</span>
-</div>
-<ul id=menu onscroll=menu_on_scroll()>
-<li>
-<a href=https://eric.swiftzer.net/fonts/ title=Fonts>
-<span>Fonts</span>
-</a>
-</li>
-<li>
-<a href=https://eric.swiftzer.net/archives/ title=Archives>
-<span>Archives</span>
-</a>
-</li>
-<li>
-<a href=https://eric.swiftzer.net/tags/ title=Tags>
-<span>Tags</span>
-</a>
-</li>
-<li>
-<a href=https://eric.swiftzer.net/about/ title=About>
-<span>About</span>
-</a>
-</li></ul>
-</nav>
-</header>
-<main class=main>
-<article class=post-single>
-<header class=post-header>
-<div class=breadcrumbs>
-<a href=https://eric.swiftzer.net/>Home</a>&nbsp;»&nbsp;<a href=https://eric.swiftzer.net/posts/>Posts</a>
-</div>
-<h1 class=post-title>
-Spek
-</h1>
-<div class=post-meta>April 22, 2017
-</div>
-</header>
-<div class=post-content>
-<p>之前一直都有留意 <a href=https://kotlinlang.org/>Kotlin</a> 這個程式語言在 Android app 開發的應用。最近試用 <a href=http://spekframework.org/>Spek</a> 來做 Android project 的 local test。Spek 是一個用 Kotlin 寫的 testing framework，用法和 Ruby 的 <a href=http://rspec.info/>RSpec</a> 差不多。對比 Android project 預設用的 JUnit 4，Spek 的寫法會比較清楚。因為 JUnit 4 只靠 class 和method 來為 test 分類，不能 nested（JUnit 5 才支援）。Spek 就用 nested 的方式來把 test 分類，還有就是用 string 來定義 test 名，比起 JUnit 4 用 method 名較易閱讀。</p>
-<p>Spek 有提供 <a href=https://plugins.jetbrains.com/plugin/8564-spek>IntelliJ IDEA/Android Studio plugin</a>，而且還有 JUnit platform engine。所以在 Android project 上面使用都沒有太大問題。</p>
-<h2 id=安裝方法>安裝方法<a hidden class=anchor aria-hidden=true href=#安裝方法>#</a></h2>
-<p>其實 Spek 的網站有介紹過安裝方法，不過在 Android project 上使用要有些改變。</p>
-<p>首先你的 Android project 要加入 Kotlin。這個部分 IDE 可以自動為你完成。之後就是加入 Spek。在 app 的 <em>build.gradle</em> 的 <code>dependencies</code> 加入以下部分：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-groovy data-lang=groovy><span class=n>dependencies</span> <span class=o>{</span>
-    <span class=n>testCompile</span> <span class=s2>&#34;org.jetbrains.kotlin:kotlin-reflect:$kotlin_version&#34;</span>
-    <span class=n>testCompile</span><span class=o>(</span><span class=s2>&#34;org.jetbrains.spek:spek-api:$spek_version&#34;</span><span class=o>)</span> <span class=o>{</span>
-        <span class=n>exclude</span> <span class=nl>group:</span> <span class=s1>&#39;org.jetbrains.kotlin&#39;</span>
-    <span class=o>}</span>
-    <span class=n>testCompile</span> <span class=s2>&#34;org.jetbrains.spek:spek-subject-extension:$spek_version&#34;</span>
-    <span class=n>testCompile</span><span class=o>(</span><span class=s2>&#34;org.jetbrains.spek:spek-junit-platform-engine:$spek_version&#34;</span><span class=o>)</span> <span class=o>{</span>
-        <span class=n>exclude</span> <span class=nl>group:</span> <span class=s1>&#39;org.junit.platform&#39;</span>
-        <span class=n>exclude</span> <span class=nl>group:</span> <span class=s1>&#39;org.jetbrains.kotlin&#39;</span>
-    <span class=o>}</span>
-    <span class=n>testCompile</span> <span class=s1>&#39;org.junit.platform:junit-platform-runner:1.0.0-M3&#39;</span>
-    <span class=n>testCompile</span> <span class=s2>&#34;org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version&#34;</span>
-<span class=o>}</span></code></pre></div>
-<p>留意 <code>spek_version</code> 是一個自訂變數，可以參考 <code>kotlin_version</code> 變數的定義方法。Spek 的最新版本請留意官方網站。</p>
-<p>之後你的 test class 要加上 <code>@RunWith(JUnitPlatform::class)</code>：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>import</span> <span class=nn>net.swiftzer.metroride.checkfare.Station</span>
-<span class=k>import</span> <span class=nn>org.jetbrains.spek.api.Spek</span>
-<span class=k>import</span> <span class=nn>org.jetbrains.spek.api.dsl.describe</span>
-<span class=k>import</span> <span class=nn>org.jetbrains.spek.api.dsl.it</span>
-<span class=k>import</span> <span class=nn>org.junit.platform.runner.JUnitPlatform</span>
-<span class=k>import</span> <span class=nn>org.junit.runner.RunWith</span>
-<span class=k>import</span> <span class=nn>java.math.BigDecimal</span>
-<span class=k>import</span> <span class=nn>kotlin.test.*</span>
-
-
-<span class=nd>@RunWith</span><span class=p>(</span><span class=n>JUnitPlatform</span><span class=o>::</span><span class=k>class</span><span class=p>)</span>
-<span class=k>object</span> <span class=nc>FareTripLegSpec</span> <span class=p>:</span> <span class=n>Spek</span><span class=p>({</span>
-    <span class=n>describe</span><span class=p>(</span><span class=s2>&#34;a fare trip leg node&#34;</span><span class=p>)</span> <span class=p>{</span>
-        <span class=k>it</span><span class=p>(</span><span class=s2>&#34;should have copy all other properties when from is given&#34;</span><span class=p>)</span> <span class=p>{</span>
-            <span class=k>val</span> <span class=py>originalNode</span> <span class=p>=</span> <span class=n>FareTripLeg</span><span class=p>(</span><span class=n>Station</span><span class=p>.</span><span class=n>CEN</span><span class=p>,</span> <span class=n>Station</span><span class=p>.</span><span class=n>KOT</span><span class=p>,</span> <span class=n>BigDecimal</span><span class=p>(</span><span class=s2>&#34;10.0&#34;</span><span class=p>))</span>
-            <span class=k>val</span> <span class=py>newNode</span> <span class=p>=</span> <span class=n>originalNode</span><span class=p>.</span><span class=n>copy</span><span class=p>(</span><span class=n>from</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>SYP</span><span class=p>)</span>
-            <span class=n>assertEquals</span><span class=p>(</span><span class=n>Station</span><span class=p>.</span><span class=n>SYP</span><span class=p>,</span> <span class=n>newNode</span><span class=p>.</span><span class=n>from</span><span class=p>)</span>
-            <span class=n>assertEquals</span><span class=p>(</span><span class=n>Station</span><span class=p>.</span><span class=n>KOT</span><span class=p>,</span> <span class=n>newNode</span><span class=p>.</span><span class=n>to</span><span class=p>)</span>
-            <span class=n>assertEquals</span><span class=p>(</span><span class=n>BigDecimal</span><span class=p>(</span><span class=s2>&#34;10.0&#34;</span><span class=p>),</span> <span class=n>newNode</span><span class=p>.</span><span class=n>fare</span><span class=p>)</span>
-            <span class=n>assertNull</span><span class=p>(</span><span class=n>newNode</span><span class=p>.</span><span class=n>fareHandler</span><span class=p>)</span>
-        <span class=p>}</span>
-    <span class=p>}</span>
-<span class=p>})</span></code></pre></div>
-<p>Spek 官方網站的例子有時用 class 有時用 object class，其實都是一樣的。Assertion framework 可以用 <code>org.jetbrains.kotlin:kotlin-test-junit</code>，即使你是用 Kotlin 寫 JUnit unit test 都可以用。</p>
-<h2 id=小問題>小問題<a hidden class=anchor aria-hidden=true href=#小問題>#</a></h2>
-<p>Spek 在一般使用（在 IDE 和 Gradle）都沒有太大問題，但仍有一些小問題。</p>
-<ul>
-<li>Spek IntelliJ IDEA plugin 功能未有 JUnit 般完善。例如 double click test case 名稱本應可以自動跳到 test 的 source code 對應位置，但 Spek 的 test 就不能。</li>
-<li>在 Structure 面版看不到 Spek test 的結構，只可以看到 Kotlin class 的基本 method（即是 <code>equals</code>、<code>hashCode</code>、<code>toString</code> 那些），如果 test 寫得長會難跳到想去的位置。</li>
-<li>Gradle report 顯示會有些怪，可能是因為用 JUnit 4。（下面會再介紹）</li>
-<li>在 IntelliJ IDEA/Android Studio 執行 Spek test 時需要特別設定 Run/Debug Configuration，否則可能會報錯或者 run 過一次 test 之後改 Spek test source code 再 run 時會用了舊 code 來測試。（下面會再介紹）</li>
-</ul>
-<h3 id=gradle-html-report>Gradle HTML Report<a hidden class=anchor aria-hidden=true href=#gradle-html-report>#</a></h3>
-<p>如果你會查閱 Gradle 生成的 HTML test report 的話，會發現自己寫的 Spek test class 是空白的：</p>
-<figure>
-<img loading=lazy src=empty-report.png> <figcaption>
-空白的 Spek test class
-</figcaption>
-</figure>
-<p>但其實 test class 的內容會被放到 default-package 內：</p>
-<figure>
-<img loading=lazy src=actual-test-result.png> <figcaption>
-實際的結果是放在 default-package 內
-</figcaption>
-</figure>
-<p>不過在 <a href=https://buddybuild.com>BuddyBuild</a> 看又會是正常，可能是他們特別處理過。</p>
-<figure>
-<img loading=lazy src=buddybuild.png> <figcaption>
-過在 BuddyBuild 看又會是正常
-</figcaption>
-</figure>
-<h3 id=intellij-ideaandroid-studio-的-rundebug-configuration>IntelliJ IDEA/Android Studio 的 Run/Debug Configuration<a hidden class=anchor aria-hidden=true href=#intellij-ideaandroid-studio-的-rundebug-configuration>#</a></h3>
-<p>如果你的 Run/Debug Configuration 是 Spek 的話，緊記要在 Before launch 加入 <code>assembleDebugUnitTest</code>。（資訊由 Ranie Jade Ramiso 提供）</p>
-<figure>
-<img loading=lazy src=run-debug-config.png> <figcaption>
-Run/Debug Configuration
-</figcaption>
-</figure>
-<p>如果是 Android JUnit 的話就不用特別設定。</p>
-<h2 id=小結>小結<a hidden class=anchor aria-hidden=true href=#小結>#</a></h2>
-<p>最後，要留意 Spek 並不是 Kotlin 指定的 testing framework（雖然 GitHub repo 是放在 JetBrains 名下），你可以使用其他的 framework（例如 JUnit）。還有 Kotlin 本身是支援 method 名中間有空白字符（Android Studio 會有 linter 警告，但是仍可以 compile 到的）。所以你仍可以使用 JUnit 來做 unit testing。下面是一個例子：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=nd>@file</span><span class=p>:</span><span class=n>Suppress</span><span class=p>(</span><span class=s2>&#34;IllegalIdentifier&#34;</span><span class=p>)</span>
-
-<span class=k>class</span> <span class=nc>FareTripTest</span> <span class=p>{</span>
-    <span class=nd>@Test</span>
-    <span class=nd>@Throws</span><span class=p>(</span><span class=n>Exception</span><span class=o>::</span><span class=k>class</span><span class=p>)</span>
-    <span class=k>fun</span> <span class=nf>`test get from one child node`</span><span class=p>()</span> <span class=p>{</span>
-        <span class=k>val</span> <span class=py>fareTrip</span> <span class=p>=</span> <span class=n>FareTrip</span><span class=p>()</span>
-        <span class=k>val</span> <span class=py>fareTripLeg</span> <span class=p>=</span> <span class=n>FareTripLeg</span><span class=p>(</span><span class=n>Station</span><span class=p>.</span><span class=n>SHM</span><span class=p>,</span> <span class=n>Station</span><span class=p>.</span><span class=n>KOT</span><span class=p>,</span> <span class=n>BigDecimal</span><span class=p>(</span><span class=s2>&#34;12.0&#34;</span><span class=p>))</span>
-        <span class=n>fareTrip</span><span class=p>.</span><span class=n>addChildNode</span><span class=p>(</span><span class=n>fareTripLeg</span><span class=p>)</span>
-        <span class=n>assertEquals</span><span class=p>(</span><span class=n>Station</span><span class=p>.</span><span class=n>SHM</span><span class=p>.</span><span class=n>toLong</span><span class=p>(),</span> <span class=n>fareTrip</span><span class=p>.</span><span class=n>from</span><span class=p>.</span><span class=n>toLong</span><span class=p>())</span>
-    <span class=p>}</span>
-<span class=p>}</span></code></pre></div>
-</div>
-<footer class=post-footer>
-<ul class=post-tags>
-<li><a href=https://eric.swiftzer.net/tags/spek/>Spek</a></li>
-<li><a href=https://eric.swiftzer.net/tags/kotlin/>Kotlin</a></li>
-</ul>
-<nav class=paginav>
-<a class=prev href=https://eric.swiftzer.net/2017/04/android-signing-config/>
-<span class=title>« Prev Page</span>
-<br>
-<span>Android 隱藏 signing config</span>
-</a>
-<a class=next href=https://eric.swiftzer.net/2017/02/xiaomi-bluetooth-gamepad/>
-<span class=title>Next Page »</span>
-<br>
-<span>小米藍牙手柄</span>
-</a>
-</nav>
-</footer><div id=disqus_thread></div>
-<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//efilm.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
-<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
-<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
-</article>
-</main><footer class=footer>
-<span>&copy; 2022 <a href=https://eric.swiftzer.net/>EricLog</a></span>
-<span>&#183;</span>
-<span>Powered by <a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a></span>
-<span>&#183;</span>
-<span>Theme <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span>
-</footer>
-<a href=#top aria-label="go to top" title="Go to Top (Alt + G)">
-<button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
-</button>
-</a>
-<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
-<script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script>
-<script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
-</body>
-</html>
+<!doctype html><html lang=zh-tw dir=auto><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Spek | EricLog</title><meta name=keywords content="Spek,Kotlin"><meta name=description content="之前一直都有留意 Kotlin 這個程式語言在 Android app 開發的應用。最近試用 Spek 來做 Android project 的 local test。Spek 是一個用 Kotlin 寫的 testing framework，用法和 Ruby 的 RSpec 差不多。對比 Android project 預設用的 JUnit 4，Spek 的寫法會比較清楚。因為 JUnit 4 只靠 class 和method 來為 test 分類，不能 nested（JUnit 5 才支援）。Spek 就用 nested 的方式來把 test 分類，還有就是用 string 來定義 test 名，比起 JUnit 4 用 method 名較易閱讀。
+Spek 有提供 IntelliJ IDEA/Android Studio plugin，而且還有 JUnit platform engine。所以在 Android project 上面使用都沒有太大問題。"><meta name=author content><link rel=canonical href=https://eric.swiftzer.net/2017/04/spek/><link crossorigin=anonymous href=/assets/css/stylesheet.min.249b1770ac429c01ffa746cc012a310192d174c913b1527f312e3294a0766d1c.css integrity="sha256-JJsXcKxCnAH/p0bMASoxAZLRdMkTsVJ/MS4ylKB2bRw=" rel="preload stylesheet" as=style><link rel=icon href=https://eric.swiftzer.net/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png><link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png><link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><meta name=generator content="Hugo 0.101.0"><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--hljs-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><link rel=preconnect href=https://fonts.gstatic.com><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet><script async src="https://www.googletagmanager.com/gtag/js?id=G-D93F946T73"></script>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-D93F946T73",{anonymize_ip:!1})}</script><meta property="og:title" content="Spek"><meta property="og:description" content="之前一直都有留意 Kotlin 這個程式語言在 Android app 開發的應用。最近試用 Spek 來做 Android project 的 local test。Spek 是一個用 Kotlin 寫的 testing framework，用法和 Ruby 的 RSpec 差不多。對比 Android project 預設用的 JUnit 4，Spek 的寫法會比較清楚。因為 JUnit 4 只靠 class 和method 來為 test 分類，不能 nested（JUnit 5 才支援）。Spek 就用 nested 的方式來把 test 分類，還有就是用 string 來定義 test 名，比起 JUnit 4 用 method 名較易閱讀。
+Spek 有提供 IntelliJ IDEA/Android Studio plugin，而且還有 JUnit platform engine。所以在 Android project 上面使用都沒有太大問題。"><meta property="og:type" content="article"><meta property="og:url" content="https://eric.swiftzer.net/2017/04/spek/"><meta property="article:section" content="posts"><meta property="article:published_time" content="2017-04-22T23:25:52+08:00"><meta property="article:modified_time" content="2017-04-22T23:25:52+08:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Spek"><meta name=twitter:description content="之前一直都有留意 Kotlin 這個程式語言在 Android app 開發的應用。最近試用 Spek 來做 Android project 的 local test。Spek 是一個用 Kotlin 寫的 testing framework，用法和 Ruby 的 RSpec 差不多。對比 Android project 預設用的 JUnit 4，Spek 的寫法會比較清楚。因為 JUnit 4 只靠 class 和method 來為 test 分類，不能 nested（JUnit 5 才支援）。Spek 就用 nested 的方式來把 test 分類，還有就是用 string 來定義 test 名，比起 JUnit 4 用 method 名較易閱讀。
+Spek 有提供 IntelliJ IDEA/Android Studio plugin，而且還有 JUnit platform engine。所以在 Android project 上面使用都沒有太大問題。"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"Spek","item":"https://eric.swiftzer.net/2017/04/spek/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Spek","name":"Spek","description":"之前一直都有留意 Kotlin 這個程式語言在 Android app 開發的應用。最近試用 Spek 來做 Android project 的 local test。Spek 是一個用 Kotlin 寫的 testing framework，用法和 Ruby 的 RSpec 差不多。對比 Android project 預設用的 JUnit 4，Spek 的寫法會比較清楚。因為 JUnit 4 只靠 class 和method 來為 test 分類，不能 nested（JUnit 5 才支援）。Spek 就用 nested 的方式來把 test 分類，還有就是用 string 來定義 test 名，比起 JUnit 4 用 method 名較易閱讀。\nSpek 有提供 IntelliJ IDEA/Android Studio plugin，而且還有 JUnit platform engine。所以在 Android project 上面使用都沒有太大問題。\n","keywords":["Spek","Kotlin"],"articleBody":"之前一直都有留意 Kotlin 這個程式語言在 Android app 開發的應用。最近試用 Spek 來做 Android project 的 local test。Spek 是一個用 Kotlin 寫的 testing framework，用法和 Ruby 的 RSpec 差不多。對比 Android project 預設用的 JUnit 4，Spek 的寫法會比較清楚。因為 JUnit 4 只靠 class 和method 來為 test 分類，不能 nested（JUnit 5 才支援）。Spek 就用 nested 的方式來把 test 分類，還有就是用 string 來定義 test 名，比起 JUnit 4 用 method 名較易閱讀。\nSpek 有提供 IntelliJ IDEA/Android Studio plugin，而且還有 JUnit platform engine。所以在 Android project 上面使用都沒有太大問題。\n安裝方法 其實 Spek 的網站有介紹過安裝方法，不過在 Android project 上使用要有些改變。\n首先你的 Android project 要加入 Kotlin。這個部分 IDE 可以自動為你完成。之後就是加入 Spek。在 app 的 build.gradle 的 dependencies 加入以下部分：\ndependencies { testCompile \"org.jetbrains.kotlin:kotlin-reflect:$kotlin_version\" testCompile(\"org.jetbrains.spek:spek-api:$spek_version\") { exclude group: 'org.jetbrains.kotlin' } testCompile \"org.jetbrains.spek:spek-subject-extension:$spek_version\" testCompile(\"org.jetbrains.spek:spek-junit-platform-engine:$spek_version\") { exclude group: 'org.junit.platform' exclude group: 'org.jetbrains.kotlin' } testCompile 'org.junit.platform:junit-platform-runner:1.0.0-M3' testCompile \"org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version\" } 留意 spek_version 是一個自訂變數，可以參考 kotlin_version 變數的定義方法。Spek 的最新版本請留意官方網站。\n之後你的 test class 要加上 @RunWith(JUnitPlatform::class)：\nimport net.swiftzer.metroride.checkfare.Station import org.jetbrains.spek.api.Spek import org.jetbrains.spek.api.dsl.describe import org.jetbrains.spek.api.dsl.it import org.junit.platform.runner.JUnitPlatform import org.junit.runner.RunWith import java.math.BigDecimal import kotlin.test.* @RunWith(JUnitPlatform::class) object FareTripLegSpec : Spek({ describe(\"a fare trip leg node\") { it(\"should have copy all other properties when from is given\") { val originalNode = FareTripLeg(Station.CEN, Station.KOT, BigDecimal(\"10.0\")) val newNode = originalNode.copy(from = Station.SYP) assertEquals(Station.SYP, newNode.from) assertEquals(Station.KOT, newNode.to) assertEquals(BigDecimal(\"10.0\"), newNode.fare) assertNull(newNode.fareHandler) } } }) Spek 官方網站的例子有時用 class 有時用 object class，其實都是一樣的。Assertion framework 可以用 org.jetbrains.kotlin:kotlin-test-junit，即使你是用 Kotlin 寫 JUnit unit test 都可以用。\n小問題 Spek 在一般使用（在 IDE 和 Gradle）都沒有太大問題，但仍有一些小問題。\nSpek IntelliJ IDEA plugin 功能未有 JUnit 般完善。例如 double click test case 名稱本應可以自動跳到 test 的 source code 對應位置，但 Spek 的 test 就不能。 在 Structure 面版看不到 Spek test 的結構，只可以看到 Kotlin class 的基本 method（即是 equals、hashCode、toString 那些），如果 test 寫得長會難跳到想去的位置。 Gradle report 顯示會有些怪，可能是因為用 JUnit 4。（下面會再介紹） 在 IntelliJ IDEA/Android Studio 執行 Spek test 時需要特別設定 Run/Debug Configuration，否則可能會報錯或者 run 過一次 test 之後改 Spek test source code 再 run 時會用了舊 code 來測試。（下面會再介紹） Gradle HTML Report 如果你會查閱 Gradle 生成的 HTML test report 的話，會發現自己寫的 Spek test class 是空白的：\n空白的 Spek test class 但其實 test class 的內容會被放到 default-package 內：\n實際的結果是放在 default-package 內 不過在 BuddyBuild 看又會是正常，可能是他們特別處理過。\n過在 BuddyBuild 看又會是正常 IntelliJ IDEA/Android Studio 的 Run/Debug Configuration 如果你的 Run/Debug Configuration 是 Spek 的話，緊記要在 Before launch 加入 assembleDebugUnitTest。（資訊由 Ranie Jade Ramiso 提供）\nRun/Debug Configuration 如果是 Android JUnit 的話就不用特別設定。\n小結 最後，要留意 Spek 並不是 Kotlin 指定的 testing framework（雖然 GitHub repo 是放在 JetBrains 名下），你可以使用其他的 framework（例如 JUnit）。還有 Kotlin 本身是支援 method 名中間有空白字符（Android Studio 會有 linter 警告，但是仍可以 compile 到的）。所以你仍可以使用 JUnit 來做 unit testing。下面是一個例子：\n@file:Suppress(\"IllegalIdentifier\") class FareTripTest { @Test @Throws(Exception::class) fun `test get from one child node`() { val fareTrip = FareTrip() val fareTripLeg = FareTripLeg(Station.SHM, Station.KOT, BigDecimal(\"12.0\")) fareTrip.addChildNode(fareTripLeg) assertEquals(Station.SHM.toLong(), fareTrip.from.toLong()) } }","wordCount":"1162","inLanguage":"zh-tw","datePublished":"2017-04-22T23:25:52+08:00","dateModified":"2017-04-22T23:25:52+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2017/04/spek/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
+<span class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></span></div><ul id=menu><li><a href=https://eric.swiftzer.net/fonts/ title=Fonts><span>Fonts</span></a></li><li><a href=https://eric.swiftzer.net/archives/ title=Archives><span>Archives</span></a></li><li><a href=https://eric.swiftzer.net/tags/ title=Tags><span>Tags</span></a></li><li><a href=https://eric.swiftzer.net/about/ title=About><span>About</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><div class=breadcrumbs><a href=https://eric.swiftzer.net/>首頁</a>&nbsp;»&nbsp;<a href=https://eric.swiftzer.net/posts/>Posts</a></div><h1 class=post-title>Spek</h1><div class=post-meta>April 22, 2017</div></header><div class=post-content><p>之前一直都有留意 <a href=https://kotlinlang.org/>Kotlin</a> 這個程式語言在 Android app 開發的應用。最近試用 <a href=http://spekframework.org/>Spek</a> 來做 Android project 的 local test。Spek 是一個用 Kotlin 寫的 testing framework，用法和 Ruby 的 <a href=http://rspec.info/>RSpec</a> 差不多。對比 Android project 預設用的 JUnit 4，Spek 的寫法會比較清楚。因為 JUnit 4 只靠 class 和method 來為 test 分類，不能 nested（JUnit 5 才支援）。Spek 就用 nested 的方式來把 test 分類，還有就是用 string 來定義 test 名，比起 JUnit 4 用 method 名較易閱讀。</p><p>Spek 有提供 <a href=https://plugins.jetbrains.com/plugin/8564-spek>IntelliJ IDEA/Android Studio plugin</a>，而且還有 JUnit platform engine。所以在 Android project 上面使用都沒有太大問題。</p><h2 id=安裝方法>安裝方法<a hidden class=anchor aria-hidden=true href=#安裝方法>#</a></h2><p>其實 Spek 的網站有介紹過安裝方法，不過在 Android project 上使用要有些改變。</p><p>首先你的 Android project 要加入 Kotlin。這個部分 IDE 可以自動為你完成。之後就是加入 Spek。在 app 的 <em>build.gradle</em> 的 <code>dependencies</code> 加入以下部分：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-groovy data-lang=groovy><span class=line><span class=cl><span class=n>dependencies</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>testCompile</span> <span class=s2>&#34;org.jetbrains.kotlin:kotlin-reflect:$kotlin_version&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=n>testCompile</span><span class=o>(</span><span class=s2>&#34;org.jetbrains.spek:spek-api:$spek_version&#34;</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>exclude</span> <span class=nl>group:</span> <span class=s1>&#39;org.jetbrains.kotlin&#39;</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>    <span class=n>testCompile</span> <span class=s2>&#34;org.jetbrains.spek:spek-subject-extension:$spek_version&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=n>testCompile</span><span class=o>(</span><span class=s2>&#34;org.jetbrains.spek:spek-junit-platform-engine:$spek_version&#34;</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>exclude</span> <span class=nl>group:</span> <span class=s1>&#39;org.junit.platform&#39;</span>
+</span></span><span class=line><span class=cl>        <span class=n>exclude</span> <span class=nl>group:</span> <span class=s1>&#39;org.jetbrains.kotlin&#39;</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>    <span class=n>testCompile</span> <span class=s1>&#39;org.junit.platform:junit-platform-runner:1.0.0-M3&#39;</span>
+</span></span><span class=line><span class=cl>    <span class=n>testCompile</span> <span class=s2>&#34;org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version&#34;</span>
+</span></span><span class=line><span class=cl><span class=o>}</span></span></span></code></pre></div><p>留意 <code>spek_version</code> 是一個自訂變數，可以參考 <code>kotlin_version</code> 變數的定義方法。Spek 的最新版本請留意官方網站。</p><p>之後你的 test class 要加上 <code>@RunWith(JUnitPlatform::class)</code>：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>import</span> <span class=nn>net.swiftzer.metroride.checkfare.Station</span>
+</span></span><span class=line><span class=cl><span class=k>import</span> <span class=nn>org.jetbrains.spek.api.Spek</span>
+</span></span><span class=line><span class=cl><span class=k>import</span> <span class=nn>org.jetbrains.spek.api.dsl.describe</span>
+</span></span><span class=line><span class=cl><span class=k>import</span> <span class=nn>org.jetbrains.spek.api.dsl.it</span>
+</span></span><span class=line><span class=cl><span class=k>import</span> <span class=nn>org.junit.platform.runner.JUnitPlatform</span>
+</span></span><span class=line><span class=cl><span class=k>import</span> <span class=nn>org.junit.runner.RunWith</span>
+</span></span><span class=line><span class=cl><span class=k>import</span> <span class=nn>java.math.BigDecimal</span>
+</span></span><span class=line><span class=cl><span class=k>import</span> <span class=nn>kotlin.test.*</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@RunWith</span><span class=p>(</span><span class=n>JUnitPlatform</span><span class=o>::</span><span class=k>class</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>object</span> <span class=nc>FareTripLegSpec</span> <span class=p>:</span> <span class=n>Spek</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>    <span class=n>describe</span><span class=p>(</span><span class=s2>&#34;a fare trip leg node&#34;</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>it</span><span class=p>(</span><span class=s2>&#34;should have copy all other properties when from is given&#34;</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>val</span> <span class=py>originalNode</span> <span class=p>=</span> <span class=n>FareTripLeg</span><span class=p>(</span><span class=n>Station</span><span class=p>.</span><span class=n>CEN</span><span class=p>,</span> <span class=n>Station</span><span class=p>.</span><span class=n>KOT</span><span class=p>,</span> <span class=n>BigDecimal</span><span class=p>(</span><span class=s2>&#34;10.0&#34;</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>            <span class=k>val</span> <span class=py>newNode</span> <span class=p>=</span> <span class=n>originalNode</span><span class=p>.</span><span class=n>copy</span><span class=p>(</span><span class=n>from</span> <span class=p>=</span> <span class=n>Station</span><span class=p>.</span><span class=n>SYP</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=n>assertEquals</span><span class=p>(</span><span class=n>Station</span><span class=p>.</span><span class=n>SYP</span><span class=p>,</span> <span class=n>newNode</span><span class=p>.</span><span class=n>from</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=n>assertEquals</span><span class=p>(</span><span class=n>Station</span><span class=p>.</span><span class=n>KOT</span><span class=p>,</span> <span class=n>newNode</span><span class=p>.</span><span class=n>to</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=n>assertEquals</span><span class=p>(</span><span class=n>BigDecimal</span><span class=p>(</span><span class=s2>&#34;10.0&#34;</span><span class=p>),</span> <span class=n>newNode</span><span class=p>.</span><span class=n>fare</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=n>assertNull</span><span class=p>(</span><span class=n>newNode</span><span class=p>.</span><span class=n>fareHandler</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>})</span></span></span></code></pre></div><p>Spek 官方網站的例子有時用 class 有時用 object class，其實都是一樣的。Assertion framework 可以用 <code>org.jetbrains.kotlin:kotlin-test-junit</code>，即使你是用 Kotlin 寫 JUnit unit test 都可以用。</p><h2 id=小問題>小問題<a hidden class=anchor aria-hidden=true href=#小問題>#</a></h2><p>Spek 在一般使用（在 IDE 和 Gradle）都沒有太大問題，但仍有一些小問題。</p><ul><li>Spek IntelliJ IDEA plugin 功能未有 JUnit 般完善。例如 double click test case 名稱本應可以自動跳到 test 的 source code 對應位置，但 Spek 的 test 就不能。</li><li>在 Structure 面版看不到 Spek test 的結構，只可以看到 Kotlin class 的基本 method（即是 <code>equals</code>、<code>hashCode</code>、<code>toString</code> 那些），如果 test 寫得長會難跳到想去的位置。</li><li>Gradle report 顯示會有些怪，可能是因為用 JUnit 4。（下面會再介紹）</li><li>在 IntelliJ IDEA/Android Studio 執行 Spek test 時需要特別設定 Run/Debug Configuration，否則可能會報錯或者 run 過一次 test 之後改 Spek test source code 再 run 時會用了舊 code 來測試。（下面會再介紹）</li></ul><h3 id=gradle-html-report>Gradle HTML Report<a hidden class=anchor aria-hidden=true href=#gradle-html-report>#</a></h3><p>如果你會查閱 Gradle 生成的 HTML test report 的話，會發現自己寫的 Spek test class 是空白的：</p><figure><img loading=lazy src=empty-report.png><figcaption>空白的 Spek test class</figcaption></figure><p>但其實 test class 的內容會被放到 default-package 內：</p><figure><img loading=lazy src=actual-test-result.png><figcaption>實際的結果是放在 default-package 內</figcaption></figure><p>不過在 <a href=https://buddybuild.com>BuddyBuild</a> 看又會是正常，可能是他們特別處理過。</p><figure><img loading=lazy src=buddybuild.png><figcaption>過在 BuddyBuild 看又會是正常</figcaption></figure><h3 id=intellij-ideaandroid-studio-的-rundebug-configuration>IntelliJ IDEA/Android Studio 的 Run/Debug Configuration<a hidden class=anchor aria-hidden=true href=#intellij-ideaandroid-studio-的-rundebug-configuration>#</a></h3><p>如果你的 Run/Debug Configuration 是 Spek 的話，緊記要在 Before launch 加入 <code>assembleDebugUnitTest</code>。（資訊由 Ranie Jade Ramiso 提供）</p><figure><img loading=lazy src=run-debug-config.png><figcaption>Run/Debug Configuration</figcaption></figure><p>如果是 Android JUnit 的話就不用特別設定。</p><h2 id=小結>小結<a hidden class=anchor aria-hidden=true href=#小結>#</a></h2><p>最後，要留意 Spek 並不是 Kotlin 指定的 testing framework（雖然 GitHub repo 是放在 JetBrains 名下），你可以使用其他的 framework（例如 JUnit）。還有 Kotlin 本身是支援 method 名中間有空白字符（Android Studio 會有 linter 警告，但是仍可以 compile 到的）。所以你仍可以使用 JUnit 來做 unit testing。下面是一個例子：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=nd>@file</span><span class=p>:</span><span class=n>Suppress</span><span class=p>(</span><span class=s2>&#34;IllegalIdentifier&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>FareTripTest</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@Test</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@Throws</span><span class=p>(</span><span class=n>Exception</span><span class=o>::</span><span class=k>class</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>fun</span> <span class=nf>`test get from one child node`</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>fareTrip</span> <span class=p>=</span> <span class=n>FareTrip</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>fareTripLeg</span> <span class=p>=</span> <span class=n>FareTripLeg</span><span class=p>(</span><span class=n>Station</span><span class=p>.</span><span class=n>SHM</span><span class=p>,</span> <span class=n>Station</span><span class=p>.</span><span class=n>KOT</span><span class=p>,</span> <span class=n>BigDecimal</span><span class=p>(</span><span class=s2>&#34;12.0&#34;</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>        <span class=n>fareTrip</span><span class=p>.</span><span class=n>addChildNode</span><span class=p>(</span><span class=n>fareTripLeg</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>assertEquals</span><span class=p>(</span><span class=n>Station</span><span class=p>.</span><span class=n>SHM</span><span class=p>.</span><span class=n>toLong</span><span class=p>(),</span> <span class=n>fareTrip</span><span class=p>.</span><span class=n>from</span><span class=p>.</span><span class=n>toLong</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span></span></span></code></pre></div></div><footer class=post-footer><ul class=post-tags><li><a href=https://eric.swiftzer.net/tags/spek/>Spek</a></li><li><a href=https://eric.swiftzer.net/tags/kotlin/>Kotlin</a></li></ul><nav class=paginav><a class=prev href=https://eric.swiftzer.net/2017/04/android-signing-config/><span class=title>« 上一篇</span><br><span>Android 隱藏 signing config</span></a>
+<a class=next href=https://eric.swiftzer.net/2017/02/xiaomi-bluetooth-gamepad/><span class=title>下一篇 »</span><br><span>小米藍牙手柄</span></a></nav></footer><div id=disqus_thread></div><script type=application/javascript>window.disqus_config=function(){},function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById("disqus_thread").innerHTML="Disqus comments not available by default when the website is previewed locally.";return}var t=document,e=t.createElement("script");e.async=!0,e.src="//efilm.disqus.com/embed.js",e.setAttribute("data-timestamp",+new Date),(t.head||t.body).appendChild(e)}()</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></article></main><footer class=footer><span>&copy; 2022 <a href=https://eric.swiftzer.net/>EricLog</a></span>
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg></a><script>let menu=document.getElementById("menu");menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)},document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script></body></html>

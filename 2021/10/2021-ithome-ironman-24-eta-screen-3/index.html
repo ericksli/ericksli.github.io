@@ -1,295 +1,153 @@
-<!doctype html><html lang=zh-hant-hk dir=auto>
-<head><meta charset=utf-8>
-<meta http-equiv=x-ua-compatible content="IE=edge">
-<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta name=robots content="index, follow">
-<title>2021 iThome 鐵人賽 Day 24：ETA screen (3) | EricLog</title>
-<meta name=keywords content="2021 iThome 鐵人賽,Android">
-<meta name=description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 24 篇，你可到 iThome 查看原文。 文章目錄 我們這次會為班次頁加上自動更新和順帶為下一篇實">
-<meta name=author content>
-<link rel=canonical href=https://ithelp.ithome.com.tw/articles/10279594>
-<link href=/assets/css/stylesheet.min.d1fc837a267f77f6ede89d1a89c4880a90c381d9e6673ad4a76a3ad1900b65f9.css integrity="sha256-0fyDeiZ/d/bt6J0aicSICpDDgdnmZzrUp2o60ZALZfk=" rel="preload stylesheet" as=style>
-<link rel=icon href=https://eric.swiftzer.net/favicon.ico>
-<link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png>
-<link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png>
-<link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png>
-<link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg>
-<meta name=theme-color content="#2e2e33">
-<meta name=msapplication-TileColor content="#2e2e33">
-<meta name=generator content="Hugo 0.88.1">
-<link rel=preconnect href=https://fonts.gstatic.com>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-1268728-8','auto'),ga('send','pageview'))</script>
-<script async src=https://www.google-analytics.com/analytics.js></script>
-<meta property="og:title" content="2021 iThome 鐵人賽 Day 24：ETA screen (3)">
-<meta property="og:description" content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 24 篇，你可到 iThome 查看原文。 文章目錄 我們這次會為班次頁加上自動更新和順帶為下一篇實">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://eric.swiftzer.net/2021/10/2021-ithome-ironman-24-eta-screen-3/"><meta property="article:section" content="posts">
-<meta property="article:published_time" content="2021-10-09T00:00:00+08:00">
-<meta property="article:modified_time" content="2021-10-09T00:00:00+08:00">
-<meta name=twitter:card content="summary">
-<meta name=twitter:title content="2021 iThome 鐵人賽 Day 24：ETA screen (3)">
-<meta name=twitter:description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 24 篇，你可到 iThome 查看原文。 文章目錄 我們這次會為班次頁加上自動更新和順帶為下一篇實">
-<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"2021 iThome 鐵人賽 Day 24：ETA screen (3)","item":"https://eric.swiftzer.net/2021/10/2021-ithome-ironman-24-eta-screen-3/"}]}</script>
-<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"2021 iThome 鐵人賽 Day 24：ETA screen (3)","name":"2021 iThome 鐵人賽 Day 24：ETA screen (3)","description":"本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 24 篇，你可到 iThome 查看原文。 文章目錄 我們這次會為班次頁加上自動更新和順帶為下一篇實","keywords":["2021 iThome 鐵人賽","Android"],"articleBody":" 本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 24 篇，你可到 iThome 查看原文。\n文章目錄\n 我們這次會為班次頁加上自動更新和順帶為下一篇實作錯誤 banner 做準備。\n我們這頁除非顯示不能連接到互聯網這類錯誤外，都不會出現重新載入按鈕，這是因為這頁就應該自動更新。按照 API 的介紹，它是每十秒更新一次。我們先準備一個 constant 來表示這個數值：\nimport kotlin.time.Duration as KotlinDuration private val AUTO_REFRESH_INTERVAL = KotlinDuration.seconds(10) 由於我們會用 Kotlin Coroutine 的 delay 來做延時的效果，它是用 Kotlin 的 Duration 作為參數，故此這裏就用 Kotlin 的 Duration。而因為之前我們用了 Java 的 Instant 來表示抵站時間，在換算站時間「X 分鐘」的數字時會用到 Java 的 Duration，為了避免混淆所以我們預先用 import alias 分開兩個 Duration。\n紀錄載入時間 我們做自動更新除了考慮用戶一直停留在該頁時能自動更新外，還要考慮 Android 的 lifecycle 問題。如果用戶在班次頁按 Home button 的話，我們應該暫停自動更新；而當用戶由其他 app 切換到該頁的時候就要回復自動更新。Fragment 的話就是要留意 onPause 和 onResume callback，在 onPause 時停止下次再 call API 的排程而在 onResume 重新 call API 一次。但如果用戶很快速地做 onPause 和 onResume 的話那可能會導致 call API 太密。所以我們應該在每次收到 response 時都記錄時間，然後在 onResume 檢查上次的載入的時間來決定要馬上 call API 還是要隔一會才 call API。這樣的話就做一個 data class 記錄那個時間：\nprivate data class TimedValueout T( val value: T, val updatedAt: Instant, ) 自動更新 然後 etaResult 就變成這樣：\nprivate lateinit var _autoRefreshScope: CoroutineScope private val autoRefreshScope: CoroutineScope get() { if (!::_autoRefreshScope.isInitialized || !_autoRefreshScope.isActive) { _autoRefreshScope = CoroutineScope( viewModelScope.coroutineContext + SupervisorJob(viewModelScope.coroutineContext.job) + CoroutineName(\"auto-refresh\") ) } return _autoRefreshScope } private val etaResult: StateFlowTimedValueLoadableEtaResult = combineTransform( language, line, station, sortedBy, triggerRefresh.receiveAsFlow(), ) { language, line, station, sortedBy, _ - emit(TimedValue(value = Loadable.Loading, updatedAt = clock.instant())) emit( TimedValue( value = Loadable.Loaded(getEta(language, line, station, sortedBy)), updatedAt = clock.instant(), ) ) }.onEach { autoRefreshScope.launch { delay(AUTO_REFRESH_INTERVAL) triggerRefresh.send(Unit) } }.stateIn( scope = viewModelScope, started = SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MILLIS), initialValue = TimedValue(value = Loadable.Loading, updatedAt = clock.instant()), ) onEach 是會在 combineTransform 做完後觸發的，然後我們特意為了能取消之前排程好的 delay 就做了一個 CoroutineScope (autoRefreshScope)。因為將會有好幾個地方都會有 delay，如果開 variable 儲存每個 Job 會比較難搞，所以就開了一個專門的 CoroutineScope 來 launch 這些包含 delay 的 coroutine，如果要取消 CoroutineScope 的話都是跟 Job 一樣 call cancel 就可以了。以下就是除了 onEach 以外有關 autoRefreshScope 的地方：\n// 當用戶改變排序方式時會令 etaResult 馬上 call 多次 API，所以要把原有的排程清除 private val sortedBy = savedStateHandle.getLiveData(SORT_BY, 0).asFlow() .map { GetEtaUseCase.SortBy.values()[it] } .onEach { autoRefreshScope.cancel() } // 當用戶按下錯誤頁的「Try again」按鈕時 fun refresh() { autoRefreshScope.cancel() autoRefreshScope.launch { triggerRefresh.send(Unit) } } // Fragment.onResume 時 fun startAutoRefresh() { autoRefreshScope.launch { val delayDuration = JavaDuration.between(etaResult.value.currentResult.updatedAt, clock.instant()) if (delayDuration = AUTO_REFRESH_INTERVAL.toJavaDuration()) { triggerRefresh.send(Unit) } else { // schedule the next refresh base on the previous loaded time  delay(delayDuration.toKotlinDuration()) triggerRefresh.send(Unit) } } } // Fragment.onPause 時 fun stopAutoRefresh() { autoRefreshScope.cancel() } startAutoRefresh 那個 if 就是看看上次 API response 的時間是不是超過了十秒，如果是就馬上 call API，否則就多等十秒以內的時間來維持十秒間距。留意我們在 etaResult 的 combineTransform 和 startAutoRefresh 都是用 Clock 來取得當前時間。那個 Clock 是經 dependency injection 取得，以便之後可以做 unit testing。以下是對應的 Dagger module：\n@Module @InstallIn(SingletonComponent::class) object CommonModule { @Provides fun provideClock(): Clock = Clock.systemDefaultZone() } 另外，由於我們會在 onResume 觸發更新排程，所以原先在 init block 觸發更新的 code 都可以刪走。同時因應我們包多了一層 TimedValue，所有跟 etaResult 有關的地方都要做對應的修改：\nprivate val loadedEtaResult = etaResult .map { it.value } .filterIsInstanceLoadable.LoadedEtaResult() .map { it.value } val showLoading: StateFlowBoolean = etaResult .map { it.value == Loadable.Loading } .stateIn( scope = viewModelScope, started = SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MILLIS), initialValue = true, ) val showError = etaResult .map { it.value is Loadable.Loaded \u0026\u0026 it.value.value is EtaFailResult } .stateIn( scope = viewModelScope, started = SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MILLIS), initialValue = false, ) val showEtaList = etaResult .map { it.value is Loadable.Loaded \u0026\u0026 it.value.value is EtaResult.Success } .stateIn( scope = viewModelScope, started = SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MILLIS), initialValue = false, ) fun viewIncidentDetail() { val result = etaResult.value.value if (result !is Loadable.Loaded) return if (result.value !is EtaResult.Incident) return viewModelScope.launch { _viewIncidentDetail.send(result.value.url) } } 那我們就試試效果如何。由於我們之前已經為 app 整合了 Flipper，我們就看看效果如何：\n  Flipper 顯示的 HTTP 請求紀錄   發現不似預期！在第一次 call API 後隔了十秒會變了兩個 API call，再隔十秒會變了四個 API call，再之後變十六個 API call……原來我們沒有為意到 etaResult 的 combineTransform 是先 emit 載入中然後待 API response 來到時 emit 另一個值，所以兩個值各自觸發了 delay 就變了一開二的效果。這樣的話我們要改改寫法：\nprivate val etaResult: StateFlowTimedValueLoadableEtaResult = triggerRefresh .consumeAsFlow() .flatMapLatest { flowOf( flowOf(TimedValue(value = Loadable.Loading, updatedAt = clock.instant())), combine( language, line, station, sortedBy, ) { language, line, station, sortedBy - TimedValue( value = Loadable.Loaded(getEta(language, line, station, sortedBy)), updatedAt = clock.instant(), ) }.onEach { // schedule the next refresh after loading  autoRefreshScope.launch { delay(AUTO_REFRESH_INTERVAL) triggerRefresh.send(Unit) } }, ).flattenConcat() } .stateIn( scope = viewModelScope, started = SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MILLIS), initialValue = TimedValue(value = Loadable.Loading, updatedAt = Instant.EPOCH), ) 現在我們不把 triggerRefresh 放入 combineTransform/combine 內，改為以 triggerRefresh 觸發整個 combine。flatMapLatest 就是把 lambda 內的 Flow 轉交去下游。flatMapLatest 內的 Flow 是把兩個 Flow（載入中和 call API 加下次更新排程）接駁為一個 Flow（用 flattenConcat）。因為用了 flattenConcat，所以載入中那個值會比 API response 那個值來得早，正正就是我們想要的效果。\n小結 現在我們已經做了定時自動更新的功能了，亦都用了 custom scope 來停止之前的 delay，感覺有點像 RxJava 的 CompositeDisposable。另外亦經 Dagger inject Java Time 的 Clock 獲取當前時間而不是用 System.currentTimeMillis 或者 Calendar.getInstance() 獲取，這個做法是為了方便寫 unit test。至於實際如何寫 unit test 我們會待其餘功能完成後示範。下一篇會完成當成功載入班次後更新出現錯誤時會顯示的 banner，這次的 code 可以到 GitHub repo 找尋「Auto refresh」commit 就會找到。\n","wordCount":"1853","inLanguage":"en","datePublished":"2021-10-09T00:00:00+08:00","dateModified":"2021-10-09T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2021/10/2021-ithome-ironman-24-eta-screen-3/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
-</head>
-<body id=top>
-<script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
-<noscript>
-<style type=text/css>#theme-toggle,.top-link{display:none}</style>
-<style>@media(prefers-color-scheme:dark){:root{--theme:#1d1e20;--entry:#2e2e33;--primary:rgba(255, 255, 255, 0.84);--secondary:rgba(255, 255, 255, 0.56);--tertiary:rgba(255, 255, 255, 0.16);--content:rgba(255, 255, 255, 0.74);--hljs-bg:#2e2e33;--code-bg:#37383e;--border:#333}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
-</noscript>
-<header class=header>
-<nav class=nav>
-<div class=logo>
-<a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
-<span class=logo-switches>
-<button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-</button>
-</span>
-</div>
-<ul id=menu onscroll=menu_on_scroll()>
-<li>
-<a href=https://eric.swiftzer.net/fonts/ title=Fonts>
-<span>Fonts</span>
-</a>
-</li>
-<li>
-<a href=https://eric.swiftzer.net/archives/ title=Archives>
-<span>Archives</span>
-</a>
-</li>
-<li>
-<a href=https://eric.swiftzer.net/tags/ title=Tags>
-<span>Tags</span>
-</a>
-</li>
-<li>
-<a href=https://eric.swiftzer.net/about/ title=About>
-<span>About</span>
-</a>
-</li></ul>
-</nav>
-</header>
-<main class=main>
-<article class=post-single>
-<header class=post-header>
-<div class=breadcrumbs>
-<a href=https://eric.swiftzer.net/>Home</a>&nbsp;»&nbsp;<a href=https://eric.swiftzer.net/posts/>Posts</a>
-</div>
-<h1 class=post-title>
-2021 iThome 鐵人賽 Day 24：ETA screen (3)
-</h1>
-<div class=post-meta>October 9, 2021
-</div>
-</header>
-<div class=post-content>
-<blockquote>
-<p>本篇文章是 <a href=https://ithelp.ithome.com.tw/2021ironman>2021 iThome 鐵人賽</a>參賽題目「<a href=https://ithelp.ithome.com.tw/users/20139666/ironman/4661>寫一個列車抵站時間 Android App</a>」的第 24 篇，你可到 iThome <a href=https://ithelp.ithome.com.tw/articles/10279594>查看原文</a>。</p>
-<p><a href=https://eric.swiftzer.net/2021-ithome-ironman/>文章目錄</a></p>
-</blockquote>
-<p>我們這次會為班次頁加上自動更新和順帶為下一篇實作錯誤 banner 做準備。</p>
-<p>我們這頁除非顯示不能連接到互聯網這類錯誤外，都不會出現重新載入按鈕，這是因為這頁就應該自動更新。按照 <a href=https://data.gov.hk/tc-data/dataset/mtr-data2-nexttrain-data>API 的介紹</a>，它是每十秒更新一次。我們先準備一個 constant 來表示這個數值：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>import</span> <span class=nn>kotlin.time.Duration</span> <span class=k>as</span> <span class=n>KotlinDuration</span>
-
-<span class=k>private</span> <span class=k>val</span> <span class=py>AUTO_REFRESH_INTERVAL</span> <span class=p>=</span> <span class=n>KotlinDuration</span><span class=p>.</span><span class=n>seconds</span><span class=p>(</span><span class=m>10</span><span class=p>)</span>
-</code></pre></div><p>由於我們會用 Kotlin Coroutine 的 <code>delay</code> 來做延時的效果，它是用 Kotlin 的 <code>Duration</code> 作為參數，故此這裏就用 Kotlin 的 <code>Duration</code>。而因為之前我們用了 Java 的 <code>Instant</code> 來表示抵站時間，在換算站時間「X 分鐘」的數字時會用到 Java 的 <code>Duration</code>，為了避免混淆所以我們預先用 import alias 分開兩個 <code>Duration</code>。</p>
-<h2 id=紀錄載入時間>紀錄載入時間<a hidden class=anchor aria-hidden=true href=#紀錄載入時間>#</a></h2>
-<p>我們做自動更新除了考慮用戶一直停留在該頁時能自動更新外，還要考慮 Android 的 lifecycle 問題。如果用戶在班次頁按 Home button 的話，我們應該暫停自動更新；而當用戶由其他 app 切換到該頁的時候就要回復自動更新。<code>Fragment</code> 的話就是要留意 <code>onPause</code> 和 <code>onResume</code> callback，在 <code>onPause</code> 時停止下次再 call API 的排程而在 <code>onResume</code> 重新 call API 一次。但如果用戶很快速地做 <code>onPause</code> 和 <code>onResume</code> 的話那可能會導致 call API 太密。所以我們應該在每次收到 response 時都記錄時間，然後在 <code>onResume</code> 檢查上次的載入的時間來決定要馬上 call API 還是要隔一會才 call API。這樣的話就做一個 data class 記錄那個時間：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>private</span> <span class=k>data</span> <span class=k>class</span> <span class=nc>TimedValue</span><span class=p>&lt;</span><span class=k>out</span> <span class=n>T</span><span class=p>&gt;(</span>
-    <span class=k>val</span> <span class=py>value</span><span class=p>:</span> <span class=n>T</span><span class=p>,</span>
-    <span class=k>val</span> <span class=py>updatedAt</span><span class=p>:</span> <span class=n>Instant</span><span class=p>,</span>
-<span class=p>)</span>
-</code></pre></div><h2 id=自動更新>自動更新<a hidden class=anchor aria-hidden=true href=#自動更新>#</a></h2>
-<p>然後 <code>etaResult</code> 就變成這樣：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>private</span> <span class=k>lateinit</span> <span class=k>var</span> <span class=py>_autoRefreshScope</span><span class=p>:</span> <span class=n>CoroutineScope</span>
-<span class=k>private</span> <span class=k>val</span> <span class=py>autoRefreshScope</span><span class=p>:</span> <span class=n>CoroutineScope</span>
-    <span class=k>get</span><span class=p>()</span> <span class=p>{</span>
-        <span class=k>if</span> <span class=p>(!</span><span class=o>::</span><span class=n>_autoRefreshScope</span><span class=p>.</span><span class=n>isInitialized</span> <span class=o>||</span> <span class=p>!</span><span class=n>_autoRefreshScope</span><span class=p>.</span><span class=n>isActive</span><span class=p>)</span> <span class=p>{</span>
-            <span class=n>_autoRefreshScope</span> <span class=p>=</span>
-                <span class=n>CoroutineScope</span><span class=p>(</span>
-                    <span class=n>viewModelScope</span><span class=p>.</span><span class=n>coroutineContext</span> <span class=p>+</span>
-                            <span class=n>SupervisorJob</span><span class=p>(</span><span class=n>viewModelScope</span><span class=p>.</span><span class=n>coroutineContext</span><span class=p>.</span><span class=n>job</span><span class=p>)</span> <span class=p>+</span>
-                            <span class=n>CoroutineName</span><span class=p>(</span><span class=s2>&#34;auto-refresh&#34;</span><span class=p>)</span>
-                <span class=p>)</span>
-        <span class=p>}</span>
-        <span class=k>return</span> <span class=n>_autoRefreshScope</span>
-    <span class=p>}</span>
-
-<span class=k>private</span> <span class=k>val</span> <span class=py>etaResult</span><span class=p>:</span> <span class=n>StateFlow</span><span class=p>&lt;</span><span class=n>TimedValue</span><span class=p>&lt;</span><span class=n>Loadable</span><span class=p>&lt;</span><span class=n>EtaResult</span><span class=p>&gt;&gt;&gt;</span> <span class=p>=</span> <span class=n>combineTransform</span><span class=p>(</span>
-    <span class=n>language</span><span class=p>,</span>
-    <span class=n>line</span><span class=p>,</span>
-    <span class=n>station</span><span class=p>,</span>
-    <span class=n>sortedBy</span><span class=p>,</span>
-    <span class=n>triggerRefresh</span><span class=p>.</span><span class=n>receiveAsFlow</span><span class=p>(),</span>
-<span class=p>)</span> <span class=p>{</span> <span class=n>language</span><span class=p>,</span> <span class=n>line</span><span class=p>,</span> <span class=n>station</span><span class=p>,</span> <span class=n>sortedBy</span><span class=p>,</span> <span class=n>_</span> <span class=o>-&gt;</span>
-    <span class=n>emit</span><span class=p>(</span><span class=n>TimedValue</span><span class=p>(</span><span class=n>value</span> <span class=p>=</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loading</span><span class=p>,</span> <span class=n>updatedAt</span> <span class=p>=</span> <span class=n>clock</span><span class=p>.</span><span class=n>instant</span><span class=p>()))</span>
-    <span class=n>emit</span><span class=p>(</span>
-        <span class=n>TimedValue</span><span class=p>(</span>
-            <span class=n>value</span> <span class=p>=</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loaded</span><span class=p>(</span><span class=n>getEta</span><span class=p>(</span><span class=n>language</span><span class=p>,</span> <span class=n>line</span><span class=p>,</span> <span class=n>station</span><span class=p>,</span> <span class=n>sortedBy</span><span class=p>)),</span>
-            <span class=n>updatedAt</span> <span class=p>=</span> <span class=n>clock</span><span class=p>.</span><span class=n>instant</span><span class=p>(),</span>
-        <span class=p>)</span>
-    <span class=p>)</span>
-<span class=p>}.</span><span class=n>onEach</span> <span class=p>{</span>
-    <span class=n>autoRefreshScope</span><span class=p>.</span><span class=n>launch</span> <span class=p>{</span>
-        <span class=n>delay</span><span class=p>(</span><span class=n>AUTO_REFRESH_INTERVAL</span><span class=p>)</span>
-        <span class=n>triggerRefresh</span><span class=p>.</span><span class=n>send</span><span class=p>(</span><span class=n>Unit</span><span class=p>)</span>
-    <span class=p>}</span>
-<span class=p>}.</span><span class=n>stateIn</span><span class=p>(</span>
-    <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
-    <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
-    <span class=n>initialValue</span> <span class=p>=</span> <span class=n>TimedValue</span><span class=p>(</span><span class=n>value</span> <span class=p>=</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loading</span><span class=p>,</span> <span class=n>updatedAt</span> <span class=p>=</span> <span class=n>clock</span><span class=p>.</span><span class=n>instant</span><span class=p>()),</span>
-<span class=p>)</span>
-</code></pre></div><p><code>onEach</code> 是會在 <code>combineTransform</code> 做完後觸發的，然後我們特意為了能取消之前排程好的 <code>delay</code> 就做了一個 <code>CoroutineScope</code> (<code>autoRefreshScope</code>)。因為將會有好幾個地方都會有 <code>delay</code>，如果開 variable 儲存每個 <code>Job</code> 會比較難搞，所以就開了一個專門的 <code>CoroutineScope</code> 來 launch 這些包含 <code>delay</code> 的 coroutine，如果要取消 <code>CoroutineScope</code> 的話都是跟 <code>Job</code> 一樣 call <code>cancel</code> 就可以了。以下就是除了 <code>onEach</code> 以外有關 <code>autoRefreshScope</code> 的地方：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=c1>// 當用戶改變排序方式時會令 etaResult 馬上 call 多次 API，所以要把原有的排程清除
-</span><span class=c1></span><span class=k>private</span> <span class=k>val</span> <span class=py>sortedBy</span> <span class=p>=</span> <span class=n>savedStateHandle</span><span class=p>.</span><span class=n>getLiveData</span><span class=p>(</span><span class=n>SORT_BY</span><span class=p>,</span> <span class=m>0</span><span class=p>).</span><span class=n>asFlow</span><span class=p>()</span>
-    <span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=n>GetEtaUseCase</span><span class=p>.</span><span class=n>SortBy</span><span class=p>.</span><span class=n>values</span><span class=p>()[</span><span class=k>it</span><span class=p>]</span> <span class=p>}</span>
-    <span class=p>.</span><span class=n>onEach</span> <span class=p>{</span> <span class=n>autoRefreshScope</span><span class=p>.</span><span class=n>cancel</span><span class=p>()</span> <span class=p>}</span>
-
-<span class=c1>// 當用戶按下錯誤頁的「Try again」按鈕時
-</span><span class=c1></span><span class=k>fun</span> <span class=nf>refresh</span><span class=p>()</span> <span class=p>{</span>
-    <span class=n>autoRefreshScope</span><span class=p>.</span><span class=n>cancel</span><span class=p>()</span>
-    <span class=n>autoRefreshScope</span><span class=p>.</span><span class=n>launch</span> <span class=p>{</span>
-        <span class=n>triggerRefresh</span><span class=p>.</span><span class=n>send</span><span class=p>(</span><span class=n>Unit</span><span class=p>)</span>
-    <span class=p>}</span>
-<span class=p>}</span>
-
-<span class=c1>// Fragment.onResume 時
-</span><span class=c1></span><span class=k>fun</span> <span class=nf>startAutoRefresh</span><span class=p>()</span> <span class=p>{</span>
-    <span class=n>autoRefreshScope</span><span class=p>.</span><span class=n>launch</span> <span class=p>{</span>
-        <span class=k>val</span> <span class=py>delayDuration</span> <span class=p>=</span>
-            <span class=n>JavaDuration</span><span class=p>.</span><span class=n>between</span><span class=p>(</span><span class=n>etaResult</span><span class=p>.</span><span class=n>value</span><span class=p>.</span><span class=n>currentResult</span><span class=p>.</span><span class=n>updatedAt</span><span class=p>,</span> <span class=n>clock</span><span class=p>.</span><span class=n>instant</span><span class=p>())</span>
-        <span class=k>if</span> <span class=p>(</span><span class=n>delayDuration</span> <span class=o>&gt;=</span> <span class=n>AUTO_REFRESH_INTERVAL</span><span class=p>.</span><span class=n>toJavaDuration</span><span class=p>())</span> <span class=p>{</span>
-            <span class=n>triggerRefresh</span><span class=p>.</span><span class=n>send</span><span class=p>(</span><span class=n>Unit</span><span class=p>)</span>
-        <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
-            <span class=c1>// schedule the next refresh base on the previous loaded time
-</span><span class=c1></span>            <span class=n>delay</span><span class=p>(</span><span class=n>delayDuration</span><span class=p>.</span><span class=n>toKotlinDuration</span><span class=p>())</span>
-            <span class=n>triggerRefresh</span><span class=p>.</span><span class=n>send</span><span class=p>(</span><span class=n>Unit</span><span class=p>)</span>
-        <span class=p>}</span>
-    <span class=p>}</span>
-<span class=p>}</span>
-
-<span class=c1>// Fragment.onPause 時
-</span><span class=c1></span><span class=k>fun</span> <span class=nf>stopAutoRefresh</span><span class=p>()</span> <span class=p>{</span>
-    <span class=n>autoRefreshScope</span><span class=p>.</span><span class=n>cancel</span><span class=p>()</span>
-<span class=p>}</span>
-</code></pre></div><p><code>startAutoRefresh</code> 那個 <code>if</code> 就是看看上次 API response 的時間是不是超過了十秒，如果是就馬上 call API，否則就多等十秒以內的時間來維持十秒間距。留意我們在 <code>etaResult</code> 的 <code>combineTransform</code> 和 <code>startAutoRefresh</code> 都是用 <code>Clock</code> 來取得當前時間。那個 <code>Clock</code> 是經 dependency injection 取得，以便之後可以做 unit testing。以下是對應的 Dagger module：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=nd>@Module</span>
-<span class=nd>@InstallIn</span><span class=p>(</span><span class=n>SingletonComponent</span><span class=o>::</span><span class=k>class</span><span class=p>)</span>
-<span class=k>object</span> <span class=nc>CommonModule</span> <span class=p>{</span>
-    <span class=nd>@Provides</span>
-    <span class=k>fun</span> <span class=nf>provideClock</span><span class=p>():</span> <span class=n>Clock</span> <span class=p>=</span> <span class=n>Clock</span><span class=p>.</span><span class=n>systemDefaultZone</span><span class=p>()</span>
-<span class=p>}</span>
-</code></pre></div><p>另外，由於我們會在 <code>onResume</code> 觸發更新排程，所以原先在 <code>init</code> block 觸發更新的 code 都可以刪走。同時因應我們包多了一層 <code>TimedValue</code>，所有跟 <code>etaResult</code> 有關的地方都要做對應的修改：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>private</span> <span class=k>val</span> <span class=py>loadedEtaResult</span> <span class=p>=</span> <span class=n>etaResult</span>
-    <span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span><span class=p>.</span><span class=n>value</span> <span class=p>}</span>
-    <span class=p>.</span><span class=n>filterIsInstance</span><span class=p>&lt;</span><span class=n>Loadable</span><span class=p>.</span><span class=n>Loaded</span><span class=p>&lt;</span><span class=n>EtaResult</span><span class=p>&gt;&gt;()</span>
-    <span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span><span class=p>.</span><span class=n>value</span> <span class=p>}</span>
-<span class=k>val</span> <span class=py>showLoading</span><span class=p>:</span> <span class=n>StateFlow</span><span class=p>&lt;</span><span class=n>Boolean</span><span class=p>&gt;</span> <span class=p>=</span> <span class=n>etaResult</span>
-    <span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span><span class=p>.</span><span class=n>value</span> <span class=o>==</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loading</span> <span class=p>}</span>
-    <span class=p>.</span><span class=n>stateIn</span><span class=p>(</span>
-        <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
-        <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
-        <span class=n>initialValue</span> <span class=p>=</span> <span class=k>true</span><span class=p>,</span>
-    <span class=p>)</span>
-<span class=k>val</span> <span class=py>showError</span> <span class=p>=</span> <span class=n>etaResult</span>
-    <span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span><span class=p>.</span><span class=n>value</span> <span class=k>is</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loaded</span> <span class=o>&amp;&amp;</span> <span class=k>it</span><span class=p>.</span><span class=n>value</span><span class=p>.</span><span class=n>value</span> <span class=k>is</span> <span class=n>EtaFailResult</span> <span class=p>}</span>
-    <span class=p>.</span><span class=n>stateIn</span><span class=p>(</span>
-        <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
-        <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
-        <span class=n>initialValue</span> <span class=p>=</span> <span class=k>false</span><span class=p>,</span>
-    <span class=p>)</span>
-<span class=k>val</span> <span class=py>showEtaList</span> <span class=p>=</span> <span class=n>etaResult</span>
-    <span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span><span class=p>.</span><span class=n>value</span> <span class=k>is</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loaded</span> <span class=o>&amp;&amp;</span> <span class=k>it</span><span class=p>.</span><span class=n>value</span><span class=p>.</span><span class=n>value</span> <span class=k>is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span> <span class=p>}</span>
-    <span class=p>.</span><span class=n>stateIn</span><span class=p>(</span>
-        <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
-        <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
-        <span class=n>initialValue</span> <span class=p>=</span> <span class=k>false</span><span class=p>,</span>
-    <span class=p>)</span>
-
-<span class=k>fun</span> <span class=nf>viewIncidentDetail</span><span class=p>()</span> <span class=p>{</span>
-    <span class=k>val</span> <span class=py>result</span> <span class=p>=</span> <span class=n>etaResult</span><span class=p>.</span><span class=n>value</span><span class=p>.</span><span class=n>value</span>
-    <span class=k>if</span> <span class=p>(</span><span class=n>result</span> <span class=o>!is</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loaded</span><span class=p>)</span> <span class=k>return</span>
-    <span class=k>if</span> <span class=p>(</span><span class=n>result</span><span class=p>.</span><span class=n>value</span> <span class=o>!is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Incident</span><span class=p>)</span> <span class=k>return</span>
-    <span class=n>viewModelScope</span><span class=p>.</span><span class=n>launch</span> <span class=p>{</span>
-        <span class=n>_viewIncidentDetail</span><span class=p>.</span><span class=n>send</span><span class=p>(</span><span class=n>result</span><span class=p>.</span><span class=n>value</span><span class=p>.</span><span class=n>url</span><span class=p>)</span>
-    <span class=p>}</span>
-<span class=p>}</span>
-</code></pre></div><p>那我們就試試效果如何。由於我們之前已經為 app 整合了 <a href=https://fbflipper.com/>Flipper</a>，我們就看看效果如何：</p>
-<figure>
-<img loading=lazy src=repeated-request.png> <figcaption>
-Flipper 顯示的 HTTP 請求紀錄
-</figcaption>
-</figure>
-<p>發現不似預期！在第一次 call API 後隔了十秒會變了兩個 API call，再隔十秒會變了四個 API call，再之後變十六個 API call……原來我們沒有為意到 <code>etaResult</code> 的 <code>combineTransform</code> 是先 emit 載入中然後待 API response 來到時 emit 另一個值，所以兩個值各自觸發了 <code>delay</code> 就變了一開二的效果。這樣的話我們要改改寫法：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=k>private</span> <span class=k>val</span> <span class=py>etaResult</span><span class=p>:</span> <span class=n>StateFlow</span><span class=p>&lt;</span><span class=n>TimedValue</span><span class=p>&lt;</span><span class=n>Loadable</span><span class=p>&lt;</span><span class=n>EtaResult</span><span class=p>&gt;&gt;&gt;</span> <span class=p>=</span> <span class=n>triggerRefresh</span>
-    <span class=p>.</span><span class=n>consumeAsFlow</span><span class=p>()</span>
-    <span class=p>.</span><span class=n>flatMapLatest</span> <span class=p>{</span>
-        <span class=n>flowOf</span><span class=p>(</span>
-            <span class=n>flowOf</span><span class=p>(</span><span class=n>TimedValue</span><span class=p>(</span><span class=n>value</span> <span class=p>=</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loading</span><span class=p>,</span> <span class=n>updatedAt</span> <span class=p>=</span> <span class=n>clock</span><span class=p>.</span><span class=n>instant</span><span class=p>())),</span>
-            <span class=n>combine</span><span class=p>(</span>
-                <span class=n>language</span><span class=p>,</span>
-                <span class=n>line</span><span class=p>,</span>
-                <span class=n>station</span><span class=p>,</span>
-                <span class=n>sortedBy</span><span class=p>,</span>
-            <span class=p>)</span> <span class=p>{</span> <span class=n>language</span><span class=p>,</span> <span class=n>line</span><span class=p>,</span> <span class=n>station</span><span class=p>,</span> <span class=n>sortedBy</span> <span class=o>-&gt;</span>
-                <span class=n>TimedValue</span><span class=p>(</span>
-                    <span class=n>value</span> <span class=p>=</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loaded</span><span class=p>(</span><span class=n>getEta</span><span class=p>(</span><span class=n>language</span><span class=p>,</span> <span class=n>line</span><span class=p>,</span> <span class=n>station</span><span class=p>,</span> <span class=n>sortedBy</span><span class=p>)),</span>
-                    <span class=n>updatedAt</span> <span class=p>=</span> <span class=n>clock</span><span class=p>.</span><span class=n>instant</span><span class=p>(),</span>
-                <span class=p>)</span>
-            <span class=p>}.</span><span class=n>onEach</span> <span class=p>{</span>
-                <span class=c1>// schedule the next refresh after loading
-</span><span class=c1></span>                <span class=n>autoRefreshScope</span><span class=p>.</span><span class=n>launch</span> <span class=p>{</span>
-                    <span class=n>delay</span><span class=p>(</span><span class=n>AUTO_REFRESH_INTERVAL</span><span class=p>)</span>
-                    <span class=n>triggerRefresh</span><span class=p>.</span><span class=n>send</span><span class=p>(</span><span class=n>Unit</span><span class=p>)</span>
-                <span class=p>}</span>
-            <span class=p>},</span>
-        <span class=p>).</span><span class=n>flattenConcat</span><span class=p>()</span>
-    <span class=p>}</span>
-    <span class=p>.</span><span class=n>stateIn</span><span class=p>(</span>
-        <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
-        <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
-        <span class=n>initialValue</span> <span class=p>=</span> <span class=n>TimedValue</span><span class=p>(</span><span class=n>value</span> <span class=p>=</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loading</span><span class=p>,</span> <span class=n>updatedAt</span> <span class=p>=</span> <span class=n>Instant</span><span class=p>.</span><span class=n>EPOCH</span><span class=p>),</span>
-    <span class=p>)</span>
-</code></pre></div><p>現在我們不把 <code>triggerRefresh</code> 放入 <code>combineTransform</code>/<code>combine</code> 內，改為以 <code>triggerRefresh</code> 觸發整個 <code>combine</code>。<code>flatMapLatest</code> 就是把 lambda 內的 <code>Flow</code> 轉交去下游。<code>flatMapLatest</code> 內的 <code>Flow</code> 是把兩個 <code>Flow</code>（載入中和 call API 加下次更新排程）接駁為一個 <code>Flow</code>（用 <code>flattenConcat</code>）。因為用了 <code>flattenConcat</code>，所以載入中那個值會比 API response 那個值來得早，正正就是我們想要的效果。</p>
-<h2 id=小結>小結<a hidden class=anchor aria-hidden=true href=#小結>#</a></h2>
-<p>現在我們已經做了定時自動更新的功能了，亦都用了 custom scope 來停止之前的 <code>delay</code>，感覺有點像 RxJava 的 <a href=http://reactivex.io/RxJava/javadoc/io/reactivex/disposables/CompositeDisposable.html><code>CompositeDisposable</code></a>。另外亦經 Dagger inject Java Time 的 <code>Clock</code> 獲取當前時間而不是用 <code>System.currentTimeMillis</code> 或者 <code>Calendar.getInstance()</code> 獲取，這個做法是為了方便寫 unit test。至於實際如何寫 unit test 我們會待其餘功能完成後示範。下一篇會完成當成功載入班次後更新出現錯誤時會顯示的 banner，這次的 code 可以到 <a href=https://github.com/ericksli/eta-demo/commits/main>GitHub repo</a> 找尋「Auto refresh」commit 就會找到。</p>
-</div>
-<footer class=post-footer>
-<ul class=post-tags>
-<li><a href=https://eric.swiftzer.net/tags/2021-ithome-%E9%90%B5%E4%BA%BA%E8%B3%BD/>2021 iThome 鐵人賽</a></li>
-<li><a href=https://eric.swiftzer.net/tags/android/>Android</a></li>
-</ul>
-<nav class=paginav>
-<a class=prev href=https://eric.swiftzer.net/2021/10/2021-ithome-ironman-25-eta-screen-4/>
-<span class=title>« Prev Page</span>
-<br>
-<span>2021 iThome 鐵人賽 Day 25：ETA screen (4)</span>
-</a>
-<a class=next href=https://eric.swiftzer.net/2021/10/2021-ithome-ironman-23-eta-screen-2/>
-<span class=title>Next Page »</span>
-<br>
-<span>2021 iThome 鐵人賽 Day 23：ETA screen (2)</span>
-</a>
-</nav>
-</footer><div id=disqus_thread></div>
-<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//efilm.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
-<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
-<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
-</article>
-</main><footer class=footer>
-<span>&copy; 2022 <a href=https://eric.swiftzer.net/>EricLog</a></span>
-<span>&#183;</span>
-<span>Powered by <a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a></span>
-<span>&#183;</span>
-<span>Theme <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span>
-</footer>
-<a href=#top aria-label="go to top" title="Go to Top (Alt + G)">
-<button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
-</button>
-</a>
-<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
-<script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script>
-<script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
-</body>
-</html>
+<!doctype html><html lang=zh-tw dir=auto><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>2021 iThome 鐵人賽 Day 24：ETA screen (3) | EricLog</title><meta name=keywords content="2021 iThome 鐵人賽,Android"><meta name=description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 24 篇，你可到 iThome 查看原文。 文章目錄 我們這次會為班次頁加上自動更新和順帶為下一篇實"><meta name=author content><link rel=canonical href=https://ithelp.ithome.com.tw/articles/10279594><link crossorigin=anonymous href=/assets/css/stylesheet.min.249b1770ac429c01ffa746cc012a310192d174c913b1527f312e3294a0766d1c.css integrity="sha256-JJsXcKxCnAH/p0bMASoxAZLRdMkTsVJ/MS4ylKB2bRw=" rel="preload stylesheet" as=style><link rel=icon href=https://eric.swiftzer.net/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png><link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png><link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><meta name=generator content="Hugo 0.101.0"><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--hljs-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><link rel=preconnect href=https://fonts.gstatic.com><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet><script async src="https://www.googletagmanager.com/gtag/js?id=G-D93F946T73"></script>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-D93F946T73",{anonymize_ip:!1})}</script><meta property="og:title" content="2021 iThome 鐵人賽 Day 24：ETA screen (3)"><meta property="og:description" content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 24 篇，你可到 iThome 查看原文。 文章目錄 我們這次會為班次頁加上自動更新和順帶為下一篇實"><meta property="og:type" content="article"><meta property="og:url" content="https://eric.swiftzer.net/2021/10/2021-ithome-ironman-24-eta-screen-3/"><meta property="article:section" content="posts"><meta property="article:published_time" content="2021-10-09T00:00:00+08:00"><meta property="article:modified_time" content="2021-10-09T00:00:00+08:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="2021 iThome 鐵人賽 Day 24：ETA screen (3)"><meta name=twitter:description content="本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 24 篇，你可到 iThome 查看原文。 文章目錄 我們這次會為班次頁加上自動更新和順帶為下一篇實"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"2021 iThome 鐵人賽 Day 24：ETA screen (3)","item":"https://eric.swiftzer.net/2021/10/2021-ithome-ironman-24-eta-screen-3/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"2021 iThome 鐵人賽 Day 24：ETA screen (3)","name":"2021 iThome 鐵人賽 Day 24：ETA screen (3)","description":"本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 24 篇，你可到 iThome 查看原文。 文章目錄 我們這次會為班次頁加上自動更新和順帶為下一篇實","keywords":["2021 iThome 鐵人賽","Android"],"articleBody":" 本篇文章是 2021 iThome 鐵人賽參賽題目「寫一個列車抵站時間 Android App」的第 24 篇，你可到 iThome 查看原文。\n文章目錄\n我們這次會為班次頁加上自動更新和順帶為下一篇實作錯誤 banner 做準備。\n我們這頁除非顯示不能連接到互聯網這類錯誤外，都不會出現重新載入按鈕，這是因為這頁就應該自動更新。按照 API 的介紹，它是每十秒更新一次。我們先準備一個 constant 來表示這個數值：\nimport kotlin.time.Duration as KotlinDuration private val AUTO_REFRESH_INTERVAL = KotlinDuration.seconds(10) 由於我們會用 Kotlin Coroutine 的 delay 來做延時的效果，它是用 Kotlin 的 Duration 作為參數，故此這裏就用 Kotlin 的 Duration。而因為之前我們用了 Java 的 Instant 來表示抵站時間，在換算站時間「X 分鐘」的數字時會用到 Java 的 Duration，為了避免混淆所以我們預先用 import alias 分開兩個 Duration。\n紀錄載入時間 我們做自動更新除了考慮用戶一直停留在該頁時能自動更新外，還要考慮 Android 的 lifecycle 問題。如果用戶在班次頁按 Home button 的話，我們應該暫停自動更新；而當用戶由其他 app 切換到該頁的時候就要回復自動更新。Fragment 的話就是要留意 onPause 和 onResume callback，在 onPause 時停止下次再 call API 的排程而在 onResume 重新 call API 一次。但如果用戶很快速地做 onPause 和 onResume 的話那可能會導致 call API 太密。所以我們應該在每次收到 response 時都記錄時間，然後在 onResume 檢查上次的載入的時間來決定要馬上 call API 還是要隔一會才 call API。這樣的話就做一個 data class 記錄那個時間：\nprivate data class TimedValue\u003cout T\u003e( val value: T, val updatedAt: Instant, ) 自動更新 然後 etaResult 就變成這樣：\nprivate lateinit var _autoRefreshScope: CoroutineScope private val autoRefreshScope: CoroutineScope get() { if (!::_autoRefreshScope.isInitialized || !_autoRefreshScope.isActive) { _autoRefreshScope = CoroutineScope( viewModelScope.coroutineContext + SupervisorJob(viewModelScope.coroutineContext.job) + CoroutineName(\"auto-refresh\") ) } return _autoRefreshScope } private val etaResult: StateFlow\u003cTimedValue\u003cLoadable\u003cEtaResult\u003e\u003e\u003e = combineTransform( language, line, station, sortedBy, triggerRefresh.receiveAsFlow(), ) { language, line, station, sortedBy, _ -\u003e emit(TimedValue(value = Loadable.Loading, updatedAt = clock.instant())) emit( TimedValue( value = Loadable.Loaded(getEta(language, line, station, sortedBy)), updatedAt = clock.instant(), ) ) }.onEach { autoRefreshScope.launch { delay(AUTO_REFRESH_INTERVAL) triggerRefresh.send(Unit) } }.stateIn( scope = viewModelScope, started = SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MILLIS), initialValue = TimedValue(value = Loadable.Loading, updatedAt = clock.instant()), ) onEach 是會在 combineTransform 做完後觸發的，然後我們特意為了能取消之前排程好的 delay 就做了一個 CoroutineScope (autoRefreshScope)。因為將會有好幾個地方都會有 delay，如果開 variable 儲存每個 Job 會比較難搞，所以就開了一個專門的 CoroutineScope 來 launch 這些包含 delay 的 coroutine，如果要取消 CoroutineScope 的話都是跟 Job 一樣 call cancel 就可以了。以下就是除了 onEach 以外有關 autoRefreshScope 的地方：\n// 當用戶改變排序方式時會令 etaResult 馬上 call 多次 API，所以要把原有的排程清除 private val sortedBy = savedStateHandle.getLiveData(SORT_BY, 0).asFlow() .map { GetEtaUseCase.SortBy.values()[it] } .onEach { autoRefreshScope.cancel() } // 當用戶按下錯誤頁的「Try again」按鈕時 fun refresh() { autoRefreshScope.cancel() autoRefreshScope.launch { triggerRefresh.send(Unit) } } // Fragment.onResume 時 fun startAutoRefresh() { autoRefreshScope.launch { val delayDuration = JavaDuration.between(etaResult.value.currentResult.updatedAt, clock.instant()) if (delayDuration \u003e= AUTO_REFRESH_INTERVAL.toJavaDuration()) { triggerRefresh.send(Unit) } else { // schedule the next refresh base on the previous loaded time delay(delayDuration.toKotlinDuration()) triggerRefresh.send(Unit) } } } // Fragment.onPause 時 fun stopAutoRefresh() { autoRefreshScope.cancel() } startAutoRefresh 那個 if 就是看看上次 API response 的時間是不是超過了十秒，如果是就馬上 call API，否則就多等十秒以內的時間來維持十秒間距。留意我們在 etaResult 的 combineTransform 和 startAutoRefresh 都是用 Clock 來取得當前時間。那個 Clock 是經 dependency injection 取得，以便之後可以做 unit testing。以下是對應的 Dagger module：\n@Module @InstallIn(SingletonComponent::class) object CommonModule { @Provides fun provideClock(): Clock = Clock.systemDefaultZone() } 另外，由於我們會在 onResume 觸發更新排程，所以原先在 init block 觸發更新的 code 都可以刪走。同時因應我們包多了一層 TimedValue，所有跟 etaResult 有關的地方都要做對應的修改：\nprivate val loadedEtaResult = etaResult .map { it.value } .filterIsInstance\u003cLoadable.Loaded\u003cEtaResult\u003e\u003e() .map { it.value } val showLoading: StateFlow\u003cBoolean\u003e = etaResult .map { it.value == Loadable.Loading } .stateIn( scope = viewModelScope, started = SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MILLIS), initialValue = true, ) val showError = etaResult .map { it.value is Loadable.Loaded \u0026\u0026 it.value.value is EtaFailResult } .stateIn( scope = viewModelScope, started = SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MILLIS), initialValue = false, ) val showEtaList = etaResult .map { it.value is Loadable.Loaded \u0026\u0026 it.value.value is EtaResult.Success } .stateIn( scope = viewModelScope, started = SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MILLIS), initialValue = false, ) fun viewIncidentDetail() { val result = etaResult.value.value if (result !is Loadable.Loaded) return if (result.value !is EtaResult.Incident) return viewModelScope.launch { _viewIncidentDetail.send(result.value.url) } } 那我們就試試效果如何。由於我們之前已經為 app 整合了 Flipper，我們就看看效果如何：\nFlipper 顯示的 HTTP 請求紀錄 發現不似預期！在第一次 call API 後隔了十秒會變了兩個 API call，再隔十秒會變了四個 API call，再之後變十六個 API call……原來我們沒有為意到 etaResult 的 combineTransform 是先 emit 載入中然後待 API response 來到時 emit 另一個值，所以兩個值各自觸發了 delay 就變了一開二的效果。這樣的話我們要改改寫法：\nprivate val etaResult: StateFlow\u003cTimedValue\u003cLoadable\u003cEtaResult\u003e\u003e\u003e = triggerRefresh .consumeAsFlow() .flatMapLatest { flowOf( flowOf(TimedValue(value = Loadable.Loading, updatedAt = clock.instant())), combine( language, line, station, sortedBy, ) { language, line, station, sortedBy -\u003e TimedValue( value = Loadable.Loaded(getEta(language, line, station, sortedBy)), updatedAt = clock.instant(), ) }.onEach { // schedule the next refresh after loading autoRefreshScope.launch { delay(AUTO_REFRESH_INTERVAL) triggerRefresh.send(Unit) } }, ).flattenConcat() } .stateIn( scope = viewModelScope, started = SharingStarted.WhileSubscribed(STATE_FLOW_STOP_TIMEOUT_MILLIS), initialValue = TimedValue(value = Loadable.Loading, updatedAt = Instant.EPOCH), ) 現在我們不把 triggerRefresh 放入 combineTransform/combine 內，改為以 triggerRefresh 觸發整個 combine。flatMapLatest 就是把 lambda 內的 Flow 轉交去下游。flatMapLatest 內的 Flow 是把兩個 Flow（載入中和 call API 加下次更新排程）接駁為一個 Flow（用 flattenConcat）。因為用了 flattenConcat，所以載入中那個值會比 API response 那個值來得早，正正就是我們想要的效果。\n小結 現在我們已經做了定時自動更新的功能了，亦都用了 custom scope 來停止之前的 delay，感覺有點像 RxJava 的 CompositeDisposable。另外亦經 Dagger inject Java Time 的 Clock 獲取當前時間而不是用 System.currentTimeMillis 或者 Calendar.getInstance() 獲取，這個做法是為了方便寫 unit test。至於實際如何寫 unit test 我們會待其餘功能完成後示範。下一篇會完成當成功載入班次後更新出現錯誤時會顯示的 banner，這次的 code 可以到 GitHub repo 找尋「Auto refresh」commit 就會找到。\n","wordCount":"1853","inLanguage":"zh-tw","datePublished":"2021-10-09T00:00:00+08:00","dateModified":"2021-10-09T00:00:00+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2021/10/2021-ithome-ironman-24-eta-screen-3/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
+<span class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></span></div><ul id=menu><li><a href=https://eric.swiftzer.net/fonts/ title=Fonts><span>Fonts</span></a></li><li><a href=https://eric.swiftzer.net/archives/ title=Archives><span>Archives</span></a></li><li><a href=https://eric.swiftzer.net/tags/ title=Tags><span>Tags</span></a></li><li><a href=https://eric.swiftzer.net/about/ title=About><span>About</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><div class=breadcrumbs><a href=https://eric.swiftzer.net/>首頁</a>&nbsp;»&nbsp;<a href=https://eric.swiftzer.net/posts/>Posts</a></div><h1 class=post-title>2021 iThome 鐵人賽 Day 24：ETA screen (3)</h1><div class=post-meta>October 9, 2021</div></header><div class=post-content><blockquote><p>本篇文章是 <a href=https://ithelp.ithome.com.tw/2021ironman>2021 iThome 鐵人賽</a>參賽題目「<a href=https://ithelp.ithome.com.tw/users/20139666/ironman/4661>寫一個列車抵站時間 Android App</a>」的第 24 篇，你可到 iThome <a href=https://ithelp.ithome.com.tw/articles/10279594>查看原文</a>。</p><p><a href=https://eric.swiftzer.net/2021-ithome-ironman/>文章目錄</a></p></blockquote><p>我們這次會為班次頁加上自動更新和順帶為下一篇實作錯誤 banner 做準備。</p><p>我們這頁除非顯示不能連接到互聯網這類錯誤外，都不會出現重新載入按鈕，這是因為這頁就應該自動更新。按照 <a href=https://data.gov.hk/tc-data/dataset/mtr-data2-nexttrain-data>API 的介紹</a>，它是每十秒更新一次。我們先準備一個 constant 來表示這個數值：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>import</span> <span class=nn>kotlin.time.Duration</span> <span class=k>as</span> <span class=n>KotlinDuration</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>private</span> <span class=k>val</span> <span class=py>AUTO</span><span class=n>_REFRESH_INTERVAL</span> <span class=p>=</span> <span class=n>KotlinDuration</span><span class=p>.</span><span class=n>seconds</span><span class=p>(</span><span class=m>10</span><span class=p>)</span>
+</span></span></code></pre></div><p>由於我們會用 Kotlin Coroutine 的 <code>delay</code> 來做延時的效果，它是用 Kotlin 的 <code>Duration</code> 作為參數，故此這裏就用 Kotlin 的 <code>Duration</code>。而因為之前我們用了 Java 的 <code>Instant</code> 來表示抵站時間，在換算站時間「X 分鐘」的數字時會用到 Java 的 <code>Duration</code>，為了避免混淆所以我們預先用 import alias 分開兩個 <code>Duration</code>。</p><h2 id=紀錄載入時間>紀錄載入時間<a hidden class=anchor aria-hidden=true href=#紀錄載入時間>#</a></h2><p>我們做自動更新除了考慮用戶一直停留在該頁時能自動更新外，還要考慮 Android 的 lifecycle 問題。如果用戶在班次頁按 Home button 的話，我們應該暫停自動更新；而當用戶由其他 app 切換到該頁的時候就要回復自動更新。<code>Fragment</code> 的話就是要留意 <code>onPause</code> 和 <code>onResume</code> callback，在 <code>onPause</code> 時停止下次再 call API 的排程而在 <code>onResume</code> 重新 call API 一次。但如果用戶很快速地做 <code>onPause</code> 和 <code>onResume</code> 的話那可能會導致 call API 太密。所以我們應該在每次收到 response 時都記錄時間，然後在 <code>onResume</code> 檢查上次的載入的時間來決定要馬上 call API 還是要隔一會才 call API。這樣的話就做一個 data class 記錄那個時間：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>private</span> <span class=k>data</span> <span class=k>class</span> <span class=nc>TimedValue</span><span class=p>&lt;</span><span class=k>out</span> <span class=n>T</span><span class=p>&gt;(</span>
+</span></span><span class=line><span class=cl>    <span class=k>val</span> <span class=py>value</span><span class=p>:</span> <span class=n>T</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=k>val</span> <span class=py>updatedAt</span><span class=p>:</span> <span class=n>Instant</span><span class=p>,</span>
+</span></span><span class=line><span class=cl><span class=p>)</span>
+</span></span></code></pre></div><h2 id=自動更新>自動更新<a hidden class=anchor aria-hidden=true href=#自動更新>#</a></h2><p>然後 <code>etaResult</code> 就變成這樣：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>private</span> <span class=k>lateinit</span> <span class=k>var</span> <span class=py>_autoRefreshScope</span><span class=p>:</span> <span class=n>CoroutineScope</span>
+</span></span><span class=line><span class=cl><span class=k>private</span> <span class=k>val</span> <span class=py>autoRefreshScope</span><span class=p>:</span> <span class=n>CoroutineScope</span>
+</span></span><span class=line><span class=cl>    <span class=k>get</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(!</span><span class=o>::</span><span class=n>_autoRefreshScope</span><span class=p>.</span><span class=n>isInitialized</span> <span class=o>||</span> <span class=p>!</span><span class=n>_autoRefreshScope</span><span class=p>.</span><span class=n>isActive</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>_autoRefreshScope</span> <span class=p>=</span>
+</span></span><span class=line><span class=cl>                <span class=n>CoroutineScope</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                    <span class=n>viewModelScope</span><span class=p>.</span><span class=n>coroutineContext</span> <span class=p>+</span>
+</span></span><span class=line><span class=cl>                            <span class=n>SupervisorJob</span><span class=p>(</span><span class=n>viewModelScope</span><span class=p>.</span><span class=n>coroutineContext</span><span class=p>.</span><span class=n>job</span><span class=p>)</span> <span class=p>+</span>
+</span></span><span class=line><span class=cl>                            <span class=n>CoroutineName</span><span class=p>(</span><span class=s2>&#34;auto-refresh&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                <span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>_autoRefreshScope</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>private</span> <span class=k>val</span> <span class=py>etaResult</span><span class=p>:</span> <span class=n>StateFlow</span><span class=p>&lt;</span><span class=n>TimedValue</span><span class=p>&lt;</span><span class=n>Loadable</span><span class=p>&lt;</span><span class=n>EtaResult</span><span class=p>&gt;&gt;&gt;</span> <span class=p>=</span> <span class=n>combineTransform</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=n>language</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=n>line</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=n>station</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=n>sortedBy</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=n>triggerRefresh</span><span class=p>.</span><span class=n>receiveAsFlow</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl><span class=p>)</span> <span class=p>{</span> <span class=n>language</span><span class=p>,</span> <span class=n>line</span><span class=p>,</span> <span class=n>station</span><span class=p>,</span> <span class=n>sortedBy</span><span class=p>,</span> <span class=n>_</span> <span class=o>-&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=n>emit</span><span class=p>(</span><span class=n>TimedValue</span><span class=p>(</span><span class=k>value</span> <span class=p>=</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loading</span><span class=p>,</span> <span class=n>updatedAt</span> <span class=p>=</span> <span class=n>clock</span><span class=p>.</span><span class=n>instant</span><span class=p>()))</span>
+</span></span><span class=line><span class=cl>    <span class=n>emit</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=n>TimedValue</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>            <span class=k>value</span> <span class=p>=</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loaded</span><span class=p>(</span><span class=n>getEta</span><span class=p>(</span><span class=n>language</span><span class=p>,</span> <span class=n>line</span><span class=p>,</span> <span class=n>station</span><span class=p>,</span> <span class=n>sortedBy</span><span class=p>)),</span>
+</span></span><span class=line><span class=cl>            <span class=n>updatedAt</span> <span class=p>=</span> <span class=n>clock</span><span class=p>.</span><span class=n>instant</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>        <span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>}.</span><span class=n>onEach</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>autoRefreshScope</span><span class=p>.</span><span class=n>launch</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>delay</span><span class=p>(</span><span class=n>AUTO_REFRESH_INTERVAL</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>triggerRefresh</span><span class=p>.</span><span class=n>send</span><span class=p>(</span><span class=n>Unit</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}.</span><span class=n>stateIn</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>    <span class=n>initialValue</span> <span class=p>=</span> <span class=n>TimedValue</span><span class=p>(</span><span class=k>value</span> <span class=p>=</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loading</span><span class=p>,</span> <span class=n>updatedAt</span> <span class=p>=</span> <span class=n>clock</span><span class=p>.</span><span class=n>instant</span><span class=p>()),</span>
+</span></span><span class=line><span class=cl><span class=p>)</span>
+</span></span></code></pre></div><p><code>onEach</code> 是會在 <code>combineTransform</code> 做完後觸發的，然後我們特意為了能取消之前排程好的 <code>delay</code> 就做了一個 <code>CoroutineScope</code> (<code>autoRefreshScope</code>)。因為將會有好幾個地方都會有 <code>delay</code>，如果開 variable 儲存每個 <code>Job</code> 會比較難搞，所以就開了一個專門的 <code>CoroutineScope</code> 來 launch 這些包含 <code>delay</code> 的 coroutine，如果要取消 <code>CoroutineScope</code> 的話都是跟 <code>Job</code> 一樣 call <code>cancel</code> 就可以了。以下就是除了 <code>onEach</code> 以外有關 <code>autoRefreshScope</code> 的地方：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=c1>// 當用戶改變排序方式時會令 etaResult 馬上 call 多次 API，所以要把原有的排程清除
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=k>private</span> <span class=k>val</span> <span class=py>sortedBy</span> <span class=p>=</span> <span class=n>savedStateHandle</span><span class=p>.</span><span class=n>getLiveData</span><span class=p>(</span><span class=n>SORT_BY</span><span class=p>,</span> <span class=m>0</span><span class=p>).</span><span class=n>asFlow</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=n>GetEtaUseCase</span><span class=p>.</span><span class=n>SortBy</span><span class=p>.</span><span class=n>values</span><span class=p>()[</span><span class=k>it</span><span class=p>]</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>onEach</span> <span class=p>{</span> <span class=n>autoRefreshScope</span><span class=p>.</span><span class=n>cancel</span><span class=p>()</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// 當用戶按下錯誤頁的「Try again」按鈕時
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=k>fun</span> <span class=nf>refresh</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>autoRefreshScope</span><span class=p>.</span><span class=n>cancel</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=n>autoRefreshScope</span><span class=p>.</span><span class=n>launch</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>triggerRefresh</span><span class=p>.</span><span class=n>send</span><span class=p>(</span><span class=n>Unit</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// Fragment.onResume 時
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=k>fun</span> <span class=nf>startAutoRefresh</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>autoRefreshScope</span><span class=p>.</span><span class=n>launch</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>delayDuration</span> <span class=p>=</span>
+</span></span><span class=line><span class=cl>            <span class=n>JavaDuration</span><span class=p>.</span><span class=n>between</span><span class=p>(</span><span class=n>etaResult</span><span class=p>.</span><span class=k>value</span><span class=p>.</span><span class=n>currentResult</span><span class=p>.</span><span class=n>updatedAt</span><span class=p>,</span> <span class=n>clock</span><span class=p>.</span><span class=n>instant</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=n>delayDuration</span> <span class=o>&gt;=</span> <span class=n>AUTO_REFRESH_INTERVAL</span><span class=p>.</span><span class=n>toJavaDuration</span><span class=p>())</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>triggerRefresh</span><span class=p>.</span><span class=n>send</span><span class=p>(</span><span class=n>Unit</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=c1>// schedule the next refresh base on the previous loaded time
+</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=n>delay</span><span class=p>(</span><span class=n>delayDuration</span><span class=p>.</span><span class=n>toKotlinDuration</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>            <span class=n>triggerRefresh</span><span class=p>.</span><span class=n>send</span><span class=p>(</span><span class=n>Unit</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// Fragment.onPause 時
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=k>fun</span> <span class=nf>stopAutoRefresh</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>autoRefreshScope</span><span class=p>.</span><span class=n>cancel</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p><code>startAutoRefresh</code> 那個 <code>if</code> 就是看看上次 API response 的時間是不是超過了十秒，如果是就馬上 call API，否則就多等十秒以內的時間來維持十秒間距。留意我們在 <code>etaResult</code> 的 <code>combineTransform</code> 和 <code>startAutoRefresh</code> 都是用 <code>Clock</code> 來取得當前時間。那個 <code>Clock</code> 是經 dependency injection 取得，以便之後可以做 unit testing。以下是對應的 Dagger module：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=nd>@Module</span>
+</span></span><span class=line><span class=cl><span class=nd>@InstallIn</span><span class=p>(</span><span class=n>SingletonComponent</span><span class=o>::</span><span class=k>class</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>object</span> <span class=nc>CommonModule</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@Provides</span>
+</span></span><span class=line><span class=cl>    <span class=k>fun</span> <span class=nf>provideClock</span><span class=p>():</span> <span class=n>Clock</span> <span class=p>=</span> <span class=n>Clock</span><span class=p>.</span><span class=n>systemDefaultZone</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>另外，由於我們會在 <code>onResume</code> 觸發更新排程，所以原先在 <code>init</code> block 觸發更新的 code 都可以刪走。同時因應我們包多了一層 <code>TimedValue</code>，所有跟 <code>etaResult</code> 有關的地方都要做對應的修改：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>private</span> <span class=k>val</span> <span class=py>loadedEtaResult</span> <span class=p>=</span> <span class=n>etaResult</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span><span class=p>.</span><span class=k>value</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>filterIsInstance</span><span class=p>&lt;</span><span class=n>Loadable</span><span class=p>.</span><span class=n>Loaded</span><span class=p>&lt;</span><span class=n>EtaResult</span><span class=p>&gt;&gt;()</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span><span class=p>.</span><span class=k>value</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=k>val</span> <span class=py>showLoading</span><span class=p>:</span> <span class=n>StateFlow</span><span class=p>&lt;</span><span class=n>Boolean</span><span class=p>&gt;</span> <span class=p>=</span> <span class=n>etaResult</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span><span class=p>.</span><span class=k>value</span> <span class=o>==</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loading</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>stateIn</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>        <span class=n>initialValue</span> <span class=p>=</span> <span class=k>true</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>val</span> <span class=py>showError</span> <span class=p>=</span> <span class=n>etaResult</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span><span class=p>.</span><span class=k>value</span> <span class=k>is</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loaded</span> <span class=o>&amp;&amp;</span> <span class=k>it</span><span class=p>.</span><span class=k>value</span><span class=p>.</span><span class=k>value</span> <span class=k>is</span> <span class=n>EtaFailResult</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>stateIn</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>        <span class=n>initialValue</span> <span class=p>=</span> <span class=k>false</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>val</span> <span class=py>showEtaList</span> <span class=p>=</span> <span class=n>etaResult</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>map</span> <span class=p>{</span> <span class=k>it</span><span class=p>.</span><span class=k>value</span> <span class=k>is</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loaded</span> <span class=o>&amp;&amp;</span> <span class=k>it</span><span class=p>.</span><span class=k>value</span><span class=p>.</span><span class=k>value</span> <span class=k>is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Success</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>stateIn</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>        <span class=n>initialValue</span> <span class=p>=</span> <span class=k>false</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>fun</span> <span class=nf>viewIncidentDetail</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>val</span> <span class=py>result</span> <span class=p>=</span> <span class=n>etaResult</span><span class=p>.</span><span class=k>value</span><span class=p>.</span><span class=k>value</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=n>result</span> <span class=o>!is</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loaded</span><span class=p>)</span> <span class=k>return</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=n>result</span><span class=p>.</span><span class=k>value</span> <span class=o>!is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Incident</span><span class=p>)</span> <span class=k>return</span>
+</span></span><span class=line><span class=cl>    <span class=n>viewModelScope</span><span class=p>.</span><span class=n>launch</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>_viewIncidentDetail</span><span class=p>.</span><span class=n>send</span><span class=p>(</span><span class=n>result</span><span class=p>.</span><span class=k>value</span><span class=p>.</span><span class=n>url</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>那我們就試試效果如何。由於我們之前已經為 app 整合了 <a href=https://fbflipper.com/>Flipper</a>，我們就看看效果如何：</p><figure><img loading=lazy src=repeated-request.png><figcaption>Flipper 顯示的 HTTP 請求紀錄</figcaption></figure><p>發現不似預期！在第一次 call API 後隔了十秒會變了兩個 API call，再隔十秒會變了四個 API call，再之後變十六個 API call……原來我們沒有為意到 <code>etaResult</code> 的 <code>combineTransform</code> 是先 emit 載入中然後待 API response 來到時 emit 另一個值，所以兩個值各自觸發了 <code>delay</code> 就變了一開二的效果。這樣的話我們要改改寫法：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>private</span> <span class=k>val</span> <span class=py>etaResult</span><span class=p>:</span> <span class=n>StateFlow</span><span class=p>&lt;</span><span class=n>TimedValue</span><span class=p>&lt;</span><span class=n>Loadable</span><span class=p>&lt;</span><span class=n>EtaResult</span><span class=p>&gt;&gt;&gt;</span> <span class=p>=</span> <span class=n>triggerRefresh</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>consumeAsFlow</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>flatMapLatest</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>flowOf</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>            <span class=n>flowOf</span><span class=p>(</span><span class=n>TimedValue</span><span class=p>(</span><span class=k>value</span> <span class=p>=</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loading</span><span class=p>,</span> <span class=n>updatedAt</span> <span class=p>=</span> <span class=n>clock</span><span class=p>.</span><span class=n>instant</span><span class=p>())),</span>
+</span></span><span class=line><span class=cl>            <span class=n>combine</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                <span class=n>language</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=n>line</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=n>station</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=n>sortedBy</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=p>)</span> <span class=p>{</span> <span class=n>language</span><span class=p>,</span> <span class=n>line</span><span class=p>,</span> <span class=n>station</span><span class=p>,</span> <span class=n>sortedBy</span> <span class=o>-&gt;</span>
+</span></span><span class=line><span class=cl>                <span class=n>TimedValue</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                    <span class=k>value</span> <span class=p>=</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loaded</span><span class=p>(</span><span class=n>getEta</span><span class=p>(</span><span class=n>language</span><span class=p>,</span> <span class=n>line</span><span class=p>,</span> <span class=n>station</span><span class=p>,</span> <span class=n>sortedBy</span><span class=p>)),</span>
+</span></span><span class=line><span class=cl>                    <span class=n>updatedAt</span> <span class=p>=</span> <span class=n>clock</span><span class=p>.</span><span class=n>instant</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>                <span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=p>}.</span><span class=n>onEach</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=c1>// schedule the next refresh after loading
+</span></span></span><span class=line><span class=cl><span class=c1></span>                <span class=n>autoRefreshScope</span><span class=p>.</span><span class=n>launch</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                    <span class=n>delay</span><span class=p>(</span><span class=n>AUTO_REFRESH_INTERVAL</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                    <span class=n>triggerRefresh</span><span class=p>.</span><span class=n>send</span><span class=p>(</span><span class=n>Unit</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                <span class=p>}</span>
+</span></span><span class=line><span class=cl>            <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=p>).</span><span class=n>flattenConcat</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>stateIn</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>        <span class=n>initialValue</span> <span class=p>=</span> <span class=n>TimedValue</span><span class=p>(</span><span class=k>value</span> <span class=p>=</span> <span class=n>Loadable</span><span class=p>.</span><span class=n>Loading</span><span class=p>,</span> <span class=n>updatedAt</span> <span class=p>=</span> <span class=n>Instant</span><span class=p>.</span><span class=n>EPOCH</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>    <span class=p>)</span>
+</span></span></code></pre></div><p>現在我們不把 <code>triggerRefresh</code> 放入 <code>combineTransform</code>/<code>combine</code> 內，改為以 <code>triggerRefresh</code> 觸發整個 <code>combine</code>。<code>flatMapLatest</code> 就是把 lambda 內的 <code>Flow</code> 轉交去下游。<code>flatMapLatest</code> 內的 <code>Flow</code> 是把兩個 <code>Flow</code>（載入中和 call API 加下次更新排程）接駁為一個 <code>Flow</code>（用 <code>flattenConcat</code>）。因為用了 <code>flattenConcat</code>，所以載入中那個值會比 API response 那個值來得早，正正就是我們想要的效果。</p><h2 id=小結>小結<a hidden class=anchor aria-hidden=true href=#小結>#</a></h2><p>現在我們已經做了定時自動更新的功能了，亦都用了 custom scope 來停止之前的 <code>delay</code>，感覺有點像 RxJava 的 <a href=http://reactivex.io/RxJava/javadoc/io/reactivex/disposables/CompositeDisposable.html><code>CompositeDisposable</code></a>。另外亦經 Dagger inject Java Time 的 <code>Clock</code> 獲取當前時間而不是用 <code>System.currentTimeMillis</code> 或者 <code>Calendar.getInstance()</code> 獲取，這個做法是為了方便寫 unit test。至於實際如何寫 unit test 我們會待其餘功能完成後示範。下一篇會完成當成功載入班次後更新出現錯誤時會顯示的 banner，這次的 code 可以到 <a href=https://github.com/ericksli/eta-demo/commits/main>GitHub repo</a> 找尋「Auto refresh」commit 就會找到。</p></div><footer class=post-footer><ul class=post-tags><li><a href=https://eric.swiftzer.net/tags/2021-ithome-%E9%90%B5%E4%BA%BA%E8%B3%BD/>2021 iThome 鐵人賽</a></li><li><a href=https://eric.swiftzer.net/tags/android/>Android</a></li></ul><nav class=paginav><a class=prev href=https://eric.swiftzer.net/2021/10/2021-ithome-ironman-25-eta-screen-4/><span class=title>« 上一篇</span><br><span>2021 iThome 鐵人賽 Day 25：ETA screen (4)</span></a>
+<a class=next href=https://eric.swiftzer.net/2021/10/2021-ithome-ironman-23-eta-screen-2/><span class=title>下一篇 »</span><br><span>2021 iThome 鐵人賽 Day 23：ETA screen (2)</span></a></nav></footer><div id=disqus_thread></div><script type=application/javascript>window.disqus_config=function(){},function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById("disqus_thread").innerHTML="Disqus comments not available by default when the website is previewed locally.";return}var t=document,e=t.createElement("script");e.async=!0,e.src="//efilm.disqus.com/embed.js",e.setAttribute("data-timestamp",+new Date),(t.head||t.body).appendChild(e)}()</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></article></main><footer class=footer><span>&copy; 2022 <a href=https://eric.swiftzer.net/>EricLog</a></span>
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg></a><script>let menu=document.getElementById("menu");menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)},document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script></body></html>

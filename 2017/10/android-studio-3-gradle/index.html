@@ -1,261 +1,102 @@
-<!doctype html><html lang=zh-hant-hk dir=auto>
-<head><meta charset=utf-8>
-<meta http-equiv=x-ua-compatible content="IE=edge">
-<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta name=robots content="index, follow">
-<title>Android Studio 3 的 Gradle 更新 | EricLog</title>
-<meta name=keywords content="Android,Gradle">
-<meta name=description content="昨日使用 Android Studio 途中彈了 Android Studio 3 的更新通知，那時因為知道升級會有 breaking change，擔心升級要大改 Gradle 設定檔。所以延後了一天才更新。今日試了將現有的 project 更">
-<meta name=author content>
-<link rel=canonical href=https://eric.swiftzer.net/2017/10/android-studio-3-gradle/>
-<link href=/assets/css/stylesheet.min.d1fc837a267f77f6ede89d1a89c4880a90c381d9e6673ad4a76a3ad1900b65f9.css integrity="sha256-0fyDeiZ/d/bt6J0aicSICpDDgdnmZzrUp2o60ZALZfk=" rel="preload stylesheet" as=style>
-<link rel=icon href=https://eric.swiftzer.net/favicon.ico>
-<link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png>
-<link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png>
-<link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png>
-<link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg>
-<meta name=theme-color content="#2e2e33">
-<meta name=msapplication-TileColor content="#2e2e33">
-<meta name=generator content="Hugo 0.88.1">
-<link rel=preconnect href=https://fonts.gstatic.com>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-1268728-8','auto'),ga('send','pageview'))</script>
-<script async src=https://www.google-analytics.com/analytics.js></script>
-<meta property="og:title" content="Android Studio 3 的 Gradle 更新">
-<meta property="og:description" content="昨日使用 Android Studio 途中彈了 Android Studio 3 的更新通知，那時因為知道升級會有 breaking change，擔心升級要大改 Gradle 設定檔。所以延後了一天才更新。今日試了將現有的 project 更">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://eric.swiftzer.net/2017/10/android-studio-3-gradle/"><meta property="article:section" content="posts">
-<meta property="article:published_time" content="2017-10-27T23:05:53+08:00">
-<meta property="article:modified_time" content="2017-10-27T23:05:53+08:00">
-<meta name=twitter:card content="summary">
-<meta name=twitter:title content="Android Studio 3 的 Gradle 更新">
-<meta name=twitter:description content="昨日使用 Android Studio 途中彈了 Android Studio 3 的更新通知，那時因為知道升級會有 breaking change，擔心升級要大改 Gradle 設定檔。所以延後了一天才更新。今日試了將現有的 project 更">
-<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"Android Studio 3 的 Gradle 更新","item":"https://eric.swiftzer.net/2017/10/android-studio-3-gradle/"}]}</script>
-<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Android Studio 3 的 Gradle 更新","name":"Android Studio 3 的 Gradle 更新","description":"昨日使用 Android Studio 途中彈了 Android Studio 3 的更新通知，那時因為知道升級會有 breaking change，擔心升級要大改 Gradle 設定檔。所以延後了一天才更新。今日試了將現有的 project 更","keywords":["Android","Gradle"],"articleBody":"昨日使用 Android Studio 途中彈了 Android Studio 3 的更新通知，那時因為知道升級會有 breaking change，擔心升級要大改 Gradle 設定檔。所以延後了一天才更新。今日試了將現有的 project 更新，暫時未遇到問題，應該算是完成了。\n  Android Studio 3 的更新通知   Android Studio 升級完成後，開啟 project。Android Studio 會提示你升級 build tool 之類的東西，按照指示進行。Android Studio 會改動你的 Gradle wrapper，build tool 版本。但之後 Gradle project sync 時可能會有一大堆 error。這時可以試試以下的方法：\n檢查 app/build.gradle 的 buildToolsVersion 是否太舊。在根目錄的 build.gradle 的 ext 內加入 compileSdkVersion 和 buildToolsVersion：\next { compileSdkVersion = 26 buildToolsVersion = '26.0.2' // ... } 之後將 app/build.gradle 的 compileSdkVersion 和 buildToolsVersion 換成 ext 的 property：\nandroid { compileSdkVersion rootProject.ext.compileSdkVersion buildToolsVersion rootProject.ext.buildToolsVersion // ... } 然後在根目錄的 build.gradle 加入以下的內容。用意是將 subproject 的 Android 或 Android library project 的 compileSdkVersion 和 buildToolsVersion 強行設定成 ext 所訂的版本。如果你的 project 是 React Native 的話，應該會加入不少 subproject，而每個 subproject 都會有自己的 compileSdkVersion 和 buildToolsVersion，如果版本不一致的話是不能 build 的。你可以手動逐個更新 build.gradle，但之後用 NPM update 過那些 React Native component 之後你又要再手動改一次，非常麻煩。所以都是用下面的方法比較好：\nsubprojects { subproject - afterEvaluate { if ((subproject.plugins.hasPlugin('android') || subproject.plugins.hasPlugin('android-library'))) { android { compileSdkVersion rootProject.ext.compileSdkVersion buildToolsVersion rootProject.ext.buildToolsVersion } } } } 之後試試 build project，可能已經成功。如果不能的話，就要繼續改其他地方。例如我的 project 有自訂 buildTypes，現在需要補回 matchingFallbacks 確保其他 Android 或 Android library subproject 的 buildTypes 能配對到你的 buildTypes。\nandroid { // ...  buildTypes { debug { debuggable true minifyEnabled false shrinkResources false applicationIdSuffix devAppIdSuffix versionNameSuffix devVersionNameSuffix signingConfig signingConfigs.debug manifestPlaceholders = [ // ...  ] ext.alwaysUpdateBuildId = false } upload { minifyEnabled true shrinkResources true signingConfig signingConfigs.upload manifestPlaceholders = [ // ...  ] matchingFallbacks = ['release'] } // ...  } // ... } 每個 productFlavors 都要加 dimension，之前無做就要補回。\nandroid { // ...  flavorDimensions \"api\" productFlavors { development { dimension \"api\" buildConfigField \"String\", \"ENVIRONMENT\", \"\\\"development\\\"\" buildConfigField \"String\", \"API_ENDPOINT\", \"\\\"foo.com\\\"\" } production { dimension \"api\" buildConfigField \"String\", \"ENVIRONMENT\", \"\\\"production\\\"\" buildConfigField \"String\", \"API_ENDPOINT\", \"\\\"bar.com\\\"\" } } // ... } 加入 Google Maven repository。現在 Google 會將以下最新版本的 library 經這個 repository 發布。\n Android Support Library Architecture Components Library Constraint Layout Library Android Test Support Library Databinding Library Android Instant App Library Google Play services Firebase  如果之前有加過 maven { url 'https://maven.google.com' } 的話，要將它刪走。\nbuildscript { repositories { google() jcenter() // ...  } } allprojects { repositories { google() jcenter() // ...  } } 我的 project 到了現在已經能夠 build 到，如果不能的話要再查看其他文檔。\n之後可以再將 dependency 設定更新到 Gradle 3.4 的新設定方式。compile 已經在 Gradle 3.4 開始 deprecated，要改用 implementation 或 api。provided 要轉用 compileOnly。跟據文檔的講法，應該要盡量使用 implementation。因為它會限制這個 dependency 的使用範圍，所以可以加快因改動 module 後再 build 的速度。如果出現 build error 的話，可以試試將 implementation 換成 api，api 的功能其實和之前的 compile 一樣。debugCompile 換成 debugImplementation；testCompile 換成 testImplementation……以下是一些轉用 implementation 例子：\ndependencies { implementation fileTree(dir: \"libs\", include: [\"*.jar\"]) implementation \"org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion\" implementation project(':react-native-camera') implementation \"com.android.support:appcompat-v7:$androidSupportLibVersion\" implementation \"com.google.dagger:dagger:$daggerVersion\" kapt \"com.google.dagger:dagger-compiler:$daggerVersion\" debugImplementation \"com.squareup.leakcanary:leakcanary-android-no-op:$leakCanaryVersion\" debugLeakCanaryImplementation \"com.squareup.leakcanary:leakcanary-android:$leakCanaryVersion\" releaseImplementation \"com.squareup.leakcanary:leakcanary-android-no-op:$leakCanaryVersion\" androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', { exclude group: 'com.android.support', module: 'support-annotations' exclude group: 'com.google.code.findbugs', module: 'jsr305' }) testImplementation 'junit:junit:4.12' testImplementation \"org.robolectric:robolectric:3.4.2\" } 註：kapt 是 Kotlin annotation processing tool，如果是 Java project 應該用 annotationProcessor。\n參考  Migrate to Android Plugin for Gradle 3.0.0 Boost compilation time of your React Native or Android app with the latest build-tools What’s the difference between implementation and compile in gradle Implementation vs API dependency  ","wordCount":"1202","inLanguage":"en","datePublished":"2017-10-27T23:05:53+08:00","dateModified":"2017-10-27T23:05:53+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2017/10/android-studio-3-gradle/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
-</head>
-<body id=top>
-<script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
-<noscript>
-<style type=text/css>#theme-toggle,.top-link{display:none}</style>
-<style>@media(prefers-color-scheme:dark){:root{--theme:#1d1e20;--entry:#2e2e33;--primary:rgba(255, 255, 255, 0.84);--secondary:rgba(255, 255, 255, 0.56);--tertiary:rgba(255, 255, 255, 0.16);--content:rgba(255, 255, 255, 0.74);--hljs-bg:#2e2e33;--code-bg:#37383e;--border:#333}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
-</noscript>
-<header class=header>
-<nav class=nav>
-<div class=logo>
-<a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
-<span class=logo-switches>
-<button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-</button>
-</span>
-</div>
-<ul id=menu onscroll=menu_on_scroll()>
-<li>
-<a href=https://eric.swiftzer.net/fonts/ title=Fonts>
-<span>Fonts</span>
-</a>
-</li>
-<li>
-<a href=https://eric.swiftzer.net/archives/ title=Archives>
-<span>Archives</span>
-</a>
-</li>
-<li>
-<a href=https://eric.swiftzer.net/tags/ title=Tags>
-<span>Tags</span>
-</a>
-</li>
-<li>
-<a href=https://eric.swiftzer.net/about/ title=About>
-<span>About</span>
-</a>
-</li></ul>
-</nav>
-</header>
-<main class=main>
-<article class=post-single>
-<header class=post-header>
-<div class=breadcrumbs>
-<a href=https://eric.swiftzer.net/>Home</a>&nbsp;»&nbsp;<a href=https://eric.swiftzer.net/posts/>Posts</a>
-</div>
-<h1 class=post-title>
-Android Studio 3 的 Gradle 更新
-</h1>
-<div class=post-meta>October 27, 2017
-</div>
-</header>
-<div class=post-content>
-<p>昨日使用 Android Studio 途中彈了 Android Studio 3 的更新通知，那時因為知道升級會有 breaking change，擔心升級要大改 Gradle 設定檔。所以延後了一天才更新。今日試了將現有的 project 更新，暫時未遇到問題，應該算是完成了。</p>
-<figure>
-<img loading=lazy src=as3-update.png> <figcaption>
-Android Studio 3 的更新通知
-</figcaption>
-</figure>
-<p>Android Studio 升級完成後，開啟 project。Android Studio 會提示你升級 build tool 之類的東西，按照指示進行。Android Studio 會改動你的 Gradle wrapper，build tool 版本。但之後 Gradle project sync 時可能會有一大堆 error。這時可以試試以下的方法：</p>
-<p>檢查 <em>app/build.gradle</em> 的 <code>buildToolsVersion</code> 是否太舊。在根目錄的 <em>build.gradle</em> 的 <code>ext</code> 內加入 <code>compileSdkVersion</code> 和 <code>buildToolsVersion</code>：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-gradle data-lang=gradle><span class=n>ext</span> <span class=o>{</span>
-    <span class=n>compileSdkVersion</span> <span class=o>=</span> <span class=mi>26</span>
-    <span class=n>buildToolsVersion</span> <span class=o>=</span> <span class=s1>&#39;26.0.2&#39;</span>
-    <span class=c1>// ...
-</span><span class=c1></span><span class=o>}</span></code></pre></div>
-<p>之後將 <em>app/build.gradle</em> 的 <code>compileSdkVersion</code> 和 <code>buildToolsVersion</code> 換成 <code>ext</code> 的 property：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-gradle data-lang=gradle><span class=n>android</span> <span class=o>{</span>
-    <span class=n>compileSdkVersion</span> <span class=n>rootProject</span><span class=o>.</span><span class=na>ext</span><span class=o>.</span><span class=na>compileSdkVersion</span>
-    <span class=n>buildToolsVersion</span> <span class=n>rootProject</span><span class=o>.</span><span class=na>ext</span><span class=o>.</span><span class=na>buildToolsVersion</span>
-    <span class=c1>// ...
-</span><span class=c1></span><span class=o>}</span></code></pre></div>
-<p>然後在根目錄的 <em>build.gradle</em> 加入以下的內容。用意是將 subproject 的 Android 或 Android library project 的 <code>compileSdkVersion</code> 和 <code>buildToolsVersion</code> 強行設定成 <code>ext</code> 所訂的版本。如果你的 project 是 React Native 的話，應該會加入不少 subproject，而每個 subproject 都會有自己的 <code>compileSdkVersion</code> 和 <code>buildToolsVersion</code>，如果版本不一致的話是不能 build 的。你可以手動逐個更新 <em>build.gradle</em>，但之後用 NPM update 過那些 React Native component 之後你又要再手動改一次，非常麻煩。所以都是用下面的方法比較好：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-gradle data-lang=gradle><span class=n>subprojects</span> <span class=o>{</span> <span class=n>subproject</span> <span class=o>-&gt;</span>
-    <span class=n>afterEvaluate</span> <span class=o>{</span>
-        <span class=k>if</span> <span class=o>((</span><span class=n>subproject</span><span class=o>.</span><span class=na>plugins</span><span class=o>.</span><span class=na>hasPlugin</span><span class=o>(</span><span class=s1>&#39;android&#39;</span><span class=o>)</span> <span class=o>||</span> <span class=n>subproject</span><span class=o>.</span><span class=na>plugins</span><span class=o>.</span><span class=na>hasPlugin</span><span class=o>(</span><span class=s1>&#39;android-library&#39;</span><span class=o>)))</span> <span class=o>{</span>
-            <span class=n>android</span> <span class=o>{</span>
-                <span class=n>compileSdkVersion</span> <span class=n>rootProject</span><span class=o>.</span><span class=na>ext</span><span class=o>.</span><span class=na>compileSdkVersion</span>
-                <span class=n>buildToolsVersion</span> <span class=n>rootProject</span><span class=o>.</span><span class=na>ext</span><span class=o>.</span><span class=na>buildToolsVersion</span>
-            <span class=o>}</span>
-        <span class=o>}</span>
-    <span class=o>}</span>
-<span class=o>}</span></code></pre></div>
-<p>之後試試 build project，可能已經成功。如果不能的話，就要繼續改其他地方。例如我的 project 有自訂 <code>buildTypes</code>，現在需要補回 <code>matchingFallbacks</code> 確保其他 Android 或 Android library subproject 的 <code>buildTypes</code> 能配對到你的 <code>buildTypes</code>。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-gradle data-lang=gradle><span class=n>android</span> <span class=o>{</span>
-    <span class=c1>// ...
-</span><span class=c1></span>    <span class=n>buildTypes</span> <span class=o>{</span>
-        <span class=n>debug</span> <span class=o>{</span>
-            <span class=n>debuggable</span> <span class=kc>true</span>
-            <span class=n>minifyEnabled</span> <span class=kc>false</span>
-            <span class=n>shrinkResources</span> <span class=kc>false</span>
-            <span class=n>applicationIdSuffix</span> <span class=n>devAppIdSuffix</span>
-            <span class=n>versionNameSuffix</span> <span class=n>devVersionNameSuffix</span>
-            <span class=n>signingConfig</span> <span class=n>signingConfigs</span><span class=o>.</span><span class=na>debug</span>
-            <span class=n>manifestPlaceholders</span> <span class=o>=</span> <span class=o>[</span>
-                    <span class=c1>// ...
-</span><span class=c1></span>            <span class=o>]</span>
-            <span class=n>ext</span><span class=o>.</span><span class=na>alwaysUpdateBuildId</span> <span class=o>=</span> <span class=kc>false</span>
-        <span class=o>}</span>
-        <span class=n>upload</span> <span class=o>{</span>
-            <span class=n>minifyEnabled</span> <span class=kc>true</span>
-            <span class=n>shrinkResources</span> <span class=kc>true</span>
-            <span class=n>signingConfig</span> <span class=n>signingConfigs</span><span class=o>.</span><span class=na>upload</span>
-            <span class=n>manifestPlaceholders</span> <span class=o>=</span> <span class=o>[</span>
-                    <span class=c1>// ...
-</span><span class=c1></span>            <span class=o>]</span>
-            <span class=n>matchingFallbacks</span> <span class=o>=</span> <span class=o>[</span><span class=s1>&#39;release&#39;</span><span class=o>]</span>
-        <span class=o>}</span>
-        <span class=c1>// ...
-</span><span class=c1></span>    <span class=o>}</span>
-    <span class=c1>// ...
-</span><span class=c1></span><span class=o>}</span></code></pre></div>
-<p>每個 <code>productFlavors</code> 都要加 <code>dimension</code>，之前無做就要補回。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-gradle data-lang=gradle><span class=n>android</span> <span class=o>{</span>
-    <span class=c1>// ...
-</span><span class=c1></span>    <span class=n>flavorDimensions</span> <span class=s2>&#34;api&#34;</span>
-    <span class=n>productFlavors</span> <span class=o>{</span>
-        <span class=n>development</span> <span class=o>{</span>
-            <span class=n>dimension</span> <span class=s2>&#34;api&#34;</span>
-            <span class=n>buildConfigField</span> <span class=s2>&#34;String&#34;</span><span class=o>,</span> <span class=s2>&#34;ENVIRONMENT&#34;</span><span class=o>,</span> <span class=s2>&#34;\&#34;development\&#34;&#34;</span>
-            <span class=n>buildConfigField</span> <span class=s2>&#34;String&#34;</span><span class=o>,</span> <span class=s2>&#34;API_ENDPOINT&#34;</span><span class=o>,</span> <span class=s2>&#34;\&#34;foo.com\&#34;&#34;</span>
-        <span class=o>}</span>
-        <span class=n>production</span> <span class=o>{</span>
-            <span class=n>dimension</span> <span class=s2>&#34;api&#34;</span>
-            <span class=n>buildConfigField</span> <span class=s2>&#34;String&#34;</span><span class=o>,</span> <span class=s2>&#34;ENVIRONMENT&#34;</span><span class=o>,</span> <span class=s2>&#34;\&#34;production\&#34;&#34;</span>
-            <span class=n>buildConfigField</span> <span class=s2>&#34;String&#34;</span><span class=o>,</span> <span class=s2>&#34;API_ENDPOINT&#34;</span><span class=o>,</span> <span class=s2>&#34;\&#34;bar.com\&#34;&#34;</span>
-        <span class=o>}</span>
-    <span class=o>}</span>
-    <span class=c1>// ...
-</span><span class=c1></span><span class=o>}</span></code></pre></div>
-<p>加入 Google Maven repository。現在 Google 會將以下最新版本的 library 經這個 repository 發布。</p>
-<ul>
-<li>Android Support Library</li>
-<li>Architecture Components Library</li>
-<li>Constraint Layout Library</li>
-<li>Android Test Support Library</li>
-<li>Databinding Library</li>
-<li>Android Instant App Library</li>
-<li>Google Play services</li>
-<li>Firebase</li>
-</ul>
-<p>如果之前有加過 <code>maven { url 'https://maven.google.com' }</code> 的話，要將它刪走。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-gradle data-lang=gradle><span class=n>buildscript</span> <span class=o>{</span>
-    <span class=n>repositories</span> <span class=o>{</span>
-        <span class=n>google</span><span class=o>()</span>
-        <span class=n>jcenter</span><span class=o>()</span>
-        <span class=c1>// ...
-</span><span class=c1></span>    <span class=o>}</span>
-<span class=o>}</span>
-
-<span class=n>allprojects</span> <span class=o>{</span>
-    <span class=n>repositories</span> <span class=o>{</span>
-        <span class=n>google</span><span class=o>()</span>
-        <span class=n>jcenter</span><span class=o>()</span>
-        <span class=c1>// ...
-</span><span class=c1></span>    <span class=o>}</span>
-<span class=o>}</span></code></pre></div>
-<p>我的 project 到了現在已經能夠 build 到，如果不能的話要再查看其他文檔。</p>
-<p>之後可以再將 dependency 設定更新到 Gradle 3.4 的新設定方式。<code>compile</code> 已經在 Gradle 3.4 開始 deprecated，要改用 <code>implementation</code> 或 <code>api</code>。<code>provided</code> 要轉用 <code>compileOnly</code>。跟據文檔的講法，應該要盡量使用 <code>implementation</code>。因為它會限制這個 dependency 的使用範圍，所以可以加快因改動 module 後再 build 的速度。如果出現 build error 的話，可以試試將 <code>implementation</code> 換成 <code>api</code>，<code>api</code> 的功能其實和之前的 <code>compile</code> 一樣。<code>debugCompile</code> 換成 <code>debugImplementation</code>；<code>testCompile</code> 換成 <code>testImplementation</code>……以下是一些轉用 <code>implementation</code> 例子：</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-gradle data-lang=gradle><span class=n>dependencies</span> <span class=o>{</span>
-    <span class=n>implementation</span> <span class=nf>fileTree</span><span class=o>(</span><span class=nl>dir:</span> <span class=s2>&#34;libs&#34;</span><span class=o>,</span> <span class=nl>include:</span> <span class=o>[</span><span class=s2>&#34;*.jar&#34;</span><span class=o>])</span>
-    
-    <span class=n>implementation</span> <span class=s2>&#34;org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion&#34;</span>
-    
-    <span class=n>implementation</span> <span class=nf>project</span><span class=o>(</span><span class=s1>&#39;:react-native-camera&#39;</span><span class=o>)</span>
-    
-    <span class=n>implementation</span> <span class=s2>&#34;com.android.support:appcompat-v7:$androidSupportLibVersion&#34;</span>
-    <span class=n>implementation</span> <span class=s2>&#34;com.google.dagger:dagger:$daggerVersion&#34;</span>
-    <span class=n>kapt</span> <span class=s2>&#34;com.google.dagger:dagger-compiler:$daggerVersion&#34;</span>
-    
-    <span class=n>debugImplementation</span> <span class=s2>&#34;com.squareup.leakcanary:leakcanary-android-no-op:$leakCanaryVersion&#34;</span>
-    <span class=n>debugLeakCanaryImplementation</span> <span class=s2>&#34;com.squareup.leakcanary:leakcanary-android:$leakCanaryVersion&#34;</span>
-    <span class=n>releaseImplementation</span> <span class=s2>&#34;com.squareup.leakcanary:leakcanary-android-no-op:$leakCanaryVersion&#34;</span>
-
-    <span class=n>androidTestImplementation</span><span class=o>(</span><span class=s1>&#39;com.android.support.test.espresso:espresso-core:2.2.2&#39;</span><span class=o>,</span> <span class=o>{</span>
-        <span class=n>exclude</span> <span class=nl>group:</span> <span class=s1>&#39;com.android.support&#39;</span><span class=o>,</span> <span class=nl>module:</span> <span class=s1>&#39;support-annotations&#39;</span>
-        <span class=n>exclude</span> <span class=nl>group:</span> <span class=s1>&#39;com.google.code.findbugs&#39;</span><span class=o>,</span> <span class=nl>module:</span> <span class=s1>&#39;jsr305&#39;</span>
-    <span class=o>})</span>
-    <span class=n>testImplementation</span> <span class=s1>&#39;junit:junit:4.12&#39;</span>
-    <span class=n>testImplementation</span> <span class=s2>&#34;org.robolectric:robolectric:3.4.2&#34;</span>
-<span class=o>}</span></code></pre></div>
-<p>註：<code>kapt</code> 是 Kotlin annotation processing tool，如果是 Java project 應該用 <code>annotationProcessor</code>。</p>
-<h2 id=參考>參考<a hidden class=anchor aria-hidden=true href=#參考>#</a></h2>
-<ul>
-<li><a href=https://developer.android.com/studio/build/gradle-plugin-3-0-0-migration.html>Migrate to Android Plugin for Gradle 3.0.0</a></li>
-<li><a href=https://medium.com/bam-tech/boost-compilation-time-of-your-react-native-or-android-app-with-the-latest-build-tools-a3d5d398ed33>Boost compilation time of your React Native or Android app with the latest build-tools</a></li>
-<li><a href=https://stackoverflow.com/questions/44493378/whats-the-difference-between-implementation-and-compile-in-gradle/44493379#44493379>What&rsquo;s the difference between implementation and compile in gradle</a></li>
-<li><a href=https://jeroenmols.com/blog/2017/06/14/androidstudio3/>Implementation vs API dependency</a></li>
-</ul>
-</div>
-<footer class=post-footer>
-<ul class=post-tags>
-<li><a href=https://eric.swiftzer.net/tags/android/>Android</a></li>
-<li><a href=https://eric.swiftzer.net/tags/gradle/>Gradle</a></li>
-</ul>
-<nav class=paginav>
-<a class=prev href=https://eric.swiftzer.net/2017/12/react-native-multi-window/>
-<span class=title>« Prev Page</span>
-<br>
-<span>React Native Android Multi-window 多視窗支援</span>
-</a>
-<a class=next href=https://eric.swiftzer.net/2017/09/parcelable-intent-extra/>
-<span class=title>Next Page »</span>
-<br>
-<span>Parcelable & Intent extra</span>
-</a>
-</nav>
-</footer><div id=disqus_thread></div>
-<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//efilm.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
-<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
-<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
-</article>
-</main><footer class=footer>
-<span>&copy; 2022 <a href=https://eric.swiftzer.net/>EricLog</a></span>
-<span>&#183;</span>
-<span>Powered by <a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a></span>
-<span>&#183;</span>
-<span>Theme <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span>
-</footer>
-<a href=#top aria-label="go to top" title="Go to Top (Alt + G)">
-<button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
-</button>
-</a>
-<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
-<script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script>
-<script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
-</body>
-</html>
+<!doctype html><html lang=zh-tw dir=auto><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Android Studio 3 的 Gradle 更新 | EricLog</title><meta name=keywords content="Android,Gradle"><meta name=description content="昨日使用 Android Studio 途中彈了 Android Studio 3 的更新通知，那時因為知道升級會有 breaking change，擔心升級要大改 Gradle 設定檔。所以延後了一天才更新。今日試了將現有的 project 更"><meta name=author content><link rel=canonical href=https://eric.swiftzer.net/2017/10/android-studio-3-gradle/><link crossorigin=anonymous href=/assets/css/stylesheet.min.249b1770ac429c01ffa746cc012a310192d174c913b1527f312e3294a0766d1c.css integrity="sha256-JJsXcKxCnAH/p0bMASoxAZLRdMkTsVJ/MS4ylKB2bRw=" rel="preload stylesheet" as=style><link rel=icon href=https://eric.swiftzer.net/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png><link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png><link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><meta name=generator content="Hugo 0.101.0"><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--hljs-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><link rel=preconnect href=https://fonts.gstatic.com><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet><script async src="https://www.googletagmanager.com/gtag/js?id=G-D93F946T73"></script>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-D93F946T73",{anonymize_ip:!1})}</script><meta property="og:title" content="Android Studio 3 的 Gradle 更新"><meta property="og:description" content="昨日使用 Android Studio 途中彈了 Android Studio 3 的更新通知，那時因為知道升級會有 breaking change，擔心升級要大改 Gradle 設定檔。所以延後了一天才更新。今日試了將現有的 project 更"><meta property="og:type" content="article"><meta property="og:url" content="https://eric.swiftzer.net/2017/10/android-studio-3-gradle/"><meta property="article:section" content="posts"><meta property="article:published_time" content="2017-10-27T23:05:53+08:00"><meta property="article:modified_time" content="2017-10-27T23:05:53+08:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Android Studio 3 的 Gradle 更新"><meta name=twitter:description content="昨日使用 Android Studio 途中彈了 Android Studio 3 的更新通知，那時因為知道升級會有 breaking change，擔心升級要大改 Gradle 設定檔。所以延後了一天才更新。今日試了將現有的 project 更"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"Android Studio 3 的 Gradle 更新","item":"https://eric.swiftzer.net/2017/10/android-studio-3-gradle/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Android Studio 3 的 Gradle 更新","name":"Android Studio 3 的 Gradle 更新","description":"昨日使用 Android Studio 途中彈了 Android Studio 3 的更新通知，那時因為知道升級會有 breaking change，擔心升級要大改 Gradle 設定檔。所以延後了一天才更新。今日試了將現有的 project 更","keywords":["Android","Gradle"],"articleBody":"昨日使用 Android Studio 途中彈了 Android Studio 3 的更新通知，那時因為知道升級會有 breaking change，擔心升級要大改 Gradle 設定檔。所以延後了一天才更新。今日試了將現有的 project 更新，暫時未遇到問題，應該算是完成了。\nAndroid Studio 3 的更新通知 Android Studio 升級完成後，開啟 project。Android Studio 會提示你升級 build tool 之類的東西，按照指示進行。Android Studio 會改動你的 Gradle wrapper，build tool 版本。但之後 Gradle project sync 時可能會有一大堆 error。這時可以試試以下的方法：\n檢查 app/build.gradle 的 buildToolsVersion 是否太舊。在根目錄的 build.gradle 的 ext 內加入 compileSdkVersion 和 buildToolsVersion：\next { compileSdkVersion = 26 buildToolsVersion = '26.0.2' // ... } 之後將 app/build.gradle 的 compileSdkVersion 和 buildToolsVersion 換成 ext 的 property：\nandroid { compileSdkVersion rootProject.ext.compileSdkVersion buildToolsVersion rootProject.ext.buildToolsVersion // ... } 然後在根目錄的 build.gradle 加入以下的內容。用意是將 subproject 的 Android 或 Android library project 的 compileSdkVersion 和 buildToolsVersion 強行設定成 ext 所訂的版本。如果你的 project 是 React Native 的話，應該會加入不少 subproject，而每個 subproject 都會有自己的 compileSdkVersion 和 buildToolsVersion，如果版本不一致的話是不能 build 的。你可以手動逐個更新 build.gradle，但之後用 NPM update 過那些 React Native component 之後你又要再手動改一次，非常麻煩。所以都是用下面的方法比較好：\nsubprojects { subproject -\u003e afterEvaluate { if ((subproject.plugins.hasPlugin('android') || subproject.plugins.hasPlugin('android-library'))) { android { compileSdkVersion rootProject.ext.compileSdkVersion buildToolsVersion rootProject.ext.buildToolsVersion } } } } 之後試試 build project，可能已經成功。如果不能的話，就要繼續改其他地方。例如我的 project 有自訂 buildTypes，現在需要補回 matchingFallbacks 確保其他 Android 或 Android library subproject 的 buildTypes 能配對到你的 buildTypes。\nandroid { // ... buildTypes { debug { debuggable true minifyEnabled false shrinkResources false applicationIdSuffix devAppIdSuffix versionNameSuffix devVersionNameSuffix signingConfig signingConfigs.debug manifestPlaceholders = [ // ... ] ext.alwaysUpdateBuildId = false } upload { minifyEnabled true shrinkResources true signingConfig signingConfigs.upload manifestPlaceholders = [ // ... ] matchingFallbacks = ['release'] } // ... } // ... } 每個 productFlavors 都要加 dimension，之前無做就要補回。\nandroid { // ... flavorDimensions \"api\" productFlavors { development { dimension \"api\" buildConfigField \"String\", \"ENVIRONMENT\", \"\\\"development\\\"\" buildConfigField \"String\", \"API_ENDPOINT\", \"\\\"foo.com\\\"\" } production { dimension \"api\" buildConfigField \"String\", \"ENVIRONMENT\", \"\\\"production\\\"\" buildConfigField \"String\", \"API_ENDPOINT\", \"\\\"bar.com\\\"\" } } // ... } 加入 Google Maven repository。現在 Google 會將以下最新版本的 library 經這個 repository 發布。\nAndroid Support Library Architecture Components Library Constraint Layout Library Android Test Support Library Databinding Library Android Instant App Library Google Play services Firebase 如果之前有加過 maven { url 'https://maven.google.com' } 的話，要將它刪走。\nbuildscript { repositories { google() jcenter() // ... } } allprojects { repositories { google() jcenter() // ... } } 我的 project 到了現在已經能夠 build 到，如果不能的話要再查看其他文檔。\n之後可以再將 dependency 設定更新到 Gradle 3.4 的新設定方式。compile 已經在 Gradle 3.4 開始 deprecated，要改用 implementation 或 api。provided 要轉用 compileOnly。跟據文檔的講法，應該要盡量使用 implementation。因為它會限制這個 dependency 的使用範圍，所以可以加快因改動 module 後再 build 的速度。如果出現 build error 的話，可以試試將 implementation 換成 api，api 的功能其實和之前的 compile 一樣。debugCompile 換成 debugImplementation；testCompile 換成 testImplementation……以下是一些轉用 implementation 例子：\ndependencies { implementation fileTree(dir: \"libs\", include: [\"*.jar\"]) implementation \"org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion\" implementation project(':react-native-camera') implementation \"com.android.support:appcompat-v7:$androidSupportLibVersion\" implementation \"com.google.dagger:dagger:$daggerVersion\" kapt \"com.google.dagger:dagger-compiler:$daggerVersion\" debugImplementation \"com.squareup.leakcanary:leakcanary-android-no-op:$leakCanaryVersion\" debugLeakCanaryImplementation \"com.squareup.leakcanary:leakcanary-android:$leakCanaryVersion\" releaseImplementation \"com.squareup.leakcanary:leakcanary-android-no-op:$leakCanaryVersion\" androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', { exclude group: 'com.android.support', module: 'support-annotations' exclude group: 'com.google.code.findbugs', module: 'jsr305' }) testImplementation 'junit:junit:4.12' testImplementation \"org.robolectric:robolectric:3.4.2\" } 註：kapt 是 Kotlin annotation processing tool，如果是 Java project 應該用 annotationProcessor。\n參考 Migrate to Android Plugin for Gradle 3.0.0 Boost compilation time of your React Native or Android app with the latest build-tools What’s the difference between implementation and compile in gradle Implementation vs API dependency ","wordCount":"1202","inLanguage":"zh-tw","datePublished":"2017-10-27T23:05:53+08:00","dateModified":"2017-10-27T23:05:53+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2017/10/android-studio-3-gradle/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
+<span class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></span></div><ul id=menu><li><a href=https://eric.swiftzer.net/fonts/ title=Fonts><span>Fonts</span></a></li><li><a href=https://eric.swiftzer.net/archives/ title=Archives><span>Archives</span></a></li><li><a href=https://eric.swiftzer.net/tags/ title=Tags><span>Tags</span></a></li><li><a href=https://eric.swiftzer.net/about/ title=About><span>About</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><div class=breadcrumbs><a href=https://eric.swiftzer.net/>首頁</a>&nbsp;»&nbsp;<a href=https://eric.swiftzer.net/posts/>Posts</a></div><h1 class=post-title>Android Studio 3 的 Gradle 更新</h1><div class=post-meta>October 27, 2017</div></header><div class=post-content><p>昨日使用 Android Studio 途中彈了 Android Studio 3 的更新通知，那時因為知道升級會有 breaking change，擔心升級要大改 Gradle 設定檔。所以延後了一天才更新。今日試了將現有的 project 更新，暫時未遇到問題，應該算是完成了。</p><figure><img loading=lazy src=as3-update.png><figcaption>Android Studio 3 的更新通知</figcaption></figure><p>Android Studio 升級完成後，開啟 project。Android Studio 會提示你升級 build tool 之類的東西，按照指示進行。Android Studio 會改動你的 Gradle wrapper，build tool 版本。但之後 Gradle project sync 時可能會有一大堆 error。這時可以試試以下的方法：</p><p>檢查 <em>app/build.gradle</em> 的 <code>buildToolsVersion</code> 是否太舊。在根目錄的 <em>build.gradle</em> 的 <code>ext</code> 內加入 <code>compileSdkVersion</code> 和 <code>buildToolsVersion</code>：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-gradle data-lang=gradle><span class=line><span class=cl><span class=n>ext</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>compileSdkVersion</span> <span class=o>=</span> <span class=mi>26</span>
+</span></span><span class=line><span class=cl>    <span class=n>buildToolsVersion</span> <span class=o>=</span> <span class=s1>&#39;26.0.2&#39;</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// ...
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=o>}</span></span></span></code></pre></div><p>之後將 <em>app/build.gradle</em> 的 <code>compileSdkVersion</code> 和 <code>buildToolsVersion</code> 換成 <code>ext</code> 的 property：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-gradle data-lang=gradle><span class=line><span class=cl><span class=n>android</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>compileSdkVersion</span> <span class=n>rootProject</span><span class=o>.</span><span class=na>ext</span><span class=o>.</span><span class=na>compileSdkVersion</span>
+</span></span><span class=line><span class=cl>    <span class=n>buildToolsVersion</span> <span class=n>rootProject</span><span class=o>.</span><span class=na>ext</span><span class=o>.</span><span class=na>buildToolsVersion</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// ...
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=o>}</span></span></span></code></pre></div><p>然後在根目錄的 <em>build.gradle</em> 加入以下的內容。用意是將 subproject 的 Android 或 Android library project 的 <code>compileSdkVersion</code> 和 <code>buildToolsVersion</code> 強行設定成 <code>ext</code> 所訂的版本。如果你的 project 是 React Native 的話，應該會加入不少 subproject，而每個 subproject 都會有自己的 <code>compileSdkVersion</code> 和 <code>buildToolsVersion</code>，如果版本不一致的話是不能 build 的。你可以手動逐個更新 <em>build.gradle</em>，但之後用 NPM update 過那些 React Native component 之後你又要再手動改一次，非常麻煩。所以都是用下面的方法比較好：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-gradle data-lang=gradle><span class=line><span class=cl><span class=n>subprojects</span> <span class=o>{</span> <span class=n>subproject</span> <span class=o>-&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=n>afterEvaluate</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=o>((</span><span class=n>subproject</span><span class=o>.</span><span class=na>plugins</span><span class=o>.</span><span class=na>hasPlugin</span><span class=o>(</span><span class=s1>&#39;android&#39;</span><span class=o>)</span> <span class=o>||</span> <span class=n>subproject</span><span class=o>.</span><span class=na>plugins</span><span class=o>.</span><span class=na>hasPlugin</span><span class=o>(</span><span class=s1>&#39;android-library&#39;</span><span class=o>)))</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>android</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>                <span class=n>compileSdkVersion</span> <span class=n>rootProject</span><span class=o>.</span><span class=na>ext</span><span class=o>.</span><span class=na>compileSdkVersion</span>
+</span></span><span class=line><span class=cl>                <span class=n>buildToolsVersion</span> <span class=n>rootProject</span><span class=o>.</span><span class=na>ext</span><span class=o>.</span><span class=na>buildToolsVersion</span>
+</span></span><span class=line><span class=cl>            <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span></span></span></code></pre></div><p>之後試試 build project，可能已經成功。如果不能的話，就要繼續改其他地方。例如我的 project 有自訂 <code>buildTypes</code>，現在需要補回 <code>matchingFallbacks</code> 確保其他 Android 或 Android library subproject 的 <code>buildTypes</code> 能配對到你的 <code>buildTypes</code>。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-gradle data-lang=gradle><span class=line><span class=cl><span class=n>android</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// ...
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=n>buildTypes</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>debug</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>debuggable</span> <span class=kc>true</span>
+</span></span><span class=line><span class=cl>            <span class=n>minifyEnabled</span> <span class=kc>false</span>
+</span></span><span class=line><span class=cl>            <span class=n>shrinkResources</span> <span class=kc>false</span>
+</span></span><span class=line><span class=cl>            <span class=n>applicationIdSuffix</span> <span class=n>devAppIdSuffix</span>
+</span></span><span class=line><span class=cl>            <span class=n>versionNameSuffix</span> <span class=n>devVersionNameSuffix</span>
+</span></span><span class=line><span class=cl>            <span class=n>signingConfig</span> <span class=n>signingConfigs</span><span class=o>.</span><span class=na>debug</span>
+</span></span><span class=line><span class=cl>            <span class=n>manifestPlaceholders</span> <span class=o>=</span> <span class=o>[</span>
+</span></span><span class=line><span class=cl>                    <span class=c1>// ...
+</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=o>]</span>
+</span></span><span class=line><span class=cl>            <span class=n>ext</span><span class=o>.</span><span class=na>alwaysUpdateBuildId</span> <span class=o>=</span> <span class=kc>false</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=n>upload</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>minifyEnabled</span> <span class=kc>true</span>
+</span></span><span class=line><span class=cl>            <span class=n>shrinkResources</span> <span class=kc>true</span>
+</span></span><span class=line><span class=cl>            <span class=n>signingConfig</span> <span class=n>signingConfigs</span><span class=o>.</span><span class=na>upload</span>
+</span></span><span class=line><span class=cl>            <span class=n>manifestPlaceholders</span> <span class=o>=</span> <span class=o>[</span>
+</span></span><span class=line><span class=cl>                    <span class=c1>// ...
+</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=o>]</span>
+</span></span><span class=line><span class=cl>            <span class=n>matchingFallbacks</span> <span class=o>=</span> <span class=o>[</span><span class=s1>&#39;release&#39;</span><span class=o>]</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// ...
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// ...
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=o>}</span></span></span></code></pre></div><p>每個 <code>productFlavors</code> 都要加 <code>dimension</code>，之前無做就要補回。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-gradle data-lang=gradle><span class=line><span class=cl><span class=n>android</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// ...
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=n>flavorDimensions</span> <span class=s2>&#34;api&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=n>productFlavors</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>development</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>dimension</span> <span class=s2>&#34;api&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=n>buildConfigField</span> <span class=s2>&#34;String&#34;</span><span class=o>,</span> <span class=s2>&#34;ENVIRONMENT&#34;</span><span class=o>,</span> <span class=s2>&#34;\&#34;development\&#34;&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=n>buildConfigField</span> <span class=s2>&#34;String&#34;</span><span class=o>,</span> <span class=s2>&#34;API_ENDPOINT&#34;</span><span class=o>,</span> <span class=s2>&#34;\&#34;foo.com\&#34;&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=n>production</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>dimension</span> <span class=s2>&#34;api&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=n>buildConfigField</span> <span class=s2>&#34;String&#34;</span><span class=o>,</span> <span class=s2>&#34;ENVIRONMENT&#34;</span><span class=o>,</span> <span class=s2>&#34;\&#34;production\&#34;&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=n>buildConfigField</span> <span class=s2>&#34;String&#34;</span><span class=o>,</span> <span class=s2>&#34;API_ENDPOINT&#34;</span><span class=o>,</span> <span class=s2>&#34;\&#34;bar.com\&#34;&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// ...
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=o>}</span></span></span></code></pre></div><p>加入 Google Maven repository。現在 Google 會將以下最新版本的 library 經這個 repository 發布。</p><ul><li>Android Support Library</li><li>Architecture Components Library</li><li>Constraint Layout Library</li><li>Android Test Support Library</li><li>Databinding Library</li><li>Android Instant App Library</li><li>Google Play services</li><li>Firebase</li></ul><p>如果之前有加過 <code>maven { url 'https://maven.google.com' }</code> 的話，要將它刪走。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-gradle data-lang=gradle><span class=line><span class=cl><span class=n>buildscript</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>repositories</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>google</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>        <span class=n>jcenter</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// ...
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>allprojects</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>repositories</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>google</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>        <span class=n>jcenter</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// ...
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span></span></span></code></pre></div><p>我的 project 到了現在已經能夠 build 到，如果不能的話要再查看其他文檔。</p><p>之後可以再將 dependency 設定更新到 Gradle 3.4 的新設定方式。<code>compile</code> 已經在 Gradle 3.4 開始 deprecated，要改用 <code>implementation</code> 或 <code>api</code>。<code>provided</code> 要轉用 <code>compileOnly</code>。跟據文檔的講法，應該要盡量使用 <code>implementation</code>。因為它會限制這個 dependency 的使用範圍，所以可以加快因改動 module 後再 build 的速度。如果出現 build error 的話，可以試試將 <code>implementation</code> 換成 <code>api</code>，<code>api</code> 的功能其實和之前的 <code>compile</code> 一樣。<code>debugCompile</code> 換成 <code>debugImplementation</code>；<code>testCompile</code> 換成 <code>testImplementation</code>……以下是一些轉用 <code>implementation</code> 例子：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-gradle data-lang=gradle><span class=line><span class=cl><span class=n>dependencies</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>implementation</span> <span class=nf>fileTree</span><span class=o>(</span><span class=nl>dir:</span> <span class=s2>&#34;libs&#34;</span><span class=o>,</span> <span class=nl>include:</span> <span class=o>[</span><span class=s2>&#34;*.jar&#34;</span><span class=o>])</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=n>implementation</span> <span class=s2>&#34;org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion&#34;</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=n>implementation</span> <span class=nf>project</span><span class=o>(</span><span class=s1>&#39;:react-native-camera&#39;</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=n>implementation</span> <span class=s2>&#34;com.android.support:appcompat-v7:$androidSupportLibVersion&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=n>implementation</span> <span class=s2>&#34;com.google.dagger:dagger:$daggerVersion&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=n>kapt</span> <span class=s2>&#34;com.google.dagger:dagger-compiler:$daggerVersion&#34;</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=n>debugImplementation</span> <span class=s2>&#34;com.squareup.leakcanary:leakcanary-android-no-op:$leakCanaryVersion&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=n>debugLeakCanaryImplementation</span> <span class=s2>&#34;com.squareup.leakcanary:leakcanary-android:$leakCanaryVersion&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=n>releaseImplementation</span> <span class=s2>&#34;com.squareup.leakcanary:leakcanary-android-no-op:$leakCanaryVersion&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>androidTestImplementation</span><span class=o>(</span><span class=s1>&#39;com.android.support.test.espresso:espresso-core:2.2.2&#39;</span><span class=o>,</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>exclude</span> <span class=nl>group:</span> <span class=s1>&#39;com.android.support&#39;</span><span class=o>,</span> <span class=nl>module:</span> <span class=s1>&#39;support-annotations&#39;</span>
+</span></span><span class=line><span class=cl>        <span class=n>exclude</span> <span class=nl>group:</span> <span class=s1>&#39;com.google.code.findbugs&#39;</span><span class=o>,</span> <span class=nl>module:</span> <span class=s1>&#39;jsr305&#39;</span>
+</span></span><span class=line><span class=cl>    <span class=o>})</span>
+</span></span><span class=line><span class=cl>    <span class=n>testImplementation</span> <span class=s1>&#39;junit:junit:4.12&#39;</span>
+</span></span><span class=line><span class=cl>    <span class=n>testImplementation</span> <span class=s2>&#34;org.robolectric:robolectric:3.4.2&#34;</span>
+</span></span><span class=line><span class=cl><span class=o>}</span></span></span></code></pre></div><p>註：<code>kapt</code> 是 Kotlin annotation processing tool，如果是 Java project 應該用 <code>annotationProcessor</code>。</p><h2 id=參考>參考<a hidden class=anchor aria-hidden=true href=#參考>#</a></h2><ul><li><a href=https://developer.android.com/studio/build/gradle-plugin-3-0-0-migration.html>Migrate to Android Plugin for Gradle 3.0.0</a></li><li><a href=https://medium.com/bam-tech/boost-compilation-time-of-your-react-native-or-android-app-with-the-latest-build-tools-a3d5d398ed33>Boost compilation time of your React Native or Android app with the latest build-tools</a></li><li><a href=https://stackoverflow.com/questions/44493378/whats-the-difference-between-implementation-and-compile-in-gradle/44493379#44493379>What&rsquo;s the difference between implementation and compile in gradle</a></li><li><a href=https://jeroenmols.com/blog/2017/06/14/androidstudio3/>Implementation vs API dependency</a></li></ul></div><footer class=post-footer><ul class=post-tags><li><a href=https://eric.swiftzer.net/tags/android/>Android</a></li><li><a href=https://eric.swiftzer.net/tags/gradle/>Gradle</a></li></ul><nav class=paginav><a class=prev href=https://eric.swiftzer.net/2017/12/react-native-multi-window/><span class=title>« 上一篇</span><br><span>React Native Android Multi-window 多視窗支援</span></a>
+<a class=next href=https://eric.swiftzer.net/2017/09/parcelable-intent-extra/><span class=title>下一篇 »</span><br><span>Parcelable & Intent extra</span></a></nav></footer><div id=disqus_thread></div><script type=application/javascript>window.disqus_config=function(){},function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById("disqus_thread").innerHTML="Disqus comments not available by default when the website is previewed locally.";return}var t=document,e=t.createElement("script");e.async=!0,e.src="//efilm.disqus.com/embed.js",e.setAttribute("data-timestamp",+new Date),(t.head||t.body).appendChild(e)}()</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></article></main><footer class=footer><span>&copy; 2022 <a href=https://eric.swiftzer.net/>EricLog</a></span>
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg></a><script>let menu=document.getElementById("menu");menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)},document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script></body></html>

@@ -1,182 +1,60 @@
-<!doctype html><html lang=zh-hant-hk dir=auto>
-<head><meta charset=utf-8>
-<meta http-equiv=x-ua-compatible content="IE=edge">
-<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta name=robots content="index, follow">
-<title>在 Android app 內顯示 Git commit hash | EricLog</title>
-<meta name=keywords content="Android,Git">
-<meta name=description content="有些 Android app 除了顯示版本號碼之外，還會有該版本的 Git commit hash。如果有好幾部測試機做測試的話，可能會在開發時先後在不同的機安裝過不同版本的 app。但就沒有每次都更新版本號碼。加了 commit hash 就容易分辨 app 的實際版本。其實要顯示 commit hash 的做法不太難，不需要每次人手更改的。只需要改一下 app 的 build.gradle 就可以了。">
-<meta name=author content>
-<link rel=canonical href=https://eric.swiftzer.net/2016/08/android-app-git-commit-hash/>
-<link href=/assets/css/stylesheet.min.d1fc837a267f77f6ede89d1a89c4880a90c381d9e6673ad4a76a3ad1900b65f9.css integrity="sha256-0fyDeiZ/d/bt6J0aicSICpDDgdnmZzrUp2o60ZALZfk=" rel="preload stylesheet" as=style>
-<link rel=icon href=https://eric.swiftzer.net/favicon.ico>
-<link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png>
-<link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png>
-<link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png>
-<link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg>
-<meta name=theme-color content="#2e2e33">
-<meta name=msapplication-TileColor content="#2e2e33">
-<meta name=generator content="Hugo 0.88.1">
-<link rel=preconnect href=https://fonts.gstatic.com>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet>
-<script type=application/javascript>var doNotTrack=!1;doNotTrack||(window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga('create','UA-1268728-8','auto'),ga('send','pageview'))</script>
-<script async src=https://www.google-analytics.com/analytics.js></script>
-<meta property="og:title" content="在 Android app 內顯示 Git commit hash">
-<meta property="og:description" content="有些 Android app 除了顯示版本號碼之外，還會有該版本的 Git commit hash。如果有好幾部測試機做測試的話，可能會在開發時先後在不同的機安裝過不同版本的 app。但就沒有每次都更新版本號碼。加了 commit hash 就容易分辨 app 的實際版本。其實要顯示 commit hash 的做法不太難，不需要每次人手更改的。只需要改一下 app 的 build.gradle 就可以了。">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://eric.swiftzer.net/2016/08/android-app-git-commit-hash/"><meta property="article:section" content="posts">
-<meta property="article:published_time" content="2016-08-29T22:13:46+08:00">
-<meta property="article:modified_time" content="2016-08-29T22:13:46+08:00">
-<meta name=twitter:card content="summary">
-<meta name=twitter:title content="在 Android app 內顯示 Git commit hash">
-<meta name=twitter:description content="有些 Android app 除了顯示版本號碼之外，還會有該版本的 Git commit hash。如果有好幾部測試機做測試的話，可能會在開發時先後在不同的機安裝過不同版本的 app。但就沒有每次都更新版本號碼。加了 commit hash 就容易分辨 app 的實際版本。其實要顯示 commit hash 的做法不太難，不需要每次人手更改的。只需要改一下 app 的 build.gradle 就可以了。">
-<script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"在 Android app 內顯示 Git commit hash","item":"https://eric.swiftzer.net/2016/08/android-app-git-commit-hash/"}]}</script>
-<script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"在 Android app 內顯示 Git commit hash","name":"在 Android app 內顯示 Git commit hash","description":"有些 Android app 除了顯示版本號碼之外，還會有該版本的 Git commit hash。如果有好幾部測試機做測試的話，可能會在開發時先後在不同的機安裝過不同版本的 app。但就沒有每次都更新版本號碼。加了 commit hash 就容易分辨 app 的實際版本。其實要顯示 commit hash 的做法不太難，不需要每次人手更改的。只需要改一下 app 的 build.gradle 就可以了。\n","keywords":["Android","Git"],"articleBody":"有些 Android app 除了顯示版本號碼之外，還會有該版本的 Git commit hash。如果有好幾部測試機做測試的話，可能會在開發時先後在不同的機安裝過不同版本的 app。但就沒有每次都更新版本號碼。加了 commit hash 就容易分辨 app 的實際版本。其實要顯示 commit hash 的做法不太難，不需要每次人手更改的。只需要改一下 app 的 build.gradle 就可以了。\nimport java.util.regex.Pattern apply plugin: 'com.android.application' /** * Extract Git commit hash of HEAD with number of changed files */ def getGitHashVersionName = { try { def hashOutput = new ByteArrayOutputStream() def changeOutput = new ByteArrayOutputStream() def gitVersionName exec { commandLine 'git', 'rev-list', '--max-count=1', 'HEAD' standardOutput = hashOutput } exec { commandLine 'git', 'diff-index', '--shortstat', 'HEAD' standardOutput = changeOutput } gitVersionName = hashOutput.toString().trim().substring(0, 7); if (!changeOutput.toString().trim().empty) { def pattern = Pattern.compile(\"\\\\d+\"); def matcher = pattern.matcher(changeOutput.toString().trim()) if (matcher.find()) { gitVersionName += \"-\" + matcher.group() } } return gitVersionName } catch (ignored) { return \"UNKNOWN\"; } } android { // Skip the other items...  buildTypes { debug { debuggable true minifyEnabled false signingConfig signingConfigs.debug proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro' applicationIdSuffix debug_application_id_suffex buildConfigField \"String\", \"GIT_VERSION_NAME\", \"\\\"${getGitHashVersionName()}\\\"\" } release { minifyEnabled true signingConfig signingConfigs.release proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro' buildConfigField \"String\", \"GIT_VERSION_NAME\", \"\\\"${getGitHashVersionName()}\\\"\" } } } 上面的 getGitHashVersionName function 就是用 git getGitHashVersionName 和 git diff-index 取得 commit hash 和未 commit 的檔案數目。如果有未 commit 的檔案的話，commit hash 後面就會補上檔案數目，方便分辨。\n在 buildTypes 內的 buildConfigField 就是為 Gradle 每次 build 都會自動產生的 BuildConfig class 加入一個 public static final 的 field。只需要在 app 的 source code 直接用 BuildConfig.GIT_VERSION_NAME 就能拿到 Git commit hash。\n","wordCount":"394","inLanguage":"en","datePublished":"2016-08-29T22:13:46+08:00","dateModified":"2016-08-29T22:13:46+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2016/08/android-app-git-commit-hash/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script>
-</head>
-<body id=top>
-<script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add('dark'):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove('dark'):window.matchMedia('(prefers-color-scheme: dark)').matches&&document.body.classList.add('dark')</script>
-<noscript>
-<style type=text/css>#theme-toggle,.top-link{display:none}</style>
-<style>@media(prefers-color-scheme:dark){:root{--theme:#1d1e20;--entry:#2e2e33;--primary:rgba(255, 255, 255, 0.84);--secondary:rgba(255, 255, 255, 0.56);--tertiary:rgba(255, 255, 255, 0.16);--content:rgba(255, 255, 255, 0.74);--hljs-bg:#2e2e33;--code-bg:#37383e;--border:#333}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style>
-</noscript>
-<header class=header>
-<nav class=nav>
-<div class=logo>
-<a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
-<span class=logo-switches>
-<button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-</button>
-</span>
-</div>
-<ul id=menu onscroll=menu_on_scroll()>
-<li>
-<a href=https://eric.swiftzer.net/fonts/ title=Fonts>
-<span>Fonts</span>
-</a>
-</li>
-<li>
-<a href=https://eric.swiftzer.net/archives/ title=Archives>
-<span>Archives</span>
-</a>
-</li>
-<li>
-<a href=https://eric.swiftzer.net/tags/ title=Tags>
-<span>Tags</span>
-</a>
-</li>
-<li>
-<a href=https://eric.swiftzer.net/about/ title=About>
-<span>About</span>
-</a>
-</li></ul>
-</nav>
-</header>
-<main class=main>
-<article class=post-single>
-<header class=post-header>
-<div class=breadcrumbs>
-<a href=https://eric.swiftzer.net/>Home</a>&nbsp;»&nbsp;<a href=https://eric.swiftzer.net/posts/>Posts</a>
-</div>
-<h1 class=post-title>
-在 Android app 內顯示 Git commit hash
-</h1>
-<div class=post-meta>August 29, 2016
-</div>
-</header>
-<div class=post-content>
-<p>有些 Android app 除了顯示版本號碼之外，還會有該版本的 Git commit hash。如果有好幾部測試機做測試的話，可能會在開發時先後在不同的機安裝過不同版本的 app。但就沒有每次都更新版本號碼。加了 commit hash 就容易分辨 app 的實際版本。其實要顯示 commit hash 的做法不太難，不需要每次人手更改的。只需要改一下 <em>app</em> 的 <em>build.gradle</em> 就可以了。</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-groovy data-lang=groovy><span class=kn>import</span> <span class=nn>java.util.regex.Pattern</span>
-
-<span class=n>apply</span> <span class=nl>plugin:</span> <span class=s1>&#39;com.android.application&#39;</span>
-
-<span class=cm>/**
-</span><span class=cm> * Extract Git commit hash of HEAD with number of changed files
-</span><span class=cm> */</span>
-<span class=kt>def</span> <span class=n>getGitHashVersionName</span> <span class=o>=</span> <span class=o>{</span>
-    <span class=k>try</span> <span class=o>{</span>
-        <span class=kt>def</span> <span class=n>hashOutput</span> <span class=o>=</span> <span class=k>new</span> <span class=n>ByteArrayOutputStream</span><span class=o>()</span>
-        <span class=kt>def</span> <span class=n>changeOutput</span> <span class=o>=</span> <span class=k>new</span> <span class=n>ByteArrayOutputStream</span><span class=o>()</span>
-        <span class=kt>def</span> <span class=n>gitVersionName</span>
-        <span class=n>exec</span> <span class=o>{</span>
-            <span class=n>commandLine</span> <span class=s1>&#39;git&#39;</span><span class=o>,</span> <span class=s1>&#39;rev-list&#39;</span><span class=o>,</span> <span class=s1>&#39;--max-count=1&#39;</span><span class=o>,</span> <span class=s1>&#39;HEAD&#39;</span>
-            <span class=n>standardOutput</span> <span class=o>=</span> <span class=n>hashOutput</span>
-        <span class=o>}</span>
-        <span class=n>exec</span> <span class=o>{</span>
-            <span class=n>commandLine</span> <span class=s1>&#39;git&#39;</span><span class=o>,</span> <span class=s1>&#39;diff-index&#39;</span><span class=o>,</span> <span class=s1>&#39;--shortstat&#39;</span><span class=o>,</span> <span class=s1>&#39;HEAD&#39;</span>
-            <span class=n>standardOutput</span> <span class=o>=</span> <span class=n>changeOutput</span>
-        <span class=o>}</span>
-        <span class=n>gitVersionName</span> <span class=o>=</span> <span class=n>hashOutput</span><span class=o>.</span><span class=na>toString</span><span class=o>().</span><span class=na>trim</span><span class=o>().</span><span class=na>substring</span><span class=o>(</span><span class=mi>0</span><span class=o>,</span> <span class=mi>7</span><span class=o>);</span>
-        <span class=k>if</span> <span class=o>(!</span><span class=n>changeOutput</span><span class=o>.</span><span class=na>toString</span><span class=o>().</span><span class=na>trim</span><span class=o>().</span><span class=na>empty</span><span class=o>)</span> <span class=o>{</span>
-            <span class=kt>def</span> <span class=n>pattern</span> <span class=o>=</span> <span class=n>Pattern</span><span class=o>.</span><span class=na>compile</span><span class=o>(</span><span class=s2>&#34;\\d+&#34;</span><span class=o>);</span>
-            <span class=kt>def</span> <span class=n>matcher</span> <span class=o>=</span> <span class=n>pattern</span><span class=o>.</span><span class=na>matcher</span><span class=o>(</span><span class=n>changeOutput</span><span class=o>.</span><span class=na>toString</span><span class=o>().</span><span class=na>trim</span><span class=o>())</span>
-            <span class=k>if</span> <span class=o>(</span><span class=n>matcher</span><span class=o>.</span><span class=na>find</span><span class=o>())</span> <span class=o>{</span>
-                <span class=n>gitVersionName</span> <span class=o>+=</span> <span class=s2>&#34;-&#34;</span> <span class=o>+</span> <span class=n>matcher</span><span class=o>.</span><span class=na>group</span><span class=o>()</span>
-            <span class=o>}</span>
-        <span class=o>}</span>
-        <span class=k>return</span> <span class=n>gitVersionName</span>
-    <span class=o>}</span> <span class=k>catch</span> <span class=o>(</span><span class=n>ignored</span><span class=o>)</span> <span class=o>{</span>
-        <span class=k>return</span> <span class=s2>&#34;UNKNOWN&#34;</span><span class=o>;</span>
-    <span class=o>}</span>
-<span class=o>}</span>
-
-<span class=n>android</span> <span class=o>{</span>
-    <span class=c1>// Skip the other items...
-</span><span class=c1></span>
-    <span class=n>buildTypes</span> <span class=o>{</span>
-        <span class=n>debug</span> <span class=o>{</span>
-            <span class=n>debuggable</span> <span class=kc>true</span>
-            <span class=n>minifyEnabled</span> <span class=kc>false</span>
-            <span class=n>signingConfig</span> <span class=n>signingConfigs</span><span class=o>.</span><span class=na>debug</span>
-            <span class=n>proguardFiles</span> <span class=nf>getDefaultProguardFile</span><span class=o>(</span><span class=s1>&#39;proguard-android.txt&#39;</span><span class=o>),</span> <span class=s1>&#39;proguard-rules.pro&#39;</span>
-            <span class=n>applicationIdSuffix</span> <span class=n>debug_application_id_suffex</span>
-            <span class=n>buildConfigField</span> <span class=s2>&#34;String&#34;</span><span class=o>,</span> <span class=s2>&#34;GIT_VERSION_NAME&#34;</span><span class=o>,</span> <span class=s2>&#34;\&#34;${getGitHashVersionName()}\&#34;&#34;</span>
-        <span class=o>}</span>
-        <span class=n>release</span> <span class=o>{</span>
-            <span class=n>minifyEnabled</span> <span class=kc>true</span>
-            <span class=n>signingConfig</span> <span class=n>signingConfigs</span><span class=o>.</span><span class=na>release</span>
-            <span class=n>proguardFiles</span> <span class=nf>getDefaultProguardFile</span><span class=o>(</span><span class=s1>&#39;proguard-android.txt&#39;</span><span class=o>),</span> <span class=s1>&#39;proguard-rules.pro&#39;</span>
-            <span class=n>buildConfigField</span> <span class=s2>&#34;String&#34;</span><span class=o>,</span> <span class=s2>&#34;GIT_VERSION_NAME&#34;</span><span class=o>,</span> <span class=s2>&#34;\&#34;${getGitHashVersionName()}\&#34;&#34;</span>
-        <span class=o>}</span>
-    <span class=o>}</span>
-<span class=o>}</span></code></pre></div>
-<p>上面的 <code>getGitHashVersionName</code> function 就是用 <code>git getGitHashVersionName</code> 和 <code>git diff-index</code> 取得 commit hash 和未 commit 的檔案數目。如果有未 commit 的檔案的話，commit hash 後面就會補上檔案數目，方便分辨。</p>
-<p>在 <code>buildTypes</code> 內的 <code>buildConfigField</code> 就是為 Gradle 每次 build 都會自動產生的 <code>BuildConfig</code> class 加入一個 <code>public static final</code> 的 field。只需要在 app 的 source code 直接用 <code>BuildConfig.GIT_VERSION_NAME</code> 就能拿到 Git commit hash。</p>
-</div>
-<footer class=post-footer>
-<ul class=post-tags>
-<li><a href=https://eric.swiftzer.net/tags/android/>Android</a></li>
-<li><a href=https://eric.swiftzer.net/tags/git/>Git</a></li>
-</ul>
-<nav class=paginav>
-<a class=prev href=https://eric.swiftzer.net/2016/09/xunique/>
-<span class=title>« Prev Page</span>
-<br>
-<span>xUnique</span>
-</a>
-<a class=next href=https://eric.swiftzer.net/2016/07/photosphere/>
-<span class=title>Next Page »</span>
-<br>
-<span>Photosphere</span>
-</a>
-</nav>
-</footer><div id=disqus_thread></div>
-<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//efilm.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
-<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
-<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
-</article>
-</main><footer class=footer>
-<span>&copy; 2022 <a href=https://eric.swiftzer.net/>EricLog</a></span>
-<span>&#183;</span>
-<span>Powered by <a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a></span>
-<span>&#183;</span>
-<span>Theme <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span>
-</footer>
-<a href=#top aria-label="go to top" title="Go to Top (Alt + G)">
-<button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg>
-</button>
-</a>
-<script>window.onload=function(){localStorage.getItem("menu-scroll-position")&&(document.getElementById('menu').scrollLeft=localStorage.getItem("menu-scroll-position"))};function menu_on_scroll(){localStorage.setItem("menu-scroll-position",document.getElementById('menu').scrollLeft)}document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script>
-<script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script>
-<script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script>
-</body>
-</html>
+<!doctype html><html lang=zh-tw dir=auto><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>在 Android app 內顯示 Git commit hash | EricLog</title><meta name=keywords content="Android,Git"><meta name=description content="有些 Android app 除了顯示版本號碼之外，還會有該版本的 Git commit hash。如果有好幾部測試機做測試的話，可能會在開發時先後在不同的機安裝過不同版本的 app。但就沒有每次都更新版本號碼。加了 commit hash 就容易分辨 app 的實際版本。其實要顯示 commit hash 的做法不太難，不需要每次人手更改的。只需要改一下 app 的 build.gradle 就可以了。"><meta name=author content><link rel=canonical href=https://eric.swiftzer.net/2016/08/android-app-git-commit-hash/><link crossorigin=anonymous href=/assets/css/stylesheet.min.249b1770ac429c01ffa746cc012a310192d174c913b1527f312e3294a0766d1c.css integrity="sha256-JJsXcKxCnAH/p0bMASoxAZLRdMkTsVJ/MS4ylKB2bRw=" rel="preload stylesheet" as=style><link rel=icon href=https://eric.swiftzer.net/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://eric.swiftzer.net/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://eric.swiftzer.net/favicon-32x32.png><link rel=apple-touch-icon href=https://eric.swiftzer.net/apple-touch-icon.png><link rel=mask-icon href=https://eric.swiftzer.net/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><meta name=generator content="Hugo 0.101.0"><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--hljs-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><link rel=preconnect href=https://fonts.gstatic.com><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@300&display=swap" rel=stylesheet><script async src="https://www.googletagmanager.com/gtag/js?id=G-D93F946T73"></script>
+<script>var doNotTrack=!1;if(!doNotTrack){window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-D93F946T73",{anonymize_ip:!1})}</script><meta property="og:title" content="在 Android app 內顯示 Git commit hash"><meta property="og:description" content="有些 Android app 除了顯示版本號碼之外，還會有該版本的 Git commit hash。如果有好幾部測試機做測試的話，可能會在開發時先後在不同的機安裝過不同版本的 app。但就沒有每次都更新版本號碼。加了 commit hash 就容易分辨 app 的實際版本。其實要顯示 commit hash 的做法不太難，不需要每次人手更改的。只需要改一下 app 的 build.gradle 就可以了。"><meta property="og:type" content="article"><meta property="og:url" content="https://eric.swiftzer.net/2016/08/android-app-git-commit-hash/"><meta property="article:section" content="posts"><meta property="article:published_time" content="2016-08-29T22:13:46+08:00"><meta property="article:modified_time" content="2016-08-29T22:13:46+08:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="在 Android app 內顯示 Git commit hash"><meta name=twitter:description content="有些 Android app 除了顯示版本號碼之外，還會有該版本的 Git commit hash。如果有好幾部測試機做測試的話，可能會在開發時先後在不同的機安裝過不同版本的 app。但就沒有每次都更新版本號碼。加了 commit hash 就容易分辨 app 的實際版本。其實要顯示 commit hash 的做法不太難，不需要每次人手更改的。只需要改一下 app 的 build.gradle 就可以了。"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://eric.swiftzer.net/posts/"},{"@type":"ListItem","position":2,"name":"在 Android app 內顯示 Git commit hash","item":"https://eric.swiftzer.net/2016/08/android-app-git-commit-hash/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"在 Android app 內顯示 Git commit hash","name":"在 Android app 內顯示 Git commit hash","description":"有些 Android app 除了顯示版本號碼之外，還會有該版本的 Git commit hash。如果有好幾部測試機做測試的話，可能會在開發時先後在不同的機安裝過不同版本的 app。但就沒有每次都更新版本號碼。加了 commit hash 就容易分辨 app 的實際版本。其實要顯示 commit hash 的做法不太難，不需要每次人手更改的。只需要改一下 app 的 build.gradle 就可以了。\n","keywords":["Android","Git"],"articleBody":"有些 Android app 除了顯示版本號碼之外，還會有該版本的 Git commit hash。如果有好幾部測試機做測試的話，可能會在開發時先後在不同的機安裝過不同版本的 app。但就沒有每次都更新版本號碼。加了 commit hash 就容易分辨 app 的實際版本。其實要顯示 commit hash 的做法不太難，不需要每次人手更改的。只需要改一下 app 的 build.gradle 就可以了。\nimport java.util.regex.Pattern apply plugin: 'com.android.application' /** * Extract Git commit hash of HEAD with number of changed files */ def getGitHashVersionName = { try { def hashOutput = new ByteArrayOutputStream() def changeOutput = new ByteArrayOutputStream() def gitVersionName exec { commandLine 'git', 'rev-list', '--max-count=1', 'HEAD' standardOutput = hashOutput } exec { commandLine 'git', 'diff-index', '--shortstat', 'HEAD' standardOutput = changeOutput } gitVersionName = hashOutput.toString().trim().substring(0, 7); if (!changeOutput.toString().trim().empty) { def pattern = Pattern.compile(\"\\\\d+\"); def matcher = pattern.matcher(changeOutput.toString().trim()) if (matcher.find()) { gitVersionName += \"-\" + matcher.group() } } return gitVersionName } catch (ignored) { return \"UNKNOWN\"; } } android { // Skip the other items... buildTypes { debug { debuggable true minifyEnabled false signingConfig signingConfigs.debug proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro' applicationIdSuffix debug_application_id_suffex buildConfigField \"String\", \"GIT_VERSION_NAME\", \"\\\"${getGitHashVersionName()}\\\"\" } release { minifyEnabled true signingConfig signingConfigs.release proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro' buildConfigField \"String\", \"GIT_VERSION_NAME\", \"\\\"${getGitHashVersionName()}\\\"\" } } } 上面的 getGitHashVersionName function 就是用 git getGitHashVersionName 和 git diff-index 取得 commit hash 和未 commit 的檔案數目。如果有未 commit 的檔案的話，commit hash 後面就會補上檔案數目，方便分辨。\n在 buildTypes 內的 buildConfigField 就是為 Gradle 每次 build 都會自動產生的 BuildConfig class 加入一個 public static final 的 field。只需要在 app 的 source code 直接用 BuildConfig.GIT_VERSION_NAME 就能拿到 Git commit hash。\n","wordCount":"394","inLanguage":"zh-tw","datePublished":"2016-08-29T22:13:46+08:00","dateModified":"2016-08-29T22:13:46+08:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://eric.swiftzer.net/2016/08/android-app-git-commit-hash/"},"publisher":{"@type":"Organization","name":"EricLog","logo":{"@type":"ImageObject","url":"https://eric.swiftzer.net/favicon.ico"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://eric.swiftzer.net/ accesskey=h title="EricLog (Alt + H)">EricLog</a>
+<span class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></span></div><ul id=menu><li><a href=https://eric.swiftzer.net/fonts/ title=Fonts><span>Fonts</span></a></li><li><a href=https://eric.swiftzer.net/archives/ title=Archives><span>Archives</span></a></li><li><a href=https://eric.swiftzer.net/tags/ title=Tags><span>Tags</span></a></li><li><a href=https://eric.swiftzer.net/about/ title=About><span>About</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><div class=breadcrumbs><a href=https://eric.swiftzer.net/>首頁</a>&nbsp;»&nbsp;<a href=https://eric.swiftzer.net/posts/>Posts</a></div><h1 class=post-title>在 Android app 內顯示 Git commit hash</h1><div class=post-meta>August 29, 2016</div></header><div class=post-content><p>有些 Android app 除了顯示版本號碼之外，還會有該版本的 Git commit hash。如果有好幾部測試機做測試的話，可能會在開發時先後在不同的機安裝過不同版本的 app。但就沒有每次都更新版本號碼。加了 commit hash 就容易分辨 app 的實際版本。其實要顯示 commit hash 的做法不太難，不需要每次人手更改的。只需要改一下 <em>app</em> 的 <em>build.gradle</em> 就可以了。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-groovy data-lang=groovy><span class=line><span class=cl><span class=kn>import</span> <span class=nn>java.util.regex.Pattern</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>apply</span> <span class=nl>plugin:</span> <span class=s1>&#39;com.android.application&#39;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=cm>/**
+</span></span></span><span class=line><span class=cl><span class=cm> * Extract Git commit hash of HEAD with number of changed files
+</span></span></span><span class=line><span class=cl><span class=cm> */</span>
+</span></span><span class=line><span class=cl><span class=kt>def</span> <span class=n>getGitHashVersionName</span> <span class=o>=</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>try</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=kt>def</span> <span class=n>hashOutput</span> <span class=o>=</span> <span class=k>new</span> <span class=n>ByteArrayOutputStream</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>        <span class=kt>def</span> <span class=n>changeOutput</span> <span class=o>=</span> <span class=k>new</span> <span class=n>ByteArrayOutputStream</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>        <span class=kt>def</span> <span class=n>gitVersionName</span>
+</span></span><span class=line><span class=cl>        <span class=n>exec</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>commandLine</span> <span class=s1>&#39;git&#39;</span><span class=o>,</span> <span class=s1>&#39;rev-list&#39;</span><span class=o>,</span> <span class=s1>&#39;--max-count=1&#39;</span><span class=o>,</span> <span class=s1>&#39;HEAD&#39;</span>
+</span></span><span class=line><span class=cl>            <span class=n>standardOutput</span> <span class=o>=</span> <span class=n>hashOutput</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=n>exec</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>commandLine</span> <span class=s1>&#39;git&#39;</span><span class=o>,</span> <span class=s1>&#39;diff-index&#39;</span><span class=o>,</span> <span class=s1>&#39;--shortstat&#39;</span><span class=o>,</span> <span class=s1>&#39;HEAD&#39;</span>
+</span></span><span class=line><span class=cl>            <span class=n>standardOutput</span> <span class=o>=</span> <span class=n>changeOutput</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=n>gitVersionName</span> <span class=o>=</span> <span class=n>hashOutput</span><span class=o>.</span><span class=na>toString</span><span class=o>().</span><span class=na>trim</span><span class=o>().</span><span class=na>substring</span><span class=o>(</span><span class=mi>0</span><span class=o>,</span> <span class=mi>7</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=o>(!</span><span class=n>changeOutput</span><span class=o>.</span><span class=na>toString</span><span class=o>().</span><span class=na>trim</span><span class=o>().</span><span class=na>empty</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=kt>def</span> <span class=n>pattern</span> <span class=o>=</span> <span class=n>Pattern</span><span class=o>.</span><span class=na>compile</span><span class=o>(</span><span class=s2>&#34;\\d+&#34;</span><span class=o>);</span>
+</span></span><span class=line><span class=cl>            <span class=kt>def</span> <span class=n>matcher</span> <span class=o>=</span> <span class=n>pattern</span><span class=o>.</span><span class=na>matcher</span><span class=o>(</span><span class=n>changeOutput</span><span class=o>.</span><span class=na>toString</span><span class=o>().</span><span class=na>trim</span><span class=o>())</span>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=o>(</span><span class=n>matcher</span><span class=o>.</span><span class=na>find</span><span class=o>())</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>                <span class=n>gitVersionName</span> <span class=o>+=</span> <span class=s2>&#34;-&#34;</span> <span class=o>+</span> <span class=n>matcher</span><span class=o>.</span><span class=na>group</span><span class=o>()</span>
+</span></span><span class=line><span class=cl>            <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>gitVersionName</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span> <span class=k>catch</span> <span class=o>(</span><span class=n>ignored</span><span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=s2>&#34;UNKNOWN&#34;</span><span class=o>;</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>android</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// Skip the other items...
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl>    <span class=n>buildTypes</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>debug</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>debuggable</span> <span class=kc>true</span>
+</span></span><span class=line><span class=cl>            <span class=n>minifyEnabled</span> <span class=kc>false</span>
+</span></span><span class=line><span class=cl>            <span class=n>signingConfig</span> <span class=n>signingConfigs</span><span class=o>.</span><span class=na>debug</span>
+</span></span><span class=line><span class=cl>            <span class=n>proguardFiles</span> <span class=nf>getDefaultProguardFile</span><span class=o>(</span><span class=s1>&#39;proguard-android.txt&#39;</span><span class=o>),</span> <span class=s1>&#39;proguard-rules.pro&#39;</span>
+</span></span><span class=line><span class=cl>            <span class=n>applicationIdSuffix</span> <span class=n>debug_application_id_suffex</span>
+</span></span><span class=line><span class=cl>            <span class=n>buildConfigField</span> <span class=s2>&#34;String&#34;</span><span class=o>,</span> <span class=s2>&#34;GIT_VERSION_NAME&#34;</span><span class=o>,</span> <span class=s2>&#34;\&#34;${getGitHashVersionName()}\&#34;&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=n>release</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>minifyEnabled</span> <span class=kc>true</span>
+</span></span><span class=line><span class=cl>            <span class=n>signingConfig</span> <span class=n>signingConfigs</span><span class=o>.</span><span class=na>release</span>
+</span></span><span class=line><span class=cl>            <span class=n>proguardFiles</span> <span class=nf>getDefaultProguardFile</span><span class=o>(</span><span class=s1>&#39;proguard-android.txt&#39;</span><span class=o>),</span> <span class=s1>&#39;proguard-rules.pro&#39;</span>
+</span></span><span class=line><span class=cl>            <span class=n>buildConfigField</span> <span class=s2>&#34;String&#34;</span><span class=o>,</span> <span class=s2>&#34;GIT_VERSION_NAME&#34;</span><span class=o>,</span> <span class=s2>&#34;\&#34;${getGitHashVersionName()}\&#34;&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span></span></span></code></pre></div><p>上面的 <code>getGitHashVersionName</code> function 就是用 <code>git getGitHashVersionName</code> 和 <code>git diff-index</code> 取得 commit hash 和未 commit 的檔案數目。如果有未 commit 的檔案的話，commit hash 後面就會補上檔案數目，方便分辨。</p><p>在 <code>buildTypes</code> 內的 <code>buildConfigField</code> 就是為 Gradle 每次 build 都會自動產生的 <code>BuildConfig</code> class 加入一個 <code>public static final</code> 的 field。只需要在 app 的 source code 直接用 <code>BuildConfig.GIT_VERSION_NAME</code> 就能拿到 Git commit hash。</p></div><footer class=post-footer><ul class=post-tags><li><a href=https://eric.swiftzer.net/tags/android/>Android</a></li><li><a href=https://eric.swiftzer.net/tags/git/>Git</a></li></ul><nav class=paginav><a class=prev href=https://eric.swiftzer.net/2016/09/xunique/><span class=title>« 上一篇</span><br><span>xUnique</span></a>
+<a class=next href=https://eric.swiftzer.net/2016/07/photosphere/><span class=title>下一篇 »</span><br><span>Photosphere</span></a></nav></footer><div id=disqus_thread></div><script type=application/javascript>window.disqus_config=function(){},function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById("disqus_thread").innerHTML="Disqus comments not available by default when the website is previewed locally.";return}var t=document,e=t.createElement("script");e.async=!0,e.src="//efilm.disqus.com/embed.js",e.setAttribute("data-timestamp",+new Date),(t.head||t.body).appendChild(e)}()</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a></article></main><footer class=footer><span>&copy; 2022 <a href=https://eric.swiftzer.net/>EricLog</a></span>
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg></a><script>let menu=document.getElementById("menu");menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)},document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script></body></html>
