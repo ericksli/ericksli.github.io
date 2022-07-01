@@ -1,9 +1,8 @@
 baseURL: "https://eric.swiftzer.net/"
-defaultContentLanguage: en
+defaultContentLanguage: zh-tw
 languages:
-  en:
+  zh-tw:
     weight: 1
-    languageCode: zh-Hant-HK
 title: EricLog
 theme: PaperMod
 permalinks:
