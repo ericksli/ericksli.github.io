@@ -84,8 +84,10 @@ fun AppNavHost(
 
 fun NavGraphBuilder.settingsGraph(navController: NavHostController) {
     navigation(startDestination = "settingsHome", route = "settings") {
-        composable("settingsHome") {
-            val parentEntry = remember { navController.getBackStackEntry("settings") }
+        composable("settingsHome") { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry("settings")
+            }
             val viewModel = hiltViewModel<SettingsViewModel>(parentEntry)
             SettingsScreen(
                 viewModel = viewModel,
@@ -101,10 +103,12 @@ fun NavGraphBuilder.settingsGraph(navController: NavHostController) {
                     defaultValue = -1
                 },
             ),
-        ) {
-            val parentEntry = remember { navController.getBackStackEntry("settings") }
+        ) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry("settings")
+            }
             val viewModel = hiltViewModel<SettingsViewModel>(parentEntry)
-            val selectedIndex = it.arguments?.getInt("index") ?: -1
+            val selectedIndex = backStackEntry.arguments?.getInt("index") ?: -1
             LanguageSettingDialog(
                 preSelected = LanguageSetting.values()
                     .getOrElse(selectedIndex) { LanguageSetting.SYSTEM_DEFAULT },
@@ -123,11 +127,13 @@ fun NavGraphBuilder.settingsGraph(navController: NavHostController) {
                     defaultValue = AppCompatDelegate.MODE_NIGHT_UNSPECIFIED
                 },
             ),
-        ) {
-            val parentEntry = remember { navController.getBackStackEntry("settings") }
+        ) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry("settings")
+            }
             val viewModel = hiltViewModel<SettingsViewModel>(parentEntry)
-            val nightMode =
-                it.arguments?.getInt("nightMode") ?: AppCompatDelegate.MODE_NIGHT_UNSPECIFIED
+            val nightMode = backStackEntry.arguments?.getInt("nightMode")
+                ?: AppCompatDelegate.MODE_NIGHT_UNSPECIFIED
             ThemeSettingDialog(
                 preSelected = nightMode,
                 onConfirmSelect = { newValue ->
