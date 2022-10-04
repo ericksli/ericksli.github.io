@@ -1,16 +1,21 @@
 {
-    "configurations": [
-        {
-          "type": "command",
-          "name": "Hugo server",
-          "environment": {
-
-          }, // optional
-          "dependsOn": [], // optional
-          "program": "hugo",
-          "args": ["server", "--buildDrafts"], // optional
-          "pty": true, // optional
-        }
-
-    ]
+  "configurations": [
+    {
+      "type": "command",
+      "name": "Hugo server",
+      "environment": {
+      },
+      // optional
+      "dependsOn": [],
+      // optional
+      "program": "hugo",
+      "args": [
+        "server",
+        "--buildDrafts"
+      ],
+      // optional
+      "pty": true
+      // optional
+    }
+  ]
 }
