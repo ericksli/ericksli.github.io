@@ -5,7 +5,7 @@ date: 2016-03-19T18:42:39+08:00
 
 我是 Eric Li，現職 Android app developer。
 
-- [器材清單]({{< ref "gear" >}})
+- [裝備清單]({{< ref "gear" >}})
 
 ## 聯絡方法
 
