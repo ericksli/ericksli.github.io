@@ -19,8 +19,8 @@
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>    <span class=nd>@Before</span>
 </span></span><span class=line><span class=cl>    <span class=k>fun</span> <span class=nf>setUp</span><span class=p>()</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=n>presenter</span> <span class=p>=</span> <span class=n>EtaPresenter</span><span class=p>(</span><span class=n>ApplicationProvider</span><span class=p>.</span><span class=n>getApplicationContext</span><span class=p>())</span>
-</span></span><span class=line><span class=cl>        <span class=n>res</span> <span class=p>=</span> <span class=n>ApplicationProvider</span><span class=p>.</span><span class=n>getApplicationContext</span><span class=p>&lt;</span><span class=n>Context</span><span class=p>&gt;().</span><span class=n>resources</span>
+</span></span><span class=line><span class=cl>        <span class=n>presenter</span> <span class=p>=</span> <span class=n>EtaPresenter</span><span class=p>(</span><span class=nc>ApplicationProvider</span><span class=p>.</span><span class=n>getApplicationContext</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>        <span class=n>res</span> <span class=p>=</span> <span class=nc>ApplicationProvider</span><span class=p>.</span><span class=n>getApplicationContext</span><span class=p>&lt;</span><span class=n>Context</span><span class=p>&gt;().</span><span class=n>resources</span>
 </span></span><span class=line><span class=cl>    <span class=p>}</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>    <span class=nd>@Test</span>
@@ -34,21 +34,21 @@
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>    <span class=k>companion</span> <span class=k>object</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>        <span class=nd>@JvmStatic</span>
-</span></span><span class=line><span class=cl>        <span class=nd>@get</span><span class=p>:</span><span class=n>ParameterizedRobolectricTestRunner</span><span class=p>.</span><span class=n>Parameters</span>
+</span></span><span class=line><span class=cl>        <span class=nd>@get</span><span class=p>:</span><span class=nc>ParameterizedRobolectricTestRunner</span><span class=p>.</span><span class=n>Parameters</span>
 </span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>data</span> <span class=p>=</span> <span class=n>listOf</span><span class=p>(</span>
-</span></span><span class=line><span class=cl>            <span class=n>arrayOf</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Delay</span><span class=p>,</span> <span class=k>null</span><span class=p>,</span> <span class=n>R</span><span class=p>.</span><span class=n>string</span><span class=p>.</span><span class=n>delay</span><span class=p>),</span>
-</span></span><span class=line><span class=cl>            <span class=n>arrayOf</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Incident</span><span class=p>(</span><span class=s2>&#34;Incident&#34;</span><span class=p>,</span> <span class=s2>&#34;https://example.com&#34;</span><span class=p>),</span> <span class=s2>&#34;Incident&#34;</span><span class=p>,</span> <span class=m>0</span><span class=p>),</span>
-</span></span><span class=line><span class=cl>            <span class=n>arrayOf</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>TooManyRequests</span><span class=p>,</span> <span class=k>null</span><span class=p>,</span> <span class=n>R</span><span class=p>.</span><span class=n>string</span><span class=p>.</span><span class=n>error</span><span class=p>),</span>
-</span></span><span class=line><span class=cl>            <span class=n>arrayOf</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>InternalServerError</span><span class=p>,</span> <span class=k>null</span><span class=p>,</span> <span class=n>R</span><span class=p>.</span><span class=n>string</span><span class=p>.</span><span class=n>error</span><span class=p>),</span>
-</span></span><span class=line><span class=cl>            <span class=n>arrayOf</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Error</span><span class=p>(</span><span class=n>RuntimeException</span><span class=p>(</span><span class=s2>&#34;Testing&#34;</span><span class=p>)),</span> <span class=k>null</span><span class=p>,</span> <span class=n>R</span><span class=p>.</span><span class=n>string</span><span class=p>.</span><span class=n>error</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>            <span class=n>arrayOf</span><span class=p>(</span><span class=nc>EtaResult</span><span class=p>.</span><span class=n>Delay</span><span class=p>,</span> <span class=k>null</span><span class=p>,</span> <span class=nc>R</span><span class=p>.</span><span class=n>string</span><span class=p>.</span><span class=n>delay</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>            <span class=n>arrayOf</span><span class=p>(</span><span class=nc>EtaResult</span><span class=p>.</span><span class=n>Incident</span><span class=p>(</span><span class=s2>&#34;Incident&#34;</span><span class=p>,</span> <span class=s2>&#34;https://example.com&#34;</span><span class=p>),</span> <span class=s2>&#34;Incident&#34;</span><span class=p>,</span> <span class=m>0</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>            <span class=n>arrayOf</span><span class=p>(</span><span class=nc>EtaResult</span><span class=p>.</span><span class=n>TooManyRequests</span><span class=p>,</span> <span class=k>null</span><span class=p>,</span> <span class=nc>R</span><span class=p>.</span><span class=n>string</span><span class=p>.</span><span class=n>error</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>            <span class=n>arrayOf</span><span class=p>(</span><span class=nc>EtaResult</span><span class=p>.</span><span class=n>InternalServerError</span><span class=p>,</span> <span class=k>null</span><span class=p>,</span> <span class=nc>R</span><span class=p>.</span><span class=n>string</span><span class=p>.</span><span class=n>error</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>            <span class=n>arrayOf</span><span class=p>(</span><span class=nc>EtaResult</span><span class=p>.</span><span class=n>Error</span><span class=p>(</span><span class=n>RuntimeException</span><span class=p>(</span><span class=s2>&#34;Testing&#34;</span><span class=p>)),</span> <span class=k>null</span><span class=p>,</span> <span class=nc>R</span><span class=p>.</span><span class=n>string</span><span class=p>.</span><span class=n>error</span><span class=p>),</span>
 </span></span><span class=line><span class=cl>        <span class=p>)</span>
 </span></span><span class=line><span class=cl>    <span class=p>}</span>
 </span></span><span class=line><span class=cl><span class=p>}</span>
 </span></span></code></pre></div><p>先看 class 的 <code>@RunWith</code>，如果是單純的 JUnit 4 parameterized test 是應該用 JUnit 的 <code>Parameterized</code> runner。但因為我們要用 Robolectric 所以要改用 <code>ParameterizedRobolectricTestRunner</code>。之前用的那個 <code>AndroidJUnit4</code> runner 它有封裝 Robolectric runner，但不支援 parameterized test，惟有直接用 Robolectric 提供的 runner。</p><p>之後看看最底的 companion object，同樣因為要用 <code>ParameterizedRobolectricTestRunner</code>，所以要用對應的 <code>@get:ParameterizedRobolectricTestRunner.Parameters</code> 來標註提供予 test method 的參數。前面加了 <code>@get</code> 是因為我們要針對 property getter 來 annotation（因為 JUnit 是 Java 的東西，不會看懂 <code>val</code>，JUnit 本身的 <code>@Parameters</code> 是用來標註在 static method，所以要放在 companion object 內另加 <code>@JvmStatic</code>）。由於 <code>EtaFailResult</code> 有五款，我們在 <code>listOf</code> 就針對這五款情況提供了五組參數，每組都用 <code>arrayOf</code> 包住，它們分別對應 constructor 的三個參數。</p><p>之後跳到 <code>mapErrorMessage</code> 這個 test method。我們會在 test method 用到 constructor 的三個參數來完成 assertion。由於我不想日後改了 string resource 的文字後 test 會報錯，所以在使用 string resource 的情景就在參數交了 string resource ID，但缺點是 assertion 部分就像謄文般抄一次它背後的 code 一次。你可以視乎情況決定在測試時即場用 string resource ID 取得文字來做做比對還是在 test case 寫死它輸出的文字做比對。</p><p>順帶一提，如果想令 test case 的名不是 <code>mapErrorMessage[0]</code>、<code>mapErrorMessage[1]</code> 之類的話，可以在 <code>@get:ParameterizedRobolectricTestRunner.Parameters</code> 或者 <code>@get:Parameters</code> 加上 <code>name</code> 參數。例如 <code>@get:Parameters(name = "{0}")</code> 就是第一個參數的值 <code>toString</code> 後的文字，換做 <code>{1}</code> 就是第二個參數，如此類推。預設是用 <code>{index}</code> 即是參數序號。</p><h2 id=etaviewmodel><code>EtaViewModel</code><a hidden class=anchor aria-hidden=true href=#etaviewmodel>#</a></h2><p>現在來到最後一個 ViewModel，最重要的部分當然是 <code>etaList</code>。由於 <code>EtaViewModel</code> 的 constructor 有 Java Time 的 <code>Clock</code>，為方便之後的測試，我們會用 <a href=https://www.threeten.org/threeten-extra/>ThreeTen-Extra</a> 提供的 <code>MutableClock</code>：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-groovy data-lang=groovy><span class=line><span class=cl><span class=n>testImplementation</span> <span class=s2>&#34;org.threeten:threeten-extra:$threeTenExtraVersion&#34;</span>
-</span></span></code></pre></div><p>如果不需要在測試中途改變 <code>Clock</code> 輸出的時間，可以直接用 Java Time 的 <code>Clock.fixed()</code>，毋須另外安裝 ThreeTen-Extra。</p><p>但在寫跟 <code>etaList</code> 相關的 test case 之前我們先來測試一些簡單的東西。首先準備好 test class 的基本通用部分：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>private</span> <span class=k>val</span> <span class=py>DEFAULT</span><span class=n>_LOCAL_DATE</span> <span class=p>=</span> <span class=n>LocalDate</span><span class=p>.</span><span class=n>of</span><span class=p>(</span><span class=m>2021</span><span class=p>,</span> <span class=m>9</span><span class=p>,</span> <span class=m>1</span><span class=p>)</span>
-</span></span><span class=line><span class=cl><span class=k>private</span> <span class=k>val</span> <span class=py>DEFAULT</span><span class=n>_LOCAL_TIME</span> <span class=p>=</span> <span class=n>LocalTime</span><span class=p>.</span><span class=n>of</span><span class=p>(</span><span class=m>13</span><span class=p>,</span> <span class=m>0</span><span class=p>,</span> <span class=m>0</span><span class=p>)</span>
+</span></span></code></pre></div><p>如果不需要在測試中途改變 <code>Clock</code> 輸出的時間，可以直接用 Java Time 的 <code>Clock.fixed()</code>，毋須另外安裝 ThreeTen-Extra。</p><p>但在寫跟 <code>etaList</code> 相關的 test case 之前我們先來測試一些簡單的東西。首先準備好 test class 的基本通用部分：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>private</span> <span class=k>val</span> <span class=py>DEFAULT</span><span class=n>_LOCAL_DATE</span> <span class=p>=</span> <span class=nc>LocalDate</span><span class=p>.</span><span class=n>of</span><span class=p>(</span><span class=m>2021</span><span class=p>,</span> <span class=m>9</span><span class=p>,</span> <span class=m>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>private</span> <span class=k>val</span> <span class=py>DEFAULT</span><span class=n>_LOCAL_TIME</span> <span class=p>=</span> <span class=nc>LocalTime</span><span class=p>.</span><span class=n>of</span><span class=p>(</span><span class=m>13</span><span class=p>,</span> <span class=m>0</span><span class=p>,</span> <span class=m>0</span><span class=p>)</span>
 </span></span><span class=line><span class=cl><span class=k>private</span> <span class=k>val</span> <span class=py>DEFAULT</span><span class=n>_INSTANT</span> <span class=p>=</span>
-</span></span><span class=line><span class=cl>    <span class=n>ZonedDateTime</span><span class=p>.</span><span class=n>of</span><span class=p>(</span><span class=n>DEFAULT_LOCAL_DATE</span><span class=p>,</span> <span class=n>DEFAULT_LOCAL_TIME</span><span class=p>,</span> <span class=n>DEFAULT_TIMEZONE</span><span class=p>).</span><span class=n>toInstant</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=nc>ZonedDateTime</span><span class=p>.</span><span class=n>of</span><span class=p>(</span><span class=n>DEFAULT_LOCAL_DATE</span><span class=p>,</span> <span class=n>DEFAULT_LOCAL_TIME</span><span class=p>,</span> <span class=n>DEFAULT_TIMEZONE</span><span class=p>).</span><span class=n>toInstant</span><span class=p>()</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl><span class=nd>@RunWith</span><span class=p>(</span><span class=n>AndroidJUnit4</span><span class=o>::</span><span class=k>class</span><span class=p>)</span>
 </span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>EtaViewModelTest</span> <span class=p>{</span>
@@ -63,8 +63,8 @@
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>    <span class=nd>@Before</span>
 </span></span><span class=line><span class=cl>    <span class=k>fun</span> <span class=nf>setUp</span><span class=p>()</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=n>MockKAnnotations</span><span class=p>.</span><span class=k>init</span><span class=p>(</span><span class=k>this</span><span class=p>)</span>
-</span></span><span class=line><span class=cl>        <span class=n>clock</span> <span class=p>=</span> <span class=n>MutableClock</span><span class=p>.</span><span class=n>of</span><span class=p>(</span><span class=n>DEFAULT_INSTANT</span><span class=p>,</span> <span class=n>DEFAULT_TIMEZONE</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nc>MockKAnnotations</span><span class=p>.</span><span class=k>init</span><span class=p>(</span><span class=k>this</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>clock</span> <span class=p>=</span> <span class=nc>MutableClock</span><span class=p>.</span><span class=n>of</span><span class=p>(</span><span class=n>DEFAULT_INSTANT</span><span class=p>,</span> <span class=n>DEFAULT_TIMEZONE</span><span class=p>)</span>
 </span></span><span class=line><span class=cl>    <span class=p>}</span>
 </span></span><span class=line><span class=cl><span class=p>}</span>
 </span></span></code></pre></div><p>雖然 <code>EtaViewModel</code> 沒有直接用到 Android SDK 的 class，但因為 constructor 的 <code>SavedStateHandle</code> 背後有用到 <code>Bundle</code> 所以還是要加上 <code>@RunWith(AndroidJUnit4::class)</code>。在 <code>setUp</code> 我們先設定 <code>MutableClock</code> 的時間做 2021 年 9 月 1 日下午 1 時正。這次特意用 <code>MutableClock</code> 是因為我們那個定時更新功能需要用 <code>Clock</code> 取得當前時間來決定下次 call API 的時間，如果時間是在 call <code>EtaViewModel</code> constructor 那時寫死的話就不能測試那個位置。這亦都是我們用 dependency injection library inject <code>Clock</code> 而不是用 <code>System.currentTimeMillis</code> 之類的方式取得當前時間的原因。</p><hr><p>我們先來寫一些簡單的 test case：<code>line</code> 跟 <code>station</code>，這兩個 <code>StateFlow</code> 就是供 data binding 的 <code>MaterialToolbar</code> 顯示班次所屬於的路綫和車站。這兩個 <code>StateFlow</code> 的值其實是來自 <code>SavedStateHandle</code>（即是 <code>Fragment</code> 的 <code>arguments</code>），我們需要在 <code>EtaViewModel</code> 的 constructor 提供帶有這兩個參數的 <code>SavedStateHandle</code> 然後檢查這兩個 <code>StateFlow</code> 的值是不是跟我們放在 <code>SavedStateHandle</code> 的一樣。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=nd>@Test</span>
@@ -72,8 +72,8 @@
 </span></span><span class=line><span class=cl>    <span class=k>val</span> <span class=py>viewModel</span> <span class=p>=</span> <span class=n>EtaViewModel</span><span class=p>(</span>
 </span></span><span class=line><span class=cl>        <span class=n>savedStateHandle</span> <span class=p>=</span> <span class=n>SavedStateHandle</span><span class=p>(</span>
 </span></span><span class=line><span class=cl>            <span class=n>mapOf</span><span class=p>(</span>
-</span></span><span class=line><span class=cl>                <span class=s2>&#34;line&#34;</span> <span class=n>to</span> <span class=n>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>                <span class=s2>&#34;station&#34;</span> <span class=n>to</span> <span class=n>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;line&#34;</span> <span class=n>to</span> <span class=nc>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;station&#34;</span> <span class=n>to</span> <span class=nc>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>,</span>
 </span></span><span class=line><span class=cl>            <span class=p>)</span>
 </span></span><span class=line><span class=cl>        <span class=p>),</span>
 </span></span><span class=line><span class=cl>        <span class=n>clock</span> <span class=p>=</span> <span class=n>clock</span><span class=p>,</span>
@@ -81,7 +81,7 @@
 </span></span><span class=line><span class=cl>    <span class=p>)</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>    <span class=n>viewModel</span><span class=p>.</span><span class=n>line</span><span class=p>.</span><span class=n>test</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=n>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=nc>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>)</span>
 </span></span><span class=line><span class=cl>        <span class=n>expectNoEvents</span><span class=p>()</span>
 </span></span><span class=line><span class=cl>    <span class=p>}</span>
 </span></span><span class=line><span class=cl><span class=p>}</span>
@@ -91,8 +91,8 @@
 </span></span><span class=line><span class=cl>     <span class=k>val</span> <span class=py>viewModel</span> <span class=p>=</span> <span class=n>EtaViewModel</span><span class=p>(</span>
 </span></span><span class=line><span class=cl>        <span class=n>savedStateHandle</span> <span class=p>=</span> <span class=n>SavedStateHandle</span><span class=p>(</span>
 </span></span><span class=line><span class=cl>            <span class=n>mapOf</span><span class=p>(</span>
-</span></span><span class=line><span class=cl>                <span class=s2>&#34;line&#34;</span> <span class=n>to</span> <span class=n>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>                <span class=s2>&#34;station&#34;</span> <span class=n>to</span> <span class=n>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;line&#34;</span> <span class=n>to</span> <span class=nc>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;station&#34;</span> <span class=n>to</span> <span class=nc>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>,</span>
 </span></span><span class=line><span class=cl>            <span class=p>)</span>
 </span></span><span class=line><span class=cl>        <span class=p>),</span>
 </span></span><span class=line><span class=cl>        <span class=n>clock</span> <span class=p>=</span> <span class=n>clock</span><span class=p>,</span>
@@ -100,7 +100,7 @@
 </span></span><span class=line><span class=cl>    <span class=p>)</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>    <span class=n>viewModel</span><span class=p>.</span><span class=n>station</span><span class=p>.</span><span class=n>test</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=n>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>expectThat</span><span class=p>(</span><span class=n>awaitItem</span><span class=p>()).</span><span class=n>isEqualTo</span><span class=p>(</span><span class=nc>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>)</span>
 </span></span><span class=line><span class=cl>        <span class=n>expectNoEvents</span><span class=p>()</span>
 </span></span><span class=line><span class=cl>    <span class=p>}</span>
 </span></span><span class=line><span class=cl><span class=p>}</span>
@@ -111,8 +111,8 @@
 </span></span><span class=line><span class=cl>    <span class=k>val</span> <span class=py>viewModel</span> <span class=p>=</span> <span class=n>EtaViewModel</span><span class=p>(</span>
 </span></span><span class=line><span class=cl>        <span class=n>savedStateHandle</span> <span class=p>=</span> <span class=n>SavedStateHandle</span><span class=p>(</span>
 </span></span><span class=line><span class=cl>            <span class=n>mapOf</span><span class=p>(</span>
-</span></span><span class=line><span class=cl>                <span class=s2>&#34;line&#34;</span> <span class=n>to</span> <span class=n>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>                <span class=s2>&#34;station&#34;</span> <span class=n>to</span> <span class=n>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;line&#34;</span> <span class=n>to</span> <span class=nc>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;station&#34;</span> <span class=n>to</span> <span class=nc>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>,</span>
 </span></span><span class=line><span class=cl>            <span class=p>)</span>
 </span></span><span class=line><span class=cl>        <span class=p>),</span>
 </span></span><span class=line><span class=cl>        <span class=n>clock</span> <span class=p>=</span> <span class=n>clock</span><span class=p>,</span>
@@ -129,18 +129,18 @@
 </span></span><span class=line><span class=cl><span class=k>fun</span> <span class=nf>`viewIncidentDetail incident`</span><span class=p>()</span> <span class=p>=</span> <span class=n>coroutineScope</span><span class=p>.</span><span class=n>runBlockingTest</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>    <span class=n>coEvery</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>        <span class=n>getEtaUseCase</span><span class=p>(</span>
-</span></span><span class=line><span class=cl>            <span class=n>Language</span><span class=p>.</span><span class=n>ENGLISH</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>            <span class=n>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>            <span class=n>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>            <span class=n>GetEtaUseCase</span><span class=p>.</span><span class=n>SortBy</span><span class=p>.</span><span class=n>DIRECTION</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nc>Language</span><span class=p>.</span><span class=n>ENGLISH</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nc>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nc>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nc>GetEtaUseCase</span><span class=p>.</span><span class=nc>SortBy</span><span class=p>.</span><span class=n>DIRECTION</span><span class=p>,</span>
 </span></span><span class=line><span class=cl>        <span class=p>)</span>
-</span></span><span class=line><span class=cl>    <span class=p>}</span> <span class=n>returns</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Incident</span><span class=p>(</span><span class=s2>&#34;Message&#34;</span><span class=p>,</span> <span class=s2>&#34;https://example.com&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span> <span class=n>returns</span> <span class=nc>EtaResult</span><span class=p>.</span><span class=n>Incident</span><span class=p>(</span><span class=s2>&#34;Message&#34;</span><span class=p>,</span> <span class=s2>&#34;https://example.com&#34;</span><span class=p>)</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>    <span class=k>val</span> <span class=py>viewModel</span> <span class=p>=</span> <span class=n>EtaViewModel</span><span class=p>(</span>
 </span></span><span class=line><span class=cl>        <span class=n>savedStateHandle</span> <span class=p>=</span> <span class=n>SavedStateHandle</span><span class=p>(</span>
 </span></span><span class=line><span class=cl>            <span class=n>mapOf</span><span class=p>(</span>
-</span></span><span class=line><span class=cl>                <span class=s2>&#34;line&#34;</span> <span class=n>to</span> <span class=n>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>                <span class=s2>&#34;station&#34;</span> <span class=n>to</span> <span class=n>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;line&#34;</span> <span class=n>to</span> <span class=nc>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;station&#34;</span> <span class=n>to</span> <span class=nc>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>,</span>
 </span></span><span class=line><span class=cl>            <span class=p>)</span>
 </span></span><span class=line><span class=cl>        <span class=p>),</span>
 </span></span><span class=line><span class=cl>        <span class=n>clock</span> <span class=p>=</span> <span class=n>clock</span><span class=p>,</span>
@@ -163,14 +163,14 @@
 </span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>scan</span><span class=p>(</span><span class=n>CachedResult</span><span class=p>())</span> <span class=p>{</span> <span class=n>acc</span><span class=p>,</span> <span class=n>currentValue</span> <span class=o>-&gt;</span> <span class=cm>/* 略 */</span> <span class=p>}</span>
 </span></span><span class=line><span class=cl>    <span class=p>.</span><span class=n>shareIn</span><span class=p>(</span>
 </span></span><span class=line><span class=cl>        <span class=n>scope</span> <span class=p>=</span> <span class=n>viewModelScope</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>        <span class=n>started</span> <span class=p>=</span> <span class=n>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>        <span class=n>started</span> <span class=p>=</span> <span class=nc>SharingStarted</span><span class=p>.</span><span class=n>WhileSubscribed</span><span class=p>(</span><span class=n>STATE_FLOW_STOP_TIMEOUT_MILLIS</span><span class=p>),</span>
 </span></span><span class=line><span class=cl>        <span class=n>replay</span> <span class=p>=</span> <span class=m>1</span><span class=p>,</span>
 </span></span><span class=line><span class=cl>    <span class=p>)</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl><span class=k>fun</span> <span class=nf>startAutoRefresh</span><span class=p>()</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>    <span class=n>autoRefreshScope</span><span class=p>.</span><span class=n>launch</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>delayDuration</span> <span class=p>=</span>
-</span></span><span class=line><span class=cl>            <span class=n>JavaDuration</span><span class=p>.</span><span class=n>between</span><span class=p>(</span><span class=n>etaResult</span><span class=p>.</span><span class=n>first</span><span class=p>().</span><span class=n>currentResult</span><span class=p>.</span><span class=n>updatedAt</span><span class=p>,</span> <span class=n>clock</span><span class=p>.</span><span class=n>instant</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>            <span class=nc>JavaDuration</span><span class=p>.</span><span class=n>between</span><span class=p>(</span><span class=n>etaResult</span><span class=p>.</span><span class=n>first</span><span class=p>().</span><span class=n>currentResult</span><span class=p>.</span><span class=n>updatedAt</span><span class=p>,</span> <span class=n>clock</span><span class=p>.</span><span class=n>instant</span><span class=p>())</span>
 </span></span><span class=line><span class=cl>        <span class=c1>// 略
 </span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=p>}</span>
 </span></span><span class=line><span class=cl><span class=p>}</span>
@@ -178,7 +178,7 @@
 </span></span><span class=line><span class=cl><span class=k>fun</span> <span class=nf>viewIncidentDetail</span><span class=p>()</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>    <span class=n>viewModelScope</span><span class=p>.</span><span class=n>launch</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>result</span> <span class=p>=</span> <span class=n>etaResult</span><span class=p>.</span><span class=n>first</span><span class=p>().</span><span class=n>lastFailResult</span>
-</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=n>result</span> <span class=o>!is</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Incident</span><span class=p>)</span> <span class=k>return</span><span class=nd>@launch</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=n>result</span> <span class=o>!is</span> <span class=nc>EtaResult</span><span class=p>.</span><span class=n>Incident</span><span class=p>)</span> <span class=k>return</span><span class=nd>@launch</span>
 </span></span><span class=line><span class=cl>        <span class=n>_viewIncidentDetail</span><span class=p>.</span><span class=n>send</span><span class=p>(</span><span class=n>result</span><span class=p>.</span><span class=n>url</span><span class=p>)</span>
 </span></span><span class=line><span class=cl>    <span class=p>}</span>
 </span></span><span class=line><span class=cl><span class=p>}</span>
@@ -186,18 +186,18 @@
 </span></span><span class=line><span class=cl><span class=k>fun</span> <span class=nf>`viewIncidentDetail delay`</span><span class=p>()</span> <span class=p>=</span> <span class=n>coroutineScope</span><span class=p>.</span><span class=n>runBlockingTest</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>    <span class=n>coEvery</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>        <span class=n>getEtaUseCase</span><span class=p>(</span>
-</span></span><span class=line><span class=cl>            <span class=n>Language</span><span class=p>.</span><span class=n>ENGLISH</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>            <span class=n>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>            <span class=n>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>            <span class=n>GetEtaUseCase</span><span class=p>.</span><span class=n>SortBy</span><span class=p>.</span><span class=n>DIRECTION</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nc>Language</span><span class=p>.</span><span class=n>ENGLISH</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nc>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nc>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nc>GetEtaUseCase</span><span class=p>.</span><span class=nc>SortBy</span><span class=p>.</span><span class=n>DIRECTION</span><span class=p>,</span>
 </span></span><span class=line><span class=cl>        <span class=p>)</span>
-</span></span><span class=line><span class=cl>    <span class=p>}</span> <span class=n>returns</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>Delay</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span> <span class=n>returns</span> <span class=nc>EtaResult</span><span class=p>.</span><span class=n>Delay</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>    <span class=k>val</span> <span class=py>viewModel</span> <span class=p>=</span> <span class=n>EtaViewModel</span><span class=p>(</span>
 </span></span><span class=line><span class=cl>        <span class=n>savedStateHandle</span> <span class=p>=</span> <span class=n>SavedStateHandle</span><span class=p>(</span>
 </span></span><span class=line><span class=cl>            <span class=n>mapOf</span><span class=p>(</span>
-</span></span><span class=line><span class=cl>                <span class=s2>&#34;line&#34;</span> <span class=n>to</span> <span class=n>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>                <span class=s2>&#34;station&#34;</span> <span class=n>to</span> <span class=n>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;line&#34;</span> <span class=n>to</span> <span class=nc>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;station&#34;</span> <span class=n>to</span> <span class=nc>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>,</span>
 </span></span><span class=line><span class=cl>            <span class=p>)</span>
 </span></span><span class=line><span class=cl>        <span class=p>),</span>
 </span></span><span class=line><span class=cl>        <span class=n>clock</span> <span class=p>=</span> <span class=n>clock</span><span class=p>,</span>
@@ -214,18 +214,18 @@
 </span></span><span class=line><span class=cl><span class=k>fun</span> <span class=nf>showLoading</span><span class=p>()</span> <span class=p>=</span> <span class=n>coroutineScope</span><span class=p>.</span><span class=n>runBlockingTest</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>    <span class=n>coEvery</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>        <span class=n>getEtaUseCase</span><span class=p>(</span>
-</span></span><span class=line><span class=cl>            <span class=n>Language</span><span class=p>.</span><span class=n>ENGLISH</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>            <span class=n>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>            <span class=n>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>            <span class=n>GetEtaUseCase</span><span class=p>.</span><span class=n>SortBy</span><span class=p>.</span><span class=n>DIRECTION</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nc>Language</span><span class=p>.</span><span class=n>ENGLISH</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nc>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nc>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nc>GetEtaUseCase</span><span class=p>.</span><span class=nc>SortBy</span><span class=p>.</span><span class=n>DIRECTION</span><span class=p>,</span>
 </span></span><span class=line><span class=cl>        <span class=p>)</span>
-</span></span><span class=line><span class=cl>    <span class=p>}</span> <span class=n>returns</span> <span class=n>EtaResult</span><span class=p>.</span><span class=n>InternalServerError</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span> <span class=n>returns</span> <span class=nc>EtaResult</span><span class=p>.</span><span class=n>InternalServerError</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>    <span class=k>val</span> <span class=py>viewModel</span> <span class=p>=</span> <span class=n>EtaViewModel</span><span class=p>(</span>
 </span></span><span class=line><span class=cl>        <span class=n>savedStateHandle</span> <span class=p>=</span> <span class=n>SavedStateHandle</span><span class=p>(</span>
 </span></span><span class=line><span class=cl>            <span class=n>mapOf</span><span class=p>(</span>
-</span></span><span class=line><span class=cl>                <span class=s2>&#34;line&#34;</span> <span class=n>to</span> <span class=n>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>                <span class=s2>&#34;station&#34;</span> <span class=n>to</span> <span class=n>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;line&#34;</span> <span class=n>to</span> <span class=nc>Line</span><span class=p>.</span><span class=n>TCL</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;station&#34;</span> <span class=n>to</span> <span class=nc>Station</span><span class=p>.</span><span class=n>TUC</span><span class=p>,</span>
 </span></span><span class=line><span class=cl>            <span class=p>)</span>
 </span></span><span class=line><span class=cl>        <span class=p>),</span>
 </span></span><span class=line><span class=cl>        <span class=n>clock</span> <span class=p>=</span> <span class=n>clock</span><span class=p>,</span>

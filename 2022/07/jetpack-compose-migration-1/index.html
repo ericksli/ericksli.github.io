@@ -3,11 +3,11 @@
 </span></span><span class=line><span class=cl>    <span class=n>route</span> <span class=p>=</span> <span class=s2>&#34;stationDetail/{id}&#34;</span><span class=p>,</span>
 </span></span><span class=line><span class=cl>    <span class=n>arguments</span> <span class=p>=</span> <span class=n>listOf</span><span class=p>(</span>
 </span></span><span class=line><span class=cl>        <span class=n>navArgument</span><span class=p>(</span><span class=s2>&#34;id&#34;</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>            <span class=n>type</span> <span class=p>=</span> <span class=n>NavType</span><span class=p>.</span><span class=n>IntType</span>
+</span></span><span class=line><span class=cl>            <span class=n>type</span> <span class=p>=</span> <span class=nc>NavType</span><span class=p>.</span><span class=n>IntType</span>
 </span></span><span class=line><span class=cl>            <span class=n>defaultValue</span> <span class=p>=</span> <span class=p>-</span><span class=m>1</span>
 </span></span><span class=line><span class=cl>        <span class=p>},</span>
 </span></span><span class=line><span class=cl>        <span class=n>navArgument</span><span class=p>(</span><span class=s2>&#34;lrlStopId&#34;</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>            <span class=n>type</span> <span class=p>=</span> <span class=n>NavType</span><span class=p>.</span><span class=n>IntType</span>
+</span></span><span class=line><span class=cl>            <span class=n>type</span> <span class=p>=</span> <span class=nc>NavType</span><span class=p>.</span><span class=n>IntType</span>
 </span></span><span class=line><span class=cl>            <span class=n>defaultValue</span> <span class=p>=</span> <span class=p>-</span><span class=m>1</span>
 </span></span><span class=line><span class=cl>        <span class=p>},</span>
 </span></span><span class=line><span class=cl>    <span class=p>),</span>
@@ -55,7 +55,7 @@
 </span></span><span class=line><span class=cl>            <span class=n>route</span> <span class=p>=</span> <span class=s2>&#34;language?index={index}&#34;</span><span class=p>,</span>
 </span></span><span class=line><span class=cl>            <span class=n>arguments</span> <span class=p>=</span> <span class=n>listOf</span><span class=p>(</span>
 </span></span><span class=line><span class=cl>                <span class=n>navArgument</span><span class=p>(</span><span class=s2>&#34;index&#34;</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>                    <span class=n>type</span> <span class=p>=</span> <span class=n>NavType</span><span class=p>.</span><span class=n>IntType</span>
+</span></span><span class=line><span class=cl>                    <span class=n>type</span> <span class=p>=</span> <span class=nc>NavType</span><span class=p>.</span><span class=n>IntType</span>
 </span></span><span class=line><span class=cl>                    <span class=n>defaultValue</span> <span class=p>=</span> <span class=p>-</span><span class=m>1</span>
 </span></span><span class=line><span class=cl>                <span class=p>},</span>
 </span></span><span class=line><span class=cl>            <span class=p>),</span>
@@ -66,8 +66,8 @@
 </span></span><span class=line><span class=cl>            <span class=k>val</span> <span class=py>viewModel</span> <span class=p>=</span> <span class=n>hiltViewModel</span><span class=p>&lt;</span><span class=n>SettingsViewModel</span><span class=p>&gt;(</span><span class=n>parentEntry</span><span class=p>)</span>
 </span></span><span class=line><span class=cl>            <span class=k>val</span> <span class=py>selectedIndex</span> <span class=p>=</span> <span class=n>backStackEntry</span><span class=p>.</span><span class=n>arguments</span><span class=o>?.</span><span class=n>getInt</span><span class=p>(</span><span class=s2>&#34;index&#34;</span><span class=p>)</span> <span class=o>?:</span> <span class=p>-</span><span class=m>1</span>
 </span></span><span class=line><span class=cl>            <span class=n>LanguageSettingDialog</span><span class=p>(</span>
-</span></span><span class=line><span class=cl>                <span class=n>preSelected</span> <span class=p>=</span> <span class=n>LanguageSetting</span><span class=p>.</span><span class=n>values</span><span class=p>()</span>
-</span></span><span class=line><span class=cl>                    <span class=p>.</span><span class=n>getOrElse</span><span class=p>(</span><span class=n>selectedIndex</span><span class=p>)</span> <span class=p>{</span> <span class=n>LanguageSetting</span><span class=p>.</span><span class=n>SYSTEM_DEFAULT</span> <span class=p>},</span>
+</span></span><span class=line><span class=cl>                <span class=n>preSelected</span> <span class=p>=</span> <span class=nc>LanguageSetting</span><span class=p>.</span><span class=n>values</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>                    <span class=p>.</span><span class=n>getOrElse</span><span class=p>(</span><span class=n>selectedIndex</span><span class=p>)</span> <span class=p>{</span> <span class=nc>LanguageSetting</span><span class=p>.</span><span class=n>SYSTEM_DEFAULT</span> <span class=p>},</span>
 </span></span><span class=line><span class=cl>                <span class=n>onConfirmSelect</span> <span class=p>=</span> <span class=p>{</span> <span class=n>languageSetting</span> <span class=o>-&gt;</span>
 </span></span><span class=line><span class=cl>                    <span class=n>viewModel</span><span class=p>.</span><span class=n>updateLanguage</span><span class=p>(</span><span class=n>languageSetting</span><span class=p>)</span>
 </span></span><span class=line><span class=cl>                    <span class=n>navController</span><span class=p>.</span><span class=n>popBackStack</span><span class=p>()</span>
@@ -79,8 +79,8 @@
 </span></span><span class=line><span class=cl>            <span class=n>route</span> <span class=p>=</span> <span class=s2>&#34;theme?nightMode={nightMode}&#34;</span><span class=p>,</span>
 </span></span><span class=line><span class=cl>            <span class=n>arguments</span> <span class=p>=</span> <span class=n>listOf</span><span class=p>(</span>
 </span></span><span class=line><span class=cl>                <span class=n>navArgument</span><span class=p>(</span><span class=s2>&#34;nightMode&#34;</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>                    <span class=n>type</span> <span class=p>=</span> <span class=n>NavType</span><span class=p>.</span><span class=n>IntType</span>
-</span></span><span class=line><span class=cl>                    <span class=n>defaultValue</span> <span class=p>=</span> <span class=n>AppCompatDelegate</span><span class=p>.</span><span class=n>MODE_NIGHT_UNSPECIFIED</span>
+</span></span><span class=line><span class=cl>                    <span class=n>type</span> <span class=p>=</span> <span class=nc>NavType</span><span class=p>.</span><span class=n>IntType</span>
+</span></span><span class=line><span class=cl>                    <span class=n>defaultValue</span> <span class=p>=</span> <span class=nc>AppCompatDelegate</span><span class=p>.</span><span class=n>MODE_NIGHT_UNSPECIFIED</span>
 </span></span><span class=line><span class=cl>                <span class=p>},</span>
 </span></span><span class=line><span class=cl>            <span class=p>),</span>
 </span></span><span class=line><span class=cl>        <span class=p>)</span> <span class=p>{</span> <span class=n>backStackEntry</span> <span class=o>-&gt;</span>
@@ -89,7 +89,7 @@
 </span></span><span class=line><span class=cl>            <span class=p>}</span>
 </span></span><span class=line><span class=cl>            <span class=k>val</span> <span class=py>viewModel</span> <span class=p>=</span> <span class=n>hiltViewModel</span><span class=p>&lt;</span><span class=n>SettingsViewModel</span><span class=p>&gt;(</span><span class=n>parentEntry</span><span class=p>)</span>
 </span></span><span class=line><span class=cl>            <span class=k>val</span> <span class=py>nightMode</span> <span class=p>=</span> <span class=n>backStackEntry</span><span class=p>.</span><span class=n>arguments</span><span class=o>?.</span><span class=n>getInt</span><span class=p>(</span><span class=s2>&#34;nightMode&#34;</span><span class=p>)</span>
-</span></span><span class=line><span class=cl>                <span class=o>?:</span> <span class=n>AppCompatDelegate</span><span class=p>.</span><span class=n>MODE_NIGHT_UNSPECIFIED</span>
+</span></span><span class=line><span class=cl>                <span class=o>?:</span> <span class=nc>AppCompatDelegate</span><span class=p>.</span><span class=n>MODE_NIGHT_UNSPECIFIED</span>
 </span></span><span class=line><span class=cl>            <span class=n>ThemeSettingDialog</span><span class=p>(</span>
 </span></span><span class=line><span class=cl>                <span class=n>preSelected</span> <span class=p>=</span> <span class=n>nightMode</span><span class=p>,</span>
 </span></span><span class=line><span class=cl>                <span class=n>onConfirmSelect</span> <span class=p>=</span> <span class=p>{</span> <span class=n>newValue</span> <span class=o>-&gt;</span>

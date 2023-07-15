@@ -14,8 +14,8 @@
 </span></span></code></pre></div><h2 id=ktor-client-基本用法>Ktor Client 基本用法<a hidden class=anchor aria-hidden=true href=#ktor-client-基本用法>#</a></h2><p>如果我們甚麼都不理，只是單純用 Ktor client call API 的話，大概會是這樣：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=k>val</span> <span class=py>httpClient</span> <span class=p>=</span> <span class=n>HttpClient</span><span class=p>(</span><span class=n>OkHttp</span><span class=p>)</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>    <span class=n>expectSuccess</span> <span class=p>=</span> <span class=k>true</span>
 </span></span><span class=line><span class=cl>    <span class=n>install</span><span class=p>(</span><span class=n>Logging</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=n>logger</span> <span class=p>=</span> <span class=n>Logger</span><span class=p>.</span><span class=n>DEFAULT</span>
-</span></span><span class=line><span class=cl>        <span class=n>level</span> <span class=p>=</span> <span class=n>LogLevel</span><span class=p>.</span><span class=n>ALL</span>
+</span></span><span class=line><span class=cl>        <span class=n>logger</span> <span class=p>=</span> <span class=nc>Logger</span><span class=p>.</span><span class=n>DEFAULT</span>
+</span></span><span class=line><span class=cl>        <span class=n>level</span> <span class=p>=</span> <span class=nc>LogLevel</span><span class=p>.</span><span class=n>ALL</span>
 </span></span><span class=line><span class=cl>    <span class=p>}</span>
 </span></span><span class=line><span class=cl>    <span class=n>install</span><span class=p>(</span><span class=n>JsonFeature</span><span class=p>)</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>        <span class=n>serializer</span> <span class=p>=</span> <span class=n>KotlinxSerializer</span><span class=p>(</span><span class=n>kotlinx</span><span class=p>.</span><span class=n>serialization</span><span class=p>.</span><span class=n>json</span><span class=p>.</span><span class=n>Json</span> <span class=p>{</span>
@@ -35,24 +35,24 @@
 </span></span><span class=line><span class=cl><span class=k>interface</span> <span class=nc>DataModule</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>    <span class=nd>@BindsOptionalOf</span>
-</span></span><span class=line><span class=cl>    <span class=k>fun</span> <span class=nf>bindLogging</span><span class=p>():</span> <span class=n>HttpClientFeature</span><span class=p>&lt;</span><span class=n>Logging</span><span class=p>.</span><span class=n>Config</span><span class=p>,</span> <span class=n>Logging</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=k>fun</span> <span class=nf>bindLogging</span><span class=p>():</span> <span class=n>HttpClientFeature</span><span class=p>&lt;</span><span class=nc>Logging</span><span class=p>.</span><span class=n>Config</span><span class=p>,</span> <span class=n>Logging</span><span class=p>&gt;</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>    <span class=k>companion</span> <span class=k>object</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>        <span class=nd>@Provides</span>
 </span></span><span class=line><span class=cl>        <span class=nd>@Singleton</span>
-</span></span><span class=line><span class=cl>        <span class=k>fun</span> <span class=nf>provideOkHttpClient</span><span class=p>():</span> <span class=n>OkHttpClient</span> <span class=p>=</span> <span class=n>OkHttpClient</span><span class=p>.</span><span class=n>Builder</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=k>fun</span> <span class=nf>provideOkHttpClient</span><span class=p>():</span> <span class=n>OkHttpClient</span> <span class=p>=</span> <span class=nc>OkHttpClient</span><span class=p>.</span><span class=n>Builder</span><span class=p>()</span>
 </span></span><span class=line><span class=cl>            <span class=p>.</span><span class=n>build</span><span class=p>()</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>        <span class=nd>@Provides</span>
-</span></span><span class=line><span class=cl>        <span class=k>fun</span> <span class=nf>provideHttpClientEngine</span><span class=p>(</span><span class=n>okHttpClient</span><span class=p>:</span> <span class=n>OkHttpClient</span><span class=p>):</span> <span class=n>HttpClientEngine</span> <span class=p>=</span> <span class=n>OkHttp</span><span class=p>.</span><span class=n>create</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>fun</span> <span class=nf>provideHttpClientEngine</span><span class=p>(</span><span class=n>okHttpClient</span><span class=p>:</span> <span class=n>OkHttpClient</span><span class=p>):</span> <span class=n>HttpClientEngine</span> <span class=p>=</span> <span class=nc>OkHttp</span><span class=p>.</span><span class=n>create</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>            <span class=n>preconfigured</span> <span class=p>=</span> <span class=n>okHttpClient</span>
 </span></span><span class=line><span class=cl>        <span class=p>}</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>        <span class=nd>@Provides</span>
-</span></span><span class=line><span class=cl>        <span class=k>fun</span> <span class=nf>provideLogging</span><span class=p>():</span> <span class=n>HttpClientFeature</span><span class=p>&lt;</span><span class=n>Logging</span><span class=p>.</span><span class=n>Config</span><span class=p>,</span> <span class=n>Logging</span><span class=p>&gt;</span> <span class=p>=</span> <span class=n>Logging</span><span class=p>.</span><span class=n>apply</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>fun</span> <span class=nf>provideLogging</span><span class=p>():</span> <span class=n>HttpClientFeature</span><span class=p>&lt;</span><span class=nc>Logging</span><span class=p>.</span><span class=n>Config</span><span class=p>,</span> <span class=n>Logging</span><span class=p>&gt;</span> <span class=p>=</span> <span class=nc>Logging</span><span class=p>.</span><span class=n>apply</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>            <span class=n>prepare</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>                <span class=n>logger</span> <span class=p>=</span> <span class=n>Logger</span><span class=p>.</span><span class=n>DEFAULT</span>
-</span></span><span class=line><span class=cl>                <span class=n>level</span> <span class=p>=</span> <span class=n>LogLevel</span><span class=p>.</span><span class=n>ALL</span>
+</span></span><span class=line><span class=cl>                <span class=n>logger</span> <span class=p>=</span> <span class=nc>Logger</span><span class=p>.</span><span class=n>DEFAULT</span>
+</span></span><span class=line><span class=cl>                <span class=n>level</span> <span class=p>=</span> <span class=nc>LogLevel</span><span class=p>.</span><span class=n>ALL</span>
 </span></span><span class=line><span class=cl>            <span class=p>}</span>
 </span></span><span class=line><span class=cl>        <span class=p>}</span>
 </span></span><span class=line><span class=cl>
@@ -60,7 +60,7 @@
 </span></span><span class=line><span class=cl>        <span class=nd>@Singleton</span>
 </span></span><span class=line><span class=cl>        <span class=k>fun</span> <span class=nf>provideKtorHttpClient</span><span class=p>(</span>
 </span></span><span class=line><span class=cl>            <span class=n>engine</span><span class=p>:</span> <span class=n>HttpClientEngine</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>            <span class=n>logging</span><span class=p>:</span> <span class=n>Optional</span><span class=p>&lt;</span><span class=n>HttpClientFeature</span><span class=p>&lt;</span><span class=n>Logging</span><span class=p>.</span><span class=n>Config</span><span class=p>,</span> <span class=n>Logging</span><span class=p>&gt;&gt;,</span>
+</span></span><span class=line><span class=cl>            <span class=n>logging</span><span class=p>:</span> <span class=n>Optional</span><span class=p>&lt;</span><span class=n>HttpClientFeature</span><span class=p>&lt;</span><span class=nc>Logging</span><span class=p>.</span><span class=n>Config</span><span class=p>,</span> <span class=n>Logging</span><span class=p>&gt;&gt;,</span>
 </span></span><span class=line><span class=cl>        <span class=p>):</span> <span class=n>HttpClient</span> <span class=p>=</span> <span class=n>HttpClient</span><span class=p>(</span><span class=n>engine</span><span class=p>)</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>            <span class=n>expectSuccess</span> <span class=p>=</span> <span class=k>true</span>
 </span></span><span class=line><span class=cl>            <span class=n>logging</span><span class=p>.</span><span class=n>ifPresent</span> <span class=p>{</span> <span class=n>install</span><span class=p>(</span><span class=k>it</span><span class=p>)</span> <span class=p>}</span>

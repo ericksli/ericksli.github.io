@@ -38,7 +38,7 @@
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>    <span class=nd>@Before</span>
 </span></span><span class=line><span class=cl>    <span class=k>fun</span> <span class=nf>setUp</span><span class=p>()</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=n>MockKAnnotations</span><span class=p>.</span><span class=k>init</span><span class=p>(</span><span class=k>this</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nc>MockKAnnotations</span><span class=p>.</span><span class=k>init</span><span class=p>(</span><span class=k>this</span><span class=p>)</span>
 </span></span><span class=line><span class=cl>    <span class=p>}</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>    <span class=nd>@Test</span>
@@ -55,14 +55,14 @@
 </span></span><span class=line><span class=cl>            <span class=k>val</span> <span class=py>mockEngine</span> <span class=p>=</span> <span class=n>MockEngine</span> <span class=p>{</span> <span class=n>request</span> <span class=o>-&gt;</span>
 </span></span><span class=line><span class=cl>                <span class=n>respond</span><span class=p>(</span>
 </span></span><span class=line><span class=cl>                    <span class=n>content</span> <span class=p>=</span> <span class=n>ByteReadChannel</span><span class=p>(</span><span class=s>&#34;&#34;&#34;{&#34;ip&#34;:&#34;127.0.0.1&#34;}&#34;&#34;&#34;</span><span class=p>),</span>
-</span></span><span class=line><span class=cl>                    <span class=n>status</span> <span class=p>=</span> <span class=n>HttpStatusCode</span><span class=p>.</span><span class=n>OK</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>                    <span class=n>headers</span> <span class=p>=</span> <span class=n>headersOf</span><span class=p>(</span><span class=n>HttpHeaders</span><span class=p>.</span><span class=n>ContentType</span><span class=p>,</span> <span class=s2>&#34;application/json&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                    <span class=n>status</span> <span class=p>=</span> <span class=nc>HttpStatusCode</span><span class=p>.</span><span class=n>OK</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                    <span class=n>headers</span> <span class=p>=</span> <span class=n>headersOf</span><span class=p>(</span><span class=nc>HttpHeaders</span><span class=p>.</span><span class=n>ContentType</span><span class=p>,</span> <span class=s2>&#34;application/json&#34;</span><span class=p>)</span>
 </span></span><span class=line><span class=cl>                <span class=p>)</span>
 </span></span><span class=line><span class=cl>            <span class=p>}</span>
 </span></span><span class=line><span class=cl>            <span class=c1>// ApiClient 內會 call httpClient.get
 </span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=k>val</span> <span class=py>apiClient</span> <span class=p>=</span> <span class=n>ApiClient</span><span class=p>(</span><span class=n>mockEngine</span><span class=p>)</span>
 </span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>            <span class=n>Assert</span><span class=p>.</span><span class=n>assertEquals</span><span class=p>(</span><span class=s2>&#34;127.0.0.1&#34;</span><span class=p>,</span> <span class=n>apiClient</span><span class=p>.</span><span class=n>getIp</span><span class=p>().</span><span class=n>ip</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=nc>Assert</span><span class=p>.</span><span class=n>assertEquals</span><span class=p>(</span><span class=s2>&#34;127.0.0.1&#34;</span><span class=p>,</span> <span class=n>apiClient</span><span class=p>.</span><span class=n>getIp</span><span class=p>().</span><span class=n>ip</span><span class=p>)</span>
 </span></span><span class=line><span class=cl>        <span class=p>}</span>
 </span></span><span class=line><span class=cl>    <span class=p>}</span>
 </span></span><span class=line><span class=cl><span class=p>}</span>
@@ -83,26 +83,26 @@
 </span></span><span class=line><span class=cl>                    <span class=o>?.</span><span class=n>readBytes</span><span class=p>()</span> <span class=o>?:</span> <span class=n>ByteArray</span><span class=p>(</span><span class=m>0</span><span class=p>)</span>
 </span></span><span class=line><span class=cl>            <span class=p>),</span>
 </span></span><span class=line><span class=cl>            <span class=n>status</span> <span class=p>=</span> <span class=n>status</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>            <span class=n>headers</span> <span class=p>=</span> <span class=n>headersOf</span><span class=p>(</span><span class=n>HttpHeaders</span><span class=p>.</span><span class=n>ContentType</span><span class=p>,</span> <span class=s2>&#34;application/json&#34;</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>            <span class=n>headers</span> <span class=p>=</span> <span class=n>headersOf</span><span class=p>(</span><span class=nc>HttpHeaders</span><span class=p>.</span><span class=n>ContentType</span><span class=p>,</span> <span class=s2>&#34;application/json&#34;</span><span class=p>),</span>
 </span></span><span class=line><span class=cl>        <span class=p>)</span>
 </span></span><span class=line><span class=cl>    <span class=p>}</span>
-</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>DataModule</span><span class=p>.</span><span class=n>provideKtorHttpClient</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nc>DataModule</span><span class=p>.</span><span class=n>provideKtorHttpClient</span><span class=p>(</span>
 </span></span><span class=line><span class=cl>        <span class=n>engine</span> <span class=p>=</span> <span class=n>engine</span><span class=p>,</span>
-</span></span><span class=line><span class=cl>        <span class=n>logging</span> <span class=p>=</span> <span class=n>Optional</span><span class=p>.</span><span class=n>empty</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=n>logging</span> <span class=p>=</span> <span class=nc>Optional</span><span class=p>.</span><span class=n>empty</span><span class=p>()</span>
 </span></span><span class=line><span class=cl>    <span class=p>)</span> <span class=n>to</span> <span class=n>requestSlot</span>
 </span></span><span class=line><span class=cl><span class=p>}</span>
 </span></span></code></pre></div><p>和 Ktor 網站的寫法相比我們寫得比它複雜，因為：</p><ol><li>把 <code>HttpRequestData</code> 放出來做 assertion（因為每次網址都會因應 <code>EtaRepository.getEta</code> 的參數而有所不同）</li><li>要模擬裝置不能上網時會 throw exception</li><li>response body 靠讀取放在 resources 目錄的 JSON 檔案提供</li></ol><p>第一部分就是靠回傳出來的 Pair 交給 caller（交 <code>requestSlot</code> 給 caller 做 assertion）；第二部分就是靠 <code>exception</code> 參數是不是 null 來決定會不會 throw exception；第三部分就是用 <code>javaClass.classLoader.getResourceAsStream</code> 讀取指定檔案。</p><h2 id=geteta-throw-exception><code>getEta</code> throw exception<a hidden class=anchor aria-hidden=true href=#geteta-throw-exception>#</a></h2><p>現在我們測試如果 <code>getEta</code> throw exception 時會不會回傳 <code>EtaResult.Error</code>：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-kotlin data-lang=kotlin><span class=line><span class=cl><span class=nd>@Test</span>
 </span></span><span class=line><span class=cl><span class=k>fun</span> <span class=nf>`getEta throw exception`</span><span class=p>()</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>    <span class=n>runBlocking</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=err>(</span><span class=py>client</span><span class=p>,</span> <span class=n>_</span><span class=p>)</span> <span class=p>=</span> <span class=n>mockHttpClient</span><span class=p>(</span>
-</span></span><span class=line><span class=cl>            <span class=n>HttpStatusCode</span><span class=p>.</span><span class=n>OK</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nc>HttpStatusCode</span><span class=p>.</span><span class=n>OK</span><span class=p>,</span>
 </span></span><span class=line><span class=cl>            <span class=s2>&#34;api/schedule_incident.json&#34;</span><span class=p>,</span>
 </span></span><span class=line><span class=cl>            <span class=n>RuntimeException</span><span class=p>(</span><span class=s2>&#34;Something went wrong&#34;</span><span class=p>)</span>
 </span></span><span class=line><span class=cl>        <span class=p>)</span>
 </span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>repository</span> <span class=p>=</span> <span class=n>EtaRepositoryImpl</span><span class=p>(</span><span class=n>client</span><span class=p>,</span> <span class=n>etaResponseMapper</span><span class=p>)</span>
-</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>result</span> <span class=p>=</span> <span class=n>repository</span><span class=p>.</span><span class=n>getEta</span><span class=p>(</span><span class=n>Language</span><span class=p>.</span><span class=n>CHINESE</span><span class=p>,</span> <span class=n>Line</span><span class=p>.</span><span class=n>TKL</span><span class=p>,</span> <span class=n>Station</span><span class=p>.</span><span class=n>TKO</span><span class=p>)</span>
-</span></span><span class=line><span class=cl>        <span class=n>expectThat</span><span class=p>(</span><span class=n>result</span><span class=p>).</span><span class=n>isA</span><span class=p>&lt;</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Error</span><span class=p>&gt;().</span><span class=n>and</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>            <span class=k>get</span><span class=p>(</span><span class=n>EtaResult</span><span class=p>.</span><span class=n>Error</span><span class=o>::</span><span class=n>e</span><span class=p>).</span><span class=n>isA</span><span class=p>&lt;</span><span class=n>RuntimeException</span><span class=p>&gt;()</span>
+</span></span><span class=line><span class=cl>        <span class=k>val</span> <span class=py>result</span> <span class=p>=</span> <span class=n>repository</span><span class=p>.</span><span class=n>getEta</span><span class=p>(</span><span class=nc>Language</span><span class=p>.</span><span class=n>CHINESE</span><span class=p>,</span> <span class=nc>Line</span><span class=p>.</span><span class=n>TKL</span><span class=p>,</span> <span class=nc>Station</span><span class=p>.</span><span class=n>TKO</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>expectThat</span><span class=p>(</span><span class=n>result</span><span class=p>).</span><span class=n>isA</span><span class=p>&lt;</span><span class=nc>EtaResult</span><span class=p>.</span><span class=n>Error</span><span class=p>&gt;().</span><span class=n>and</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>get</span><span class=p>(</span><span class=nc>EtaResult</span><span class=p>.</span><span class=n>Error</span><span class=o>::</span><span class=n>e</span><span class=p>).</span><span class=n>isA</span><span class=p>&lt;</span><span class=n>RuntimeException</span><span class=p>&gt;()</span>
 </span></span><span class=line><span class=cl>        <span class=p>}</span>
 </span></span><span class=line><span class=cl>    <span class=p>}</span>
 </span></span><span class=line><span class=cl><span class=p>}</span>
