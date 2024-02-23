@@ -1,6 +1,8 @@
 ---
 title: "Android 14 migration"
 date: 2024-02-02T00:05:00+08:00
+tags:
+- Android
 ---
 
 最近把 [MetroRide](https://play.google.com/store/apps/details?id=net.swiftzer.metroride) 的 API level 升到 34 ([Android 14](https://developer.android.com/about/versions/14))，中間發現了一些問題，在這裏記錄一下。
