@@ -7,7 +7,7 @@ tags:
 date: 2012-08-04T21:12:56+08:00
 ---
 
-千呼萬喚始出來！去年[有人用了 Android 的 NFC功能來讀取八達通卡的餘額]({{< ref "posts/android-octopus-app " >}})後，八達通公司終於推出了[官方的八達通 Android app](https://play.google.com/store/apps/details?id=com.octopuscards.nfc_reader)。這個 Android app 最主要的功能在於它能夠顯示最近十次的交易紀綠。
+千呼萬喚始出來！去年[有人用了 Android 的 NFC功能來讀取八達通卡的餘額]({{< ref "posts/android-octopus-app.md" >}})後，八達通公司終於推出了[官方的八達通 Android app](https://play.google.com/store/apps/details?id=com.octopuscards.nfc_reader)。這個 Android app 最主要的功能在於它能夠顯示最近十次的交易紀綠。
 
 要查閱八達通卡的資料，要先登記八達通卡編號。只有登記過的八達通卡方可查閱。登記後，將有 NFC 功能的手機放到八達通卡上，app 就會到八達通公司的伺服器下載該卡的餘額及最近十次的交易紀綠並顯示在手機屏幕上。三十秒後就會從屏幕自動消失。如果要再查閱另一張卡的話，要先按 Back 鍵返回上一頁。
 
