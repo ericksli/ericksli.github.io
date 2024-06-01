@@ -4,7 +4,6 @@ date: 2024-06-01T14:00:00+08:00
 tags:
   - Android
   - Firebase
-draft: true
 ---
 
 如果有用 Firebase Cloud Messaging (FCM) 或者其他關於 FCM 的第三方 SDK 的話應該會收到通知說 6 月 21 日會停用舊版的 FCM API（即是供 server 發送 notification 那個 API endpoint）。之後就要轉用 [HTTP v1 API](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages/send)。
