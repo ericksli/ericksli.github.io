@@ -45,18 +45,23 @@ params:
   socialIcons:
     - name: telegram
       url: "https://telegram.me/ericksli"
-    - name: twitter
+    - name: x
       url: "https://twitter.com/ericksli"
     - name: instagram
       url: "https://www.instagram.com/ericksli"
+    - name: 500px
+      url: "https://500px.com/ericksli"
     - name: medium
       url: "https://medium.com/@ericksli"
     - name: github
       url: "https://github.com/ericksli"
     - name: linkedin
       url: "https://www.linkedin.com/in/ericksli/"
+    - name: googleplaystore
+      url: "https://play.google.com/store/apps/dev?id=7993122800343932498"
   assets:
     disableHLJS: true
   comments: true
   ShowPostNavLinks: true
   ShowBreadCrumbs: true
+  ShowCodeCopyButtons: true
