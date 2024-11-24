@@ -91,7 +91,7 @@ Accessibility 是大家經常忽略的部分。隨着歐盟的 [European accessi
 - [How Chinese Apps Handled Covid-19](https://dangrover.com/blog/2020/04/05/covid-in-ui.html)
 - [中国人和外国人用的 App，为什么差别那么大？](https://www.ifanr.com/app/822846)
 - [Test your app with pseudolocales — Android Developers](https://developer.android.com/guide/topics/resources/pseudolocales)
-- [Android pseudolocale](https://eric.swiftzer.net/2023/07/android-pseudolocale/)
+- [Android pseudolocale]({{< ref "android-pseudolocale" >}})
 
 ### Accessibility
 
