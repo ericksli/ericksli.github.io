@@ -3,6 +3,7 @@ title: AndroidX Navigation component for Jetpack Compose type safety
 date: 2024-08-18T22:00:00+08:00
 tags:
   - Android
+  - Jetpack Compose
 ---
 
 AndroidX Navigation component 是 Google 推出的 [single `Activity` app](https://www.youtube.com/watch?v=2k8x8V77CrU) navigation library。本身是用 `Fragment` 來做每一頁的內容，然後再用新的 Android resource type——navigation 來定義 navigation graph（即是聲明一個 navigation graph 內有什麼 `Fragment`、打開 `Fragment` 時要什麼參數和各 `Fragment` 之間如何導覽的 XML 檔案）。如果加上 [Safe Args](https://developer.android.com/guide/navigation/use-graph/safe-args) Gradle plugin 的話就會按 navigation graph XML 檔案生成那些 Java code 去讓你在 `Fragment` 內轉頁時調用，那就不會怕轉頁時漏了幾個參數沒有傳到，因為漏了的話就不能成功 compile。

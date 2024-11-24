@@ -3,6 +3,7 @@ title: "Jetpack Compose Navigation component sub-graph"
 date: 2022-07-27T21:30:00+08:00
 tags:
   - Android
+  - Jetpack Compose
 ---
 
 這次[遷移到 Compose]({{< ref "jetpack-compose-migration-1" >}}) 時特別花了時間試用 Compose 的 Navigation component，終於弄清 nested graph 的意義。其實 Compose 的 Navigation component 底層都是跟 XML 版的 Navigation component 一樣，只是底層多了以 route 形式的處理。以往的說明文件在介紹 [nested navigation graph](https://developer.android.com/guide/navigation/navigation-nested-graphs) 時沒有太具體說明 nested graph 背後的意義，看完之後可能覺得只是用來避免單一 XML 檔過長而拆成不同 sub-graph。但其實在 deep link 時是有特別意義。

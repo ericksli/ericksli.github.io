@@ -3,6 +3,7 @@ title: "Jetpack Compose 遷移 (1)"
 date: 2022-07-24T14:06:00+08:00
 tags:
   - Android
+  - Jetpack Compose
 ---
 
 近幾個月斷斷續續替 [MetroRide](https://play.google.com/store/apps/details?id=net.swiftzer.metroride) 的界面由傳統 view system（即是 layout XML）轉為 [Jetpack Compose](https://developer.android.com/jetpack/compose)，順帶補上去年參加 [iThome 鐵人賽]({{< ref "2021-ithome-ironman" >}})時用來做示範的重鐵抵站時間功能。昨天新版 app 上架了就來分享一下遷移過程。其實這個 app 在之前的版本有把其中一頁靜態的頁面（延誤定義）改用 Compose，那時是在 `Fragment` 內的 `onCreateView` 加入 `setContent` 顯示 Compose 內容。由於那時只是做排版，沒有遇到大問題。之後開始慢慢轉用 Compose 才遇到問題。

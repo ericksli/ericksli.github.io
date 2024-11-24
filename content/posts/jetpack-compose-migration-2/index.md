@@ -3,6 +3,7 @@ title: "Jetpack Compose 遷移 (2)"
 date: 2022-07-26T14:00:00+08:00
 tags:
   - Android
+  - Jetpack Compose
 ---
 
 [上一篇]({{< ref "jetpack-compose-migration-1" >}})提過如何將 [MetroRide](https://play.google.com/store/apps/details?id=net.swiftzer.metroride) 由傳統 view system 遷移到 Jetpack Compose。但一篇又太長，所以分拆成兩篇。
