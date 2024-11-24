@@ -1,1 +1,44 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Fonts on EricLog</title><link>https://eric.swiftzer.net/fonts/</link><description>Recent content in Fonts on EricLog</description><generator>Hugo -- gohugo.io</generator><language>zh-tw</language><lastBuildDate>Mon, 13 Nov 2017 22:16:00 +0800</lastBuildDate><atom:link href="https://eric.swiftzer.net/fonts/index.xml" rel="self" type="application/rss+xml"/><item><title>CN License A</title><link>https://eric.swiftzer.net/fonts/cn-license/</link><pubDate>Mon, 13 Nov 2017 22:16:00 +0800</pubDate><guid>https://eric.swiftzer.net/fonts/cn-license/</guid><description>CN License A 是參照 GA 36-2007《中華人民共和國機動車號牌》當中的 440 × 140 mm 車號牌所使用的字體而造。 字元 分類 字元 數字 0 1 2 3 4 5 6 7 8 9 大楷 A B C</description></item><item><title>Highway Signage</title><link>https://eric.swiftzer.net/fonts/highway-signage/</link><pubDate>Mon, 10 Oct 2016 23:03:14 +0800</pubDate><guid>https://eric.swiftzer.net/fonts/highway-signage/</guid><description>Highway Signage 概念乃源自英國道路指示牌所使用之字型，同時亦有加入用於高速公路編號的字符。Highway Signage 共有兩種粗幼度：Medium 及 Heavy。Me</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Fonts on EricLog</title><link>https://eric.swiftzer.net/fonts/</link><description>Recent content in Fonts on EricLog</description><generator>Hugo -- 0.139.2</generator><language>zh-tw</language><lastBuildDate>Mon, 13 Nov 2017 22:16:00 +0800</lastBuildDate><atom:link href="https://eric.swiftzer.net/fonts/index.xml" rel="self" type="application/rss+xml"/><item><title>CN License A</title><link>https://eric.swiftzer.net/fonts/cn-license/</link><pubDate>Mon, 13 Nov 2017 22:16:00 +0800</pubDate><guid>https://eric.swiftzer.net/fonts/cn-license/</guid><description>&lt;p>CN License A 是參照 GA 36-2007《中華人民共和國機動車號牌》當中的 440 × 140 mm 車號牌所使用的字體而造。&lt;/p>
+&lt;!-- more -->
+&lt;p>&lt;img alt="CN License A 應用示範" loading="lazy" src="https://eric.swiftzer.net/fonts/cn-license/demo.png">&lt;/p>
+&lt;p>&lt;img alt="CN License A 字元示範" loading="lazy" src="https://eric.swiftzer.net/fonts/cn-license/glyphs.png">&lt;/p>
+&lt;h2 id="字元">字元&lt;/h2>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>分類&lt;/th>
+&lt;th>字元&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>數字&lt;/td>
+&lt;td>&lt;code>0&lt;/code> &lt;code>1&lt;/code> &lt;code>2&lt;/code> &lt;code>3&lt;/code> &lt;code>4&lt;/code> &lt;code>5&lt;/code> &lt;code>6&lt;/code> &lt;code>7&lt;/code> &lt;code>8&lt;/code> &lt;code>9&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>大楷&lt;/td>
+&lt;td>&lt;code>A&lt;/code> &lt;code>B&lt;/code> &lt;code>C&lt;/code> &lt;code>D&lt;/code> &lt;code>E&lt;/code> &lt;code>F&lt;/code> &lt;code>G&lt;/code> &lt;code>H&lt;/code> &lt;code>I&lt;/code> &lt;code>J&lt;/code> &lt;code>K&lt;/code> &lt;code>L&lt;/code> &lt;code>M&lt;/code> &lt;code>N&lt;/code> &lt;code>O&lt;/code> &lt;code>P&lt;/code> &lt;code>Q&lt;/code> &lt;code>R&lt;/code> &lt;code>S&lt;/code> &lt;code>T&lt;/code> &lt;code>U&lt;/code> &lt;code>V&lt;/code> &lt;code>W&lt;/code> &lt;code>X&lt;/code> &lt;code>Y&lt;/code> &lt;code>Z&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>小楷&lt;/td>
+&lt;td>&lt;code>a&lt;/code> &lt;code>b&lt;/code> &lt;code>c&lt;/code> &lt;code>d&lt;/code> &lt;code>e&lt;/code> &lt;code>f&lt;/code> &lt;code>g&lt;/code> &lt;code>h&lt;/code> &lt;code>i&lt;/code> &lt;code>j&lt;/code> &lt;code>k&lt;/code> &lt;code>l&lt;/code> &lt;code>m&lt;/code> &lt;code>n&lt;/code> &lt;code>o&lt;/code> &lt;code>p&lt;/code> &lt;code>q&lt;/code> &lt;code>r&lt;/code> &lt;code>s&lt;/code> &lt;code>t&lt;/code> &lt;code>u&lt;/code> &lt;code>v&lt;/code> &lt;code>w&lt;/code> &lt;code>x&lt;/code> &lt;code>y&lt;/code> &lt;code>z&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>簡體中文&lt;/td>
+&lt;td>&lt;code>京&lt;/code> &lt;code>津&lt;/code> &lt;code>冀&lt;/code> &lt;code>晋&lt;/code> &lt;code>蒙&lt;/code> &lt;code>辽&lt;/code> &lt;code>吉&lt;/code> &lt;code>黑&lt;/code> &lt;code>沪&lt;/code> &lt;code>苏&lt;/code> &lt;code>浙&lt;/code> &lt;code>皖&lt;/code> &lt;code>闽&lt;/code> &lt;code>赣&lt;/code> &lt;code>鲁&lt;/code> &lt;code>豫&lt;/code> &lt;code>鄂&lt;/code> &lt;code>湘&lt;/code> &lt;code>粤&lt;/code> &lt;code>桂&lt;/code> &lt;code>琼&lt;/code> &lt;code>渝&lt;/code> &lt;code>川&lt;/code> &lt;code>贵&lt;/code> &lt;code>云&lt;/code> &lt;code>藏&lt;/code> &lt;code>陕&lt;/code> &lt;code>甘&lt;/code> &lt;code>青&lt;/code> &lt;code>宁&lt;/code> &lt;code>新&lt;/code> &lt;code>港&lt;/code> &lt;code>澳&lt;/code> &lt;code>警&lt;/code> &lt;code>使&lt;/code> &lt;code>领&lt;/code> &lt;code>学&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>繁體中文&lt;/td>
+&lt;td>&lt;code>晉&lt;/code> &lt;code>遼&lt;/code> &lt;code>滬&lt;/code> &lt;code>蘇&lt;/code> &lt;code>閩&lt;/code> &lt;code>贛&lt;/code> &lt;code>魯&lt;/code> &lt;code>粵&lt;/code> &lt;code>瓊&lt;/code> &lt;code>貴&lt;/code> &lt;code>雲&lt;/code> &lt;code>陝&lt;/code> &lt;code>寧&lt;/code> &lt;code>領&lt;/code> &lt;code>學&lt;/code>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>其他&lt;/td>
+&lt;td>&lt;code>-&lt;/code>(U+002D) &lt;code>•&lt;/code>(U+2022) &lt;code>‧&lt;/code>(U+2027) &lt;code>　&lt;/code>(U+3000)&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="下載">下載&lt;/h2>
+&lt;ul>
+&lt;li>&lt;a href="https://eric.swiftzer.net/fonts/cn-license/CNLicenseA.zip">字型檔及字元表&lt;/a>&lt;/li>
+&lt;/ul></description></item><item><title>Highway Signage</title><link>https://eric.swiftzer.net/fonts/highway-signage/</link><pubDate>Mon, 10 Oct 2016 23:03:14 +0800</pubDate><guid>https://eric.swiftzer.net/fonts/highway-signage/</guid><description>&lt;p>&lt;img alt="Highway Signage 示範" loading="lazy" src="https://eric.swiftzer.net/fonts/highway-signage/demo.png">&lt;/p>
+&lt;p>Highway Signage 概念乃源自英國道路指示牌所使用之字型，同時亦有加入用於高速公路編號的字符。Highway Signage 共有兩種粗幼度：Medium 及 Heavy。Medium 是用於藍﹑綠、啡底白字的指示牌；而 Heavy 則用於白、黃底黑字的指示牌。&lt;/p></description></item></channel></rss>

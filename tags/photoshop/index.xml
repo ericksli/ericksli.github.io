@@ -1,1 +1,19 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Photoshop on EricLog</title><link>https://eric.swiftzer.net/tags/photoshop/</link><description>Recent content in Photoshop on EricLog</description><generator>Hugo -- gohugo.io</generator><language>zh-tw</language><lastBuildDate>Sun, 31 Jul 2016 23:30:52 +0800</lastBuildDate><atom:link href="https://eric.swiftzer.net/tags/photoshop/index.xml" rel="self" type="application/rss+xml"/><item><title>Photosphere</title><link>https://eric.swiftzer.net/2016/07/photosphere/</link><pubDate>Sun, 31 Jul 2016 23:30:52 +0800</pubDate><guid>https://eric.swiftzer.net/2016/07/photosphere/</guid><description>早前 Facebook 的 360 Photos 令 Photosphre 流行起來。沒有 360 camera 的話，可以用手機應用程式駁相。不過用手機影相畫質會比較差。所以這次試試用相機拍攝 Photosphere。 以</description></item><item><title>Photoshop 扮移軸</title><link>https://eric.swiftzer.net/2010/06/photoshop-tilt-shift/</link><pubDate>Sun, 27 Jun 2010 15:43:19 +0800</pubDate><guid>https://eric.swiftzer.net/2010/06/photoshop-tilt-shift/</guid><description>之前早就看過人用 Photoshop 扮移軸，但一直都沒有合適的相片來試玩這個效果。最近就剛好拍了幾張相來試，效果也不錯。 相片中白色的輕鐵列車就是新來港的 111</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Photoshop on EricLog</title><link>https://eric.swiftzer.net/tags/photoshop/</link><description>Recent content in Photoshop on EricLog</description><generator>Hugo -- 0.139.2</generator><language>zh-tw</language><lastBuildDate>Sun, 31 Jul 2016 23:30:52 +0800</lastBuildDate><atom:link href="https://eric.swiftzer.net/tags/photoshop/index.xml" rel="self" type="application/rss+xml"/><item><title>Photosphere</title><link>https://eric.swiftzer.net/2016/07/photosphere/</link><pubDate>Sun, 31 Jul 2016 23:30:52 +0800</pubDate><guid>https://eric.swiftzer.net/2016/07/photosphere/</guid><description>&lt;p>早前 Facebook 的 &lt;a href="https://facebook360.fb.com/360-photos/">360 Photos&lt;/a> 令 Photosphre 流行起來。沒有 360 camera 的話，可以用&lt;a href="https://play.google.com/store/apps/details?id=com.google.android.street">手機應用程式&lt;/a>駁相。不過用手機影相畫質會比較差。所以這次試試用相機拍攝 Photosphere。&lt;/p>
+&lt;!-- more -->
+&lt;p>以下是所需工具：&lt;/p>
+&lt;ul>
+&lt;li>有全手動模式的相機&lt;/li>
+&lt;li>魚眼鏡 / 廣角鏡&lt;/li>
+&lt;li>三腳架&lt;/li>
+&lt;li>Hugin&lt;/li>
+&lt;li>Photoshop&lt;/li>
+&lt;li>能修改檔案 XMP 的工具&lt;/li>
+&lt;/ul>
+&lt;h2 id="器材">器材&lt;/h2>
+&lt;p>按照 Google 的指引，用 DSLR 拍攝 Photosphere 的話，是需要用魚眼鏡。但因為我沒有魚眼鏡的關係，所以唯有用 14-42mm kit 鏡（135 等效焦距 28mm）拍攝。用魚眼鏡拍攝的好處是因為視角夠廣，拍攝張數少，後期駁相都會比較方便。但由於沒有魚眼鏡的關係所以拍了 70 多張相來接駁。拍攝時要調去全手動模式 (M mode)，對焦設成無限遠，ISO、光圈、快門、白平衡都要手動固定，否則接駁時可能會有明顥光暗差異。&lt;/p></description></item><item><title>Photoshop 扮移軸</title><link>https://eric.swiftzer.net/2010/06/photoshop-tilt-shift/</link><pubDate>Sun, 27 Jun 2010 15:43:19 +0800</pubDate><guid>https://eric.swiftzer.net/2010/06/photoshop-tilt-shift/</guid><description>&lt;p>之前早就看過人用 Photoshop 扮移軸，但一直都沒有合適的相片來試玩這個效果。最近就剛好拍了幾張相來試，效果也不錯。&lt;/p>
+&lt;p>相片中白色的輕鐵列車就是新來港的 1117。&lt;/p>
+&lt;figure>
+&lt;img loading="lazy" src="IMG_6640.jpg"/> &lt;figcaption>
+Photoshop 扮移軸
+&lt;/figcaption>
+&lt;/figure></description></item></channel></rss>
