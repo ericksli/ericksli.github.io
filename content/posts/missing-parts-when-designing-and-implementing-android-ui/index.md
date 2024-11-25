@@ -29,10 +29,10 @@ cover:
 
 - 沒有考慮不同 edge case（對那些 domain 了解不夠深入，沒想到這個位置都可以出 error）、屏幕尺寸（即是 responsive/adaptive layout）
 - 不了解 Android 的特性（因為他們自己都是用 iOS，沒有花時間閱讀 Android 和 iOS 的文檔）
-- 按鈕尺寸過小、顏色對比度不足等 accessibility 問題
+- 按鈕尺寸過小、字體過小、顏色對比度不足等 accessibility 問題
 - 沒有考慮到 internationalization/localization 問題，例如文本長度能不能塞進去 UI、貨幣、日期時間、度量衡單位、當地文化習慣之類
 - 欠缺 UI/UX design 的基礎知識，例如不知道 bitmap/vector graphic 的分別、一般 design principle 例如應把相關的東西放在一起 ([Proximity principle](https://www.nngroup.com/articles/gestalt-proximity/))
-- 之前 design team 訂了 design system 的 component 但又不跟從
+- 之前 design team 訂了 design system 的 component 但又不遵從（有時是因為高層想要這個地方用更獨特的 UI）
 - 對產品本身 domain 認識不夠深，例如產品是做股票 app 但對買賣股票流程不熟識（這個比較少見，因為這個比較嚴重）
 
 以前看到 mockup 有問題時都有試過跟 designer 解釋一次，但有時候解釋完他們又聽不懂，要我或者其他 frontend developer 同事即場在 Figma 上示範才懂，甚至看完示範都不明白我們的意思。最後我乾脆自己 duplicate 那些 Figma file 到自己帳號再調整到方便自己輸出和計算物件尺寸的樣子，還有是因為沒有編輯權限所以用不到 Figma 的 plugin（那些[生成 vector drawable 的 plugin](https://www.figma.com/community/plugin/797369763563831541/android-vector-drawable) 比起 Figma 內置的輸出功能更方便）。
