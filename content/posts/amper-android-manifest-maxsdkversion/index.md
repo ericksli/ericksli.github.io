@@ -3,7 +3,6 @@ title: "Amper Android manifest maxSdkVersion"
 date: 2025-02-08T15:00:00+08:00
 tags:
   - Android
-draft: true
 ---
 
 最近發現原來 [MetroRide](https://play.google.com/store/apps/details?id=net.swiftzer.metroride) 在 Android 15 的裝置上找不到，經 Google 網頁搜尋打開 Google Play 看到紅字說裝置不支援。後來才發現原來 Android manifest 被加上 `android:maxSdkVersion="34"`。
